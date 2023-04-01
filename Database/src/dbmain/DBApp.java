@@ -118,6 +118,9 @@ public class DBApp implements Serializable{
 		htblColNameMax.put("gpa", "4");
 		
 		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		//manga awy
+		String manga = "manga";
+		System.out.println(manga);
 	}
 	
 
