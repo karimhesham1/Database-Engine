@@ -173,7 +173,7 @@ public class DBApp implements Serializable{
 
 		
 	}
-	
+	//alo
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
 	// htblColNameValue will not include clustering key as column name
