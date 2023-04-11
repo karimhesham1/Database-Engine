@@ -216,7 +216,6 @@ public class DBApp implements Serializable{
 	
 }
 
-//mangaaaaaaaaaa2
 
 //Dina gmela fsh5 
 
