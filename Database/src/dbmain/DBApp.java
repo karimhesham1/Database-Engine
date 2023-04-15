@@ -148,68 +148,90 @@ public class DBApp implements Serializable{
 		        in.close();
 		        
 		        
-		        boolean flag = false;
+		        
+		        boolean primaryexists = false;
 				
 				BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 				String line = br.readLine();
 				line = br.readLine();
+				Enumeration<String> columnNames = htblColNameValue.keys();
 				while (line != null) 
 				{
+					boolean flag = false;
 					String[] content = line.split(",");
+					
+					if(columnNames.hasMoreElements()== false)
+						break;
 					
 					if(content[0] == strTableName)
 					{
-						  Enumeration<String> columnNames = htblColNameValue.keys();
-					        while (columnNames.hasMoreElements()) {
-					            String insertedColName = columnNames.nextElement();
-					            Object insertedvalue = htblColNameValue.get(insertedColName);
-					            
-					            if (content[1] == insertedColName)
-					            {
-					            	if(content[2] == insertedvalue.getClass().toString())
-					            	{
-					            		if(insertedvalue.getClass().toString() == "java.lang.Double" ||
-					            				insertedvalue.getClass().toString() == "java.lang.Integer")
-					            		{
-					            			int min = Integer.parseInt(content[6]);
-					            			int max = Integer.parseInt(content[7]);
-					            			
-					            			if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
-					            			{
-					            				flag=true;
-					            			}
-					            		}
-					            		
-					            		else 
-					            		{
-					            			String min = content[6];
-					            			String max = content[7];
-					            			String insertedvalstring = (String) insertedvalue;
-					            			
-					            			if (insertedvalstring.compareTo(min))
-					            			{
-					            				flag=true;
-					            			}
-					            		}
-					            		
-					            		
-					            	}
-					            }
-					            String min = htblColNameMin.get(columnName);
-						        String max = htblColNameMax.get(columnName);
-					            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
-					            String indexed = "Null"; 
-
-					            writer.write(strTableName + "," + columnName + "," + columnType + "," + clusteringKey + "," + indexed + "," + indexed + "," + min + "," + max + "\n");
-					        }
 						
-					}
+						
+						String insertedColName = columnNames.nextElement();
+						Object insertedvalue = htblColNameValue.get(insertedColName);
+
+						if (content[1] == insertedColName)
+						{
+							if(content[2] == insertedvalue.getClass().toString())
+							{
+								if(insertedvalue.getClass().toString() == "java.lang.Double" ||
+										insertedvalue.getClass().toString() == "java.lang.Integer")
+								{
+									int min = Integer.parseInt(content[6]);
+									int max = Integer.parseInt(content[7]);
+
+									if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+									{
+										flag=true;
+										if (content [3] == "true")
+										{
+											primaryexists = true;
+										}
+									}
+								}
+
+								else 
+								{
+									String min = content[6];
+									String max = content[7];
+									String insertedvalstring = (String) insertedvalue;
+									int comparemin = insertedvalstring.compareTo(min);
+									int comparemax = insertedvalstring.compareTo(max);
+									if (comparemin >= 0 && comparemax<=0)
+									{
+										flag=true;
+										if (content [3] == "true")
+										{
+											primaryexists = true;
+										}
+									}
+								}
+
+
+							}
+							
+							
+						}
+
+						if(flag == false)
+							throw new DBAppException();
+
+
 					
 
+
+					}
+					
+					
 					line = br.readLine();
 				}
 				
 				br.close();
+				
+				if(primaryexists)
+				{
+					//insert
+				}
 				
 		        
 		        
