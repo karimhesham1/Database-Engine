@@ -1,9 +1,11 @@
 package dbmain;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -124,6 +126,8 @@ public class DBApp implements Serializable{
 	}
 	
 
+	
+
 	// following method inserts one row only.
 	// htblColNameValue must include a value for the primary key
 	public void insertIntoTable(String strTableName,
@@ -142,7 +146,73 @@ public class DBApp implements Serializable{
 		        ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
 		        Table table = (Table) in.readObject();
 		        in.close();
+		        
+		        
+		        boolean flag = false;
+				
+				BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+				String line = br.readLine();
+				line = br.readLine();
+				while (line != null) 
+				{
+					String[] content = line.split(",");
+					
+					if(content[0] == strTableName)
+					{
+						  Enumeration<String> columnNames = htblColNameValue.keys();
+					        while (columnNames.hasMoreElements()) {
+					            String insertedColName = columnNames.nextElement();
+					            Object insertedvalue = htblColNameValue.get(insertedColName);
+					            
+					            if (content[1] == insertedColName)
+					            {
+					            	if(content[2] == insertedvalue.getClass().toString())
+					            	{
+					            		if(insertedvalue.getClass().toString() == "java.lang.Double" ||
+					            				insertedvalue.getClass().toString() == "java.lang.Integer")
+					            		{
+					            			int min = Integer.parseInt(content[6]);
+					            			int max = Integer.parseInt(content[7]);
+					            			
+					            			if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+					            			{
+					            				flag=true;
+					            			}
+					            		}
+					            		
+					            		else 
+					            		{
+					            			String min = content[6];
+					            			String max = content[7];
+					            			String insertedvalstring = (String) insertedvalue;
+					            			
+					            			if (insertedvalstring.compareTo(min))
+					            			{
+					            				flag=true;
+					            			}
+					            		}
+					            		
+					            		
+					            	}
+					            }
+					            String min = htblColNameMin.get(columnName);
+						        String max = htblColNameMax.get(columnName);
+					            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
+					            String indexed = "Null"; 
 
+					            writer.write(strTableName + "," + columnName + "," + columnType + "," + clusteringKey + "," + indexed + "," + indexed + "," + min + "," + max + "\n");
+					        }
+						
+					}
+					
+
+					line = br.readLine();
+				}
+				
+				br.close();
+				
+		        
+		        
 		        // Check that all columns in the table are present in the hashtable
 		       
 
