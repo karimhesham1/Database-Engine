@@ -211,7 +211,7 @@ public class DBApp implements Serializable{
 											String pk = content[1];
 											Object insertedPkValue = htblColNameValue.get(pk);
 											if(!insertedPkValue.equals(null)) {
-											primaryexists = true;
+												primaryexists = true;
 											}
 										}
 									}
@@ -219,15 +219,12 @@ public class DBApp implements Serializable{
 
 
 							}
-							
-							
+
+
 						}
 
-						if(flag == false)
+						if(flag == false || !primaryexists)
 							throw new DBAppException();
-
-
-					
 
 
 					}
