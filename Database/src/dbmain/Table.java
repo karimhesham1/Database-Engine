@@ -3,6 +3,7 @@ package dbmain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Vector;
 
 public class Table implements Serializable {
 
@@ -11,19 +12,19 @@ public class Table implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String tableName;
-	private ArrayList<Page> pages;
+	private Vector<Page> pages;
  
 
     public Table(String tableName) {
         this.tableName = tableName;
-        this.pages = new ArrayList<>();
+        this.pages = new Vector<>();
     }
 
     public String getTableName() {
         return tableName;
     }
 
-    public ArrayList<Page> getPages() {
+    public Vector<Page> getPages() {
         return pages;
     }
 

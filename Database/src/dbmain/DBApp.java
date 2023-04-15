@@ -12,9 +12,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Vector;
 
 
 
@@ -155,6 +157,7 @@ public class DBApp implements Serializable{
 				String line = br.readLine();
 				line = br.readLine();
 				Enumeration<String> columnNames = htblColNameValue.keys();
+				Object insertedPkValue = null;
 				while (line != null) 
 				{
 					boolean flag = false;
@@ -187,7 +190,7 @@ public class DBApp implements Serializable{
 										{
 											//new
 											String pk = content[1];
-											Object insertedPkValue = htblColNameValue.get(pk);
+											 insertedPkValue = htblColNameValue.get(pk);
 											if(!insertedPkValue.equals(null)) {
 											primaryexists = true;
 											}
@@ -209,7 +212,7 @@ public class DBApp implements Serializable{
 										{
 											//new
 											String pk = content[1];
-											Object insertedPkValue = htblColNameValue.get(pk);
+											 insertedPkValue = htblColNameValue.get(pk);
 											if(!insertedPkValue.equals(null)) {
 												primaryexists = true;
 											}
@@ -237,7 +240,26 @@ public class DBApp implements Serializable{
 				
 				if(primaryexists)
 				{
-					//insert
+					Vector<Page> pages = table.getPages();
+					int pageSize = pages.size();
+				
+					while(true) {
+						int select = pageSize/2;
+						Page P1 = pages.get(select);
+						int used = P1.getNumUsedRows();
+						int rowMid = used/2;
+						Row R1 = P1.getRow(rowMid);
+						int PKIndex = R1.getPkIndex();
+						if(insertedPkValue.equals(R1.getValue(PKIndex))){
+							throw new DBAppException();
+						}
+						else {
+							//if(inserted)
+							//Still need to work out how moving to left or right side of tree depending on < or >
+						}
+								
+						
+					}
 				}
 				
 		        
