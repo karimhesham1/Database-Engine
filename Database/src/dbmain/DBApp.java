@@ -207,7 +207,12 @@ public class DBApp implements Serializable{
 										flag=true;
 										if (content [3] == "true")
 										{
+											//new
+											String pk = content[1];
+											Object insertedPkValue = htblColNameValue.get(pk);
+											if(!insertedPkValue.equals(null)) {
 											primaryexists = true;
+											}
 										}
 									}
 								}
