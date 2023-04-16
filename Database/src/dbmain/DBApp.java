@@ -242,7 +242,7 @@ public class DBApp implements Serializable{
 				{
 					Vector<Page> pages = table.getPages();
 					int pageSize = pages.size();
-				
+
 					while(true) {
 						int select = pageSize/2;
 						Page P1 = pages.get(select);
@@ -257,8 +257,8 @@ public class DBApp implements Serializable{
 							//if(inserted)
 							//Still need to work out how moving to left or right side of tree depending on < or >
 						}
-								
-						
+
+
 					}
 				}
 				
@@ -304,6 +304,7 @@ public class DBApp implements Serializable{
 	Hashtable<String,Object> htblColNameValue )
 	throws DBAppException
 	{
+		
 		
 	}
 	// following method could be used to delete one or more rows.

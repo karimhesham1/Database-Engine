@@ -1,16 +1,27 @@
 package dbmain;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.Vector;
 
 public class Page implements Serializable {
     private static final long serialVersionUID = 1L;
     private int maxRows;
     private int numUsedRows;
+    private String tableName;
     private Vector<Row> rows;
 
-    public Page(int maxRows) {
-        this.maxRows = maxRows;
+    public Page(String tablename) throws IOException {
+    	
+    	Properties props = new Properties();
+    	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("DBApp.config");
+    	props.load(inputStream);
+
+    	this.maxRows = Integer.parseInt(props.getProperty("MaximumRowsCountinTablePage"));
+
+        this.tableName = tablename;
         this.numUsedRows = 0;
         this.rows = new Vector<Row>(maxRows);
     }
@@ -29,6 +40,7 @@ public class Page implements Serializable {
         }
         rows.add(row);
         numUsedRows++;
+        
     }
 
     public void deleteRow(int index) {
@@ -52,5 +64,10 @@ public class Page implements Serializable {
 
     public int getNumUsedRows() {
         return numUsedRows;
+    }
+    
+    public String getTableName() {
+    	return tableName;
+    	
     }
 }
