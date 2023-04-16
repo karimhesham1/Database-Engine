@@ -12,23 +12,28 @@ public class Table implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String tableName;
-	private Vector<Page> pages;
+	private Vector<String> pages;
  
 
     public Table(String tableName) {
         this.tableName = tableName;
-        this.pages = new Vector<>();
+        this.pages = new Vector<String>();
     }
 
     public String getTableName() {
         return tableName;
     }
 
-    public Vector<Page> getPages() {
+    public Vector<String> getPages() {
         return pages;
     }
 
-    public void addPage(Page page) {
-        pages.add(page);
+    public void addPage(String pageName) {
+        pages.add(pageName);
+    }
+    
+    public int getNumOfPages()
+    {
+    	return this.pages.size();
     }
 }

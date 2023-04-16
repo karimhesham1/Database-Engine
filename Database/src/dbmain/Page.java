@@ -12,8 +12,9 @@ public class Page implements Serializable {
     private int numUsedRows;
     private String tableName;
     private Vector<Row> rows;
+    private String pageName;
 
-    public Page(String tablename) throws IOException {
+    public Page(Table table) throws IOException {
     	
     	Properties props = new Properties();
     	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("DBApp.config");
@@ -21,9 +22,13 @@ public class Page implements Serializable {
 
     	this.maxRows = Integer.parseInt(props.getProperty("MaximumRowsCountinTablePage"));
 
-        this.tableName = tablename;
+        this.tableName = table.getTableName();
         this.numUsedRows = 0;
         this.rows = new Vector<Row>(maxRows);
+        int tmp = table.getNumOfPages() +1;
+        this.pageName = this.tableName + tmp;
+        table.addPage(pageName);
+        
     }
 
     public boolean isFull() {

@@ -240,26 +240,26 @@ public class DBApp implements Serializable{
 				
 				if(primaryexists)
 				{
-					Vector<Page> pages = table.getPages();
-					int pageSize = pages.size();
-
-					while(true) {
-						int select = pageSize/2;
-						Page P1 = pages.get(select);
-						int used = P1.getNumUsedRows();
-						int rowMid = used/2;
-						Row R1 = P1.getRow(rowMid);
-						int PKIndex = R1.getPkIndex();
-						if(insertedPkValue.equals(R1.getValue(PKIndex))){
-							throw new DBAppException();
-						}
-						else {
-							//if(inserted)
-							//Still need to work out how moving to left or right side of tree depending on < or >
-						}
-
-
-					}
+//					Vector<String> pages = table.getPages();
+//					int pageSize = pages.size();
+//
+//					while(true) {
+//						int select = pageSize/2;
+//						Page P1 = pages.get(select);
+//						int used = P1.getNumUsedRows();
+//						int rowMid = used/2;
+//						Row R1 = P1.getRow(rowMid);
+//						int PKIndex = R1.getPkIndex();
+//						if(insertedPkValue.equals(R1.getValue(PKIndex))){
+//							throw new DBAppException();
+//						}
+//						else {
+//							//if(inserted)
+//							//Still need to work out how moving to left or right side of tree depending on < or >
+//						}
+//
+//
+//					}
 				}
 				
 		        
@@ -294,6 +294,9 @@ public class DBApp implements Serializable{
 
 		
 	}
+	
+	
+	
 	//alo
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
