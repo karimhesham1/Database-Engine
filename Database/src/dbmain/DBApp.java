@@ -27,6 +27,7 @@ public class DBApp implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Vector<Page> loadedPages;
 	public DBApp() {
 		
 	}
@@ -337,6 +338,22 @@ public class DBApp implements Serializable{
 		
 	}
 	
+	public void loadPages (Table table) throws ClassNotFoundException, IOException
+	{
+		loadedPages = null;
+		Vector<String> pages = table.getPages();
+		for(String s : pages)
+		{
+			//load the page file from disk
+			File pageFile = new File(s + ".class");
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(pageFile));
+			Page page = (Page) in.readObject();
+			loadedPages.add(page);
+			in.close();
+
+		}
+	}
+
 	
 	public static int binarySearch(Vector<Row> rows, Object key) {
 	    int low = 0;
