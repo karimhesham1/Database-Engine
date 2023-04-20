@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -158,6 +159,7 @@ public class DBApp implements Serializable{
 				line = br.readLine();
 				Enumeration<String> columnNames = htblColNameValue.keys();
 				Object insertedPkValue = null;
+				String tableName;
 				while (line != null) 
 				{
 					boolean flag = false;
@@ -168,7 +170,7 @@ public class DBApp implements Serializable{
 					
 					if(content[0] == strTableName)
 					{
-						
+						tableName = strTableName;
 						
 						String insertedColName = columnNames.nextElement();
 						Object insertedvalue = htblColNameValue.get(insertedColName);
@@ -240,7 +242,47 @@ public class DBApp implements Serializable{
 				
 				if(primaryexists)
 				{
-//					Vector<String> pages = table.getPages();
+//					Binary Search
+//					int i =0;
+//					while(true){
+//					 int low = 0;
+//					 int high = Table.getPages().get(i) - 1;
+//
+//					    while (low <= high) {
+//					        int mid = (low + high) / 2;
+//					        int compare = rows.get(mid).getValue(rows.get(mid).getPkIndex()).compareTo(key);
+//
+//					        if (compare < 0) {
+//					            low = mid + 1;
+//					        } else if (compare > 0) {
+//					            high = mid - 1;
+//					        } else {
+//					
+//					
+//					        }
+//					        }
+//					    
+//					i++;}
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					//Vector<String> pages = table.getPages();
 //					int pageSize = pages.size();
 //
 //					while(true) {
@@ -296,7 +338,25 @@ public class DBApp implements Serializable{
 	}
 	
 	
-	
+	public static int binarySearch(Vector<Row> rows, Object key) {
+	    int low = 0;
+	    int high = rows.size() - 1;
+
+	    while (low <= high) {
+	        int mid = (low + high) / 2;
+	        int compare = rows.get(mid).getValue(rows.get(mid).getPkIndex()).compareTo(key);
+
+	        if (compare < 0) {
+	            low = mid + 1;
+	        } else if (compare > 0) {
+	            high = mid - 1;
+	        } else {
+	            return mid;
+	        }
+	    }
+
+	    return -1;
+	}
 	//alo
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
