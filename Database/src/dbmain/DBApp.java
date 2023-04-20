@@ -363,6 +363,7 @@ public class DBApp implements Serializable{
 		            String columnName = columnNamesinsert.nextElement();
 		            Object insertedvalue = htblColNameValue.get(columnName);
 		            row.addValue(insertedvalue);
+		            //Fadel el add row lel page hena
 		        }
 		        
 		        
