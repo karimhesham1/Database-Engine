@@ -1,7 +1,10 @@
 package dbmain;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.Vector;
@@ -27,8 +30,15 @@ public class Page implements Serializable {
         this.rows = new Vector<Row>(maxRows);
         int tmp = table.getNumOfPages() +1;
         this.pageName = this.tableName + tmp;
+        //add page to table.pages
         table.addPage(pageName);
         
+        //create pagefile and serialize it
+        File pageFile = new File(pageName + ".class");
+        pageFile.createNewFile();
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pageFile));
+        out.writeObject(this); //not sure momken yedy error
+        out.close();
     }
 
     public boolean isFull() {
