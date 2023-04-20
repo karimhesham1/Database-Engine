@@ -244,26 +244,78 @@ public class DBApp implements Serializable{
 				if(primaryexists)
 				{
 //					Binary Search
-//					int i =0;
-//					while(true){
-//					 int low = 0;
-//					 int high = Table.getPages().get(i) - 1;
-//
-//					    while (low <= high) {
-//					        int mid = (low + high) / 2;
-//					        int compare = rows.get(mid).getValue(rows.get(mid).getPkIndex()).compareTo(key);
-//
-//					        if (compare < 0) {
-//					            low = mid + 1;
-//					        } else if (compare > 0) {
-//					            high = mid - 1;
-//					        } else {
-//					
-//					
-//					        }
-//					        }
-//					    
-//					i++;}
+					int insertRowIndex;
+					int insertPageIndex;
+					boolean found = false;
+					int i =0;
+					while(!found){
+					 int low = 0;
+					 int high = loadedPages.get(i).getNumUsedRows() - 1;
+
+					    while (low <= high) {
+				            int mid = (low + high) / 2;
+				            if(insertedPkValue.getClass().toString() == "java.lang.Double" ||
+									insertedPkValue.getClass().toString() == "java.lang.Integer")
+							{
+					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex()) - (Double)insertedPkValue;
+
+					        if (compare > 0) {
+					        	 high = mid - 1;
+					            
+					        } else if (compare < 0) {
+					        	low = mid + 1;
+					        } else 
+					        	if(compare ==0) {
+					        		found = true;
+					        		break;
+					        	}
+					        	
+					        
+					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
+					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
+					        		break;
+					        		
+					        	}
+					        	else {
+					        		insertPageIndex = i;
+					        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
+					        	}
+					
+					        }
+							}else {
+								String x = (String)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
+						        if (x.compareTo((String)insertedPkValue)<0) {
+						        	
+						        	 low = mid + 1;
+						            
+						        } else if (x.compareTo((String)insertedPkValue)>0) {
+						        	 high = mid - 1;
+						        } else 
+						        	if(x.compareTo((String)insertedPkValue)==0) {
+						        		found = true;
+						        		break;
+						        	}
+						        	
+						
+						        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
+						        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
+						        		break;
+						        		
+						        	}
+						        	else {
+						        		insertPageIndex = i;
+						        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
+						        	}
+						
+						        }
+							}
+				            if(low ==high) {
+				            	insertPageIndex = i;
+				            	insertRowIndex = low;
+				            }
+					        }
+					    
+					    	i++;}
 					
 					
 					
@@ -355,25 +407,7 @@ public class DBApp implements Serializable{
 	}
 
 	
-	public static int binarySearch(Vector<Row> rows, Object key) {
-	    int low = 0;
-	    int high = rows.size() - 1;
-
-	    while (low <= high) {
-	        int mid = (low + high) / 2;
-	        int compare = rows.get(mid).getValue(rows.get(mid).getPkIndex()).compareTo(key);
-
-	        if (compare < 0) {
-	            low = mid + 1;
-	        } else if (compare > 0) {
-	            high = mid - 1;
-	        } else {
-	            return mid;
-	        }
-	    }
-
-	    return -1;
-	}
+	
 	//alo
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
