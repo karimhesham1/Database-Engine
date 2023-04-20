@@ -265,24 +265,6 @@ public class DBApp implements Serializable{
 //					    
 //					i++;}
 					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
 					//Vector<String> pages = table.getPages();
 //					int pageSize = pages.size();
 //
@@ -323,7 +305,14 @@ public class DBApp implements Serializable{
 		        
 		        
 		        // Insert row into table
-		      
+				Row row = new Row();
+				Enumeration<String> columnNamesinsert = htblColNameValue.keys();
+		        while (columnNames.hasMoreElements()) {
+		            String columnName = columnNamesinsert.nextElement();
+		            Object insertedvalue = htblColNameValue.get(columnName);
+		            row.addValue(insertedvalue);
+		        }
+		        
 		        
 		        // Write table back to disk
 		        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
