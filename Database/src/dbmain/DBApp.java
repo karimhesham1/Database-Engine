@@ -316,7 +316,48 @@ public class DBApp implements Serializable{
 					        }
 					    
 					    	i++;}
-					
+					//Suggested change but I will still revise it!!!
+//					int insertRowIndex = -1;
+//					int insertPageIndex = -1;
+//					boolean found = false;
+//					int i = 0;
+//
+//					while (!found && i < loadedPages.size()) {
+//					    int low = 0;
+//					    int high = loadedPages.get(i).getNumUsedRows() - 1;
+//
+//					    while (low <= high) {
+//					        int mid = (low + high) / 2;
+//					        Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
+//					        int compare = pkValue.compareTo(insertedPkValue);
+//
+//					        if (compare > 0) {
+//					            high = mid - 1;
+//					        } else if (compare < 0) {
+//					            low = mid + 1;
+//					        } else {
+//					            found = true;
+//					            insertPageIndex = i;
+//					            insertRowIndex = mid;
+//					            break;
+//					        }
+//					    }
+//
+//					    if (!found && loadedPages.get(i).getMaxRows() > loadedPages.get(i).getNumUsedRows()) {
+//					        insertPageIndex = i;
+//					        insertRowIndex = low;
+//					        break;
+//					    }
+//
+//					    i++;
+//					}
+//
+//					if (!found && insertRowIndex == -1 && insertPageIndex == -1) {
+//					    insertPageIndex = loadedPages.size();
+//					    insertRowIndex = 0;
+//					}
+
+				
 					//Vector<String> pages = table.getPages();
 //					int pageSize = pages.size();
 //
@@ -337,6 +378,8 @@ public class DBApp implements Serializable{
 //
 //
 //					}
+					
+					//End of suggested change!!!
 				}
 				
 		        
