@@ -22,12 +22,16 @@ import java.util.Vector;
 
 
 public class DBApp implements Serializable{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private Vector<Page> loadedPages;
+	private Table loadedTable;
+	
+	
+	
+	
+	
+	
+	
 	public DBApp() {
 		
 	}
@@ -271,27 +275,36 @@ public class DBApp implements Serializable{
 					        	}
 					        	
 					        
-					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
-					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
+					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
+					        {
+					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+					        	{
 					        		break;
 					        		
 					        	}
-					        	else {
+					        	else 
+					        	{
 					        		insertPageIndex = i;
 					        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
 					        	}
 					
 					        }
-							}else {
+							}
+				            else {
 								String x = (String)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
-						        if (x.compareTo((String)insertedPkValue)<0) {
+						        if (x.compareTo((String)insertedPkValue)<0) 
+						        {
 						        	
 						        	 low = mid + 1;
 						            
-						        } else if (x.compareTo((String)insertedPkValue)>0) {
+						        } 
+						        else if (x.compareTo((String)insertedPkValue)>0) 
+						        {
 						        	 high = mid - 1;
-						        } else 
-						        	if(x.compareTo((String)insertedPkValue)==0) {
+						        } 
+						        else 
+						        	if(x.compareTo((String)insertedPkValue)==0) 
+						        	{
 						        		found = true;
 						        		break;
 						        	}
@@ -438,6 +451,21 @@ public class DBApp implements Serializable{
 
 		}
 	}
+	
+	
+	public void loadTable(String tableName) throws ClassNotFoundException, IOException
+	{
+		loadedTable= null;
+		
+		
+			File tableFile = new File(tableName + ".class");
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
+			Table out= (Table) in.readObject();
+			loadedTable=out;
+			in.close();
+
+		
+	}
 
 	
 	
@@ -460,10 +488,156 @@ public class DBApp implements Serializable{
 	// htblColNameValue enteries are ANDED together
 	public void deleteFromTable(String strTableName,
 	Hashtable<String,Object> htblColNameValue)
-	throws DBAppException
+	throws DBAppException, IOException, ClassNotFoundException
 	{
 		
+
+	
+		
+		
+		//find el pages ele feha el 7aga
+		loadTable(strTableName);
+		loadPages(loadedTable);
+	
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		  while (columnNames.hasMoreElements()) 
+		  {
+	            String columnName = columnNames.nextElement();
+	            Object columnValue = htblColNameValue.get(columnName);
+	            
+	            
+	            
+	    		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+	    		String line = br.readLine();
+	    		line = br.readLine();
+	            
+	            
+	    		boolean pk=false;
+	    		while (line != null) 
+				{
+					
+					String[] content = line.split(",");
+					if(content[0]==strTableName)
+						{
+						if(content[1]==columnName && content[3]=="True")
+							pk=true;
+						}
+					line = br.readLine();
+					
+				}
+	    		if (pk)
+	    		{
+	    			//binary search
+					int insertRowIndex;
+					int insertPageIndex;
+					boolean found = false;
+					int i =0;
+					while(!found)
+					{
+					 int low = 0;
+					 int high = loadedPages.get(i).getNumUsedRows() - 1;
+
+					    while (low <= high) 
+					    {
+				            int mid = (low + high) / 2;
+				            if(columnValue.getClass().toString() == "java.lang.Double" ||
+				            		columnValue.getClass().toString() == "java.lang.Integer")
+							{
+					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex()) - (Double)columnValue;
+
+					        if (compare > 0) {
+					        	 high = mid - 1;
+					            
+					        } else if (compare < 0) {
+					        	low = mid + 1;
+					        } else 
+					        	if(compare ==0) {
+					        		found = true;
+					        		break;
+					        	}
+					        	
+					        
+					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
+					        {
+					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+					        	{
+					        		break;
+					        		
+					        	}
+					        	else 
+					        	{
+					        		insertPageIndex = i;
+					        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
+					        	}
+					
+					        }
+							}
+				            else {
+								String x = (String)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
+						        if (x.compareTo((String)columnValue)<0) 
+						        {
+						        	
+						        	 low = mid + 1;
+						            
+						        } 
+						        else if (x.compareTo((String)columnValue)>0) 
+						        {
+						        	 high = mid - 1;
+						        } 
+						        else 
+						        	if(x.compareTo((String)columnValue)==0) 
+						        	{
+						        		found = true;
+						        		break;
+						        	}
+						        	
+						
+						        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
+						        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+						        	{
+						        		break;
+						        		
+						        	}
+						        	else {
+						        		insertPageIndex = i;
+						        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
+						        	}
+						
+						        }
+							}
+				            if(low ==high) {
+				            	insertPageIndex = i;
+				            	insertRowIndex = low;
+				            }
+					        }
+					    
+					    	i++;       //la2et el value sh5syn delete it 
+	    			
+	    		}
+	    		
+	    		}
+	    		else
+	    		{
+	    			
+	    		}
+	    			
+	    		
+	    		
+	    		
+	    		
+//	            Page page= loadedPages.get(0);   
+//	            if(!page.isEmpty())
+//	            {
+//	            	
+//	            }
+	            
+		  
+		  }
 	}
+	
+
+
+}
 	
 //	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
 //	String[] strarrOperators)
@@ -483,7 +657,7 @@ public class DBApp implements Serializable{
 //	}
 	
 	
-}
+
 
 
 //Dina gmela fsh5 
@@ -497,46 +671,49 @@ public class DBApp implements Serializable{
 
 
 //delete bas mesh 7aga 3eb
-/*public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException {
-    // Get table metadata and loaded pages
-    Table table = getTable(strTableName);
-    ArrayList<Page> loadedPages = table.getLoadedPages();
 
-    // Find the page and row to delete
-    int deletePageIndex = -1;
-    int deleteRowIndex = -1;
-    for (int i = 0; i < loadedPages.size(); i++) {
-        int low = 0;
-        int high = loadedPages.get(i).getNumUsedRows() - 1;
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            if (isRowMatch(loadedPages.get(i).getRow(mid), htblColNameValue)) {
-                deletePageIndex = i;
-                deleteRowIndex = mid;
-                break;
-            } else if (compareRow(loadedPages.get(i).getRow(mid), htblColNameValue) < 0) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-
-        if (deletePageIndex != -1) {
-            break;
-        }
-    }
-
-    // Delete the row if found
-    if (deletePageIndex != -1) {
-        loadedPages.get(deletePageIndex).deleteRow(deleteRowIndex);
-        table.incrementTableVersion();
-        saveTable(table);
-    }
-}
- .getLoadedPages() and getNumUsedRows() ,getRow() , deleteRow(), incrementTableVersion() and saveTable()
-
-*/
+	
+//    Table table = getTable(strTableName);
+//    
+//    
+//    
+//    	ArrayList<Page> loadedPages = table.loadPages();
+//
+//    // Find the page and row to delete
+//    int deletePageIndex = -1;
+//    int deleteRowIndex = -1;
+//    for (int i = 0; i < loadedPages.size(); i++) {
+//        int low = 0;
+//        int high = loadedPages.get(i).getNumUsedRows() - 1;
+//
+//        while (low <= high) {
+//            int mid = (low + high) / 2;
+//            if (isRowMatch(loadedPages.get(i).getRow(mid), htblColNameValue)) {
+//                deletePageIndex = i;
+//                deleteRowIndex = mid;
+//                break;
+//            } else if (compareRow(loadedPages.get(i).getRow(mid), htblColNameValue) < 0) {
+//                low = mid + 1;
+//            } else {
+//                high = mid - 1;
+//            }
+//        }
+//
+//        if (deletePageIndex != -1) {
+//            break;
+//        }
+//    }
+//
+//    // Delete the row if found
+//    if (deletePageIndex != -1) {
+//        loadedPages.get(deletePageIndex).deleteRow(deleteRowIndex);
+//        table.incrementTableVersion();
+//        saveTable(table);
+//    }
+//}
+//// .getLoadedPages() and getNumUsedRows() ,getRow() , deleteRow(), incrementTableVersion() and saveTable()
+//
+//
 
 
 
