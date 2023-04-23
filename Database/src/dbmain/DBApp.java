@@ -499,30 +499,39 @@ public class DBApp implements Serializable{
 		loadTable(strTableName);
 		loadPages(loadedTable);
 	
+		
+		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+		String line = br.readLine();
+		line = br.readLine();
+		
+		
 		Enumeration<String> columnNames = htblColNameValue.keys();
 		  while (columnNames.hasMoreElements()) 
 		  {
 	            String columnName = columnNames.nextElement();
 	            Object columnValue = htblColNameValue.get(columnName);
 	            
+	            int lineIndex =0;
 	            
-	            
-	    		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-	    		String line = br.readLine();
-	    		line = br.readLine();
-	            
-	            
+	    	
+	         
 	    		boolean pk=false;
+	    		int index=0;
 	    		while (line != null) 
 				{
 					
 					String[] content = line.split(",");
 					if(content[0]==strTableName)
 						{
-						if(content[1]==columnName && content[3]=="True")
-							pk=true;
+						if(content[1]==columnName)
+								if( content[3]=="True")
+									pk=true;
+								else
+									index = lineIndex;
 						}
+					
 					line = br.readLine();
+					lineIndex++;
 					
 				}
 	    		if (pk)
@@ -618,7 +627,49 @@ public class DBApp implements Serializable{
 	    		}
 	    		else
 	    		{
-	    			
+	    			for(int d=0; d<loadedPages.size();d++)
+	    			{
+	    				Page page = loadedPages.get(d);
+	    				for(int k=0;k< page.getNumUsedRows();k++)
+	    				{
+	    					Row row = page.getRow(k);
+	    					int counter=0;
+	    					
+	    					while(counter<row.getNumValues()&&row.getValue(index)==columnValue)
+	    					{
+	    						if(!columnNames.hasMoreElements())
+	    						{
+	    							page.deleteRow(k);
+	    							break;
+	    						}
+	    						 columnName = columnNames.nextElement();
+	    						 columnValue = htblColNameValue.get(columnName);
+	    			            
+	    						 lineIndex =0;
+	    						 index=0;
+	    						 
+	    			    		 line = br.readLine();
+	    			    	
+	    			    		while (line != null) 
+	    						{
+	    							
+	    							String[] content = line.split(",");
+	    							if(content[0]==strTableName)
+	    								{
+	    								if(content[1]==columnName)
+	    											index = lineIndex;
+	    								}
+	    							
+	    							line = br.readLine();
+	    							lineIndex++;
+	    							
+	    						}
+	    			    		counter++;
+	    					}
+	    					
+	    				}
+	    				
+	    			}
 	    		}
 	    			
 	    		
@@ -631,7 +682,7 @@ public class DBApp implements Serializable{
 //	            	
 //	            }
 	            
-		  
+	    		line = br.readLine();
 		  }
 	}
 	
