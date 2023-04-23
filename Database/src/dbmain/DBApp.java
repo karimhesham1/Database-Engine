@@ -496,7 +496,47 @@ public class DBApp implements Serializable{
 
 
 
+//delete bas mesh 7aga 3eb
+/*public void deleteFromTable(String strTableName, Hashtable<String,Object> htblColNameValue) throws DBAppException {
+    // Get table metadata and loaded pages
+    Table table = getTable(strTableName);
+    ArrayList<Page> loadedPages = table.getLoadedPages();
 
+    // Find the page and row to delete
+    int deletePageIndex = -1;
+    int deleteRowIndex = -1;
+    for (int i = 0; i < loadedPages.size(); i++) {
+        int low = 0;
+        int high = loadedPages.get(i).getNumUsedRows() - 1;
+
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            if (isRowMatch(loadedPages.get(i).getRow(mid), htblColNameValue)) {
+                deletePageIndex = i;
+                deleteRowIndex = mid;
+                break;
+            } else if (compareRow(loadedPages.get(i).getRow(mid), htblColNameValue) < 0) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+
+        if (deletePageIndex != -1) {
+            break;
+        }
+    }
+
+    // Delete the row if found
+    if (deletePageIndex != -1) {
+        loadedPages.get(deletePageIndex).deleteRow(deleteRowIndex);
+        table.incrementTableVersion();
+        saveTable(table);
+    }
+}
+ .getLoadedPages() and getNumUsedRows() ,getRow() , deleteRow(), incrementTableVersion() and saveTable()
+
+*/
 
 
 
