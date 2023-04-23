@@ -1,31 +1,33 @@
 package dbmain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.Hashtable;
 
 public class Row implements Serializable {
     private static final long serialVersionUID = 1L;
-    private Vector<Object> values;
-    private int pkIndex;
+    private Hashtable<String, Object> colNameValue;
+    
 
-    public Row() {
-        this.values = new Vector<Object>();
+    public Row(Hashtable<String, Object> htbl) {
+        this.colNameValue = htbl;
     }
 
-    public void addValue(Object value) {
-        values.add(value);
+    public void addValue(String colName, Object value) {
+    	colNameValue.put(colName, value);
     }
 
-    public Object getValue(int index) {
-        return values.get(index);
+    public Object getValue(String colName) {
+        return colNameValue.get(colName);
+    }
+    
+    public Hashtable<String, Object> getRowHashtable()
+    {
+    	return this.colNameValue;
     }
 
     public int getNumValues() {
-        return values.size();
+        return colNameValue.size();
     }
-    public int getPkIndex() {
-    	return pkIndex;
-    }
+
+    
 }

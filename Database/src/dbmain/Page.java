@@ -49,11 +49,11 @@ public class Page implements Serializable {
         return numUsedRows == 0;
     }
 
-    public void addRow(Row row) {
+    public void addRow(Row row, int index) {
         if (isFull()) {
             throw new RuntimeException("Page is full");
         }
-        rows.add(row);
+        rows.add(index, row);
         numUsedRows++;
         
     }
@@ -79,6 +79,11 @@ public class Page implements Serializable {
 
     public int getNumUsedRows() {
         return numUsedRows;
+    }
+    
+    public String getPageName()
+    {
+    	return this.pageName;
     }
     
     public String getTableName() {

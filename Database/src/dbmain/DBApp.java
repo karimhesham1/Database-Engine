@@ -165,6 +165,9 @@ public class DBApp implements Serializable{
 				Enumeration<String> columnNames = htblColNameValue.keys();
 				Object insertedPkValue = null;
 				String tableName;
+				String pk = null;
+				int insertRowIndex=0;
+				int insertPageIndex=0;
 				while (line != null) 
 				{
 					boolean flag = false;
@@ -196,10 +199,10 @@ public class DBApp implements Serializable{
 										if (content [3] == "true")
 										{
 											//new
-											String pk = content[1];
-											 insertedPkValue = htblColNameValue.get(pk);
+											pk = content[1];
+											insertedPkValue = htblColNameValue.get(pk);
 											if(!insertedPkValue.equals(null)) {
-											primaryexists = true;
+												primaryexists = true;
 											}
 										}
 									}
@@ -218,8 +221,8 @@ public class DBApp implements Serializable{
 										if (content [3] == "true")
 										{
 											//new
-											String pk = content[1];
-											 insertedPkValue = htblColNameValue.get(pk);
+											pk = content[1];
+											insertedPkValue = htblColNameValue.get(pk);
 											if(!insertedPkValue.equals(null)) {
 												primaryexists = true;
 											}
@@ -247,9 +250,9 @@ public class DBApp implements Serializable{
 				
 				if(primaryexists)
 				{
+					
+					loadPages(loadedTable);
 //					Binary Search
-					int insertRowIndex;
-					int insertPageIndex;
 					boolean found = false;
 					int i =0;
 					while(!found){
@@ -261,7 +264,7 @@ public class DBApp implements Serializable{
 				            if(insertedPkValue.getClass().toString() == "java.lang.Double" ||
 									insertedPkValue.getClass().toString() == "java.lang.Integer")
 							{
-					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex()) - (Double)insertedPkValue;
+					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(pk) - (Double)insertedPkValue;
 
 					        if (compare > 0) {
 					        	 high = mid - 1;
@@ -291,7 +294,7 @@ public class DBApp implements Serializable{
 					        }
 							}
 				            else {
-								String x = (String)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
+								String x = (String)loadedPages.get(i).getRow(mid).getValue(pk);
 						        if (x.compareTo((String)insertedPkValue)<0) 
 						        {
 						        	
@@ -395,43 +398,23 @@ public class DBApp implements Serializable{
 					//End of suggested change!!!
 				}
 				
-		        
-		        
-		        // Check that all columns in the table are present in the hashtable
-		       
+       
 
-		        // Check that the primary key column is present in the hashtable
-		       
-
-		        // Get primary key value from hashtable
-		       
-
-		        // Check that the primary key value is of the correct type
-		     
-
-		        // Check if the row already exists
-		        
-		        
-		        // Insert row into table
-				Row row = new Row();
-				Enumeration<String> columnNamesinsert = htblColNameValue.keys();
-		        while (columnNames.hasMoreElements()) {
-		            String columnName = columnNamesinsert.nextElement();
-		            Object insertedvalue = htblColNameValue.get(columnName);
-		            row.addValue(insertedvalue);
-		            //Fadel el add row lel page hena
-		        }
-		        
-		        
-		        // Write table back to disk
-		        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
-		        out.writeObject(table);
-		        out.close();
+				// Insert row into table
+				Row row = new Row(htblColNameValue);
+				loadedPages.get(insertPageIndex).addRow(row, insertRowIndex);
+				//write pages back to disk
+				savePages();
+			
+				// Write table back to disk
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
+				out.writeObject(table);
+				out.close();
 		    } catch (Exception e) {
-		        System.out.println("An error occurred while inserting row into table " + strTableName + ": " + e.getMessage());
-		        throw new DBAppException();
+		    	System.out.println("An error occurred while inserting row into table " + strTableName + ": " + e.getMessage());
+		    	throw new DBAppException();
 		    }
-		
+
 
 		
 	}
@@ -449,6 +432,17 @@ public class DBApp implements Serializable{
 			loadedPages.add(page);
 			in.close();
 
+		}
+	}
+	
+	public void savePages() throws IOException
+	{
+		for(Page p : loadedPages)
+		{
+		File pageFile = new File(p.getPageName() + ".class");
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pageFile));
+		out.writeObject(p);
+		out.close();
 		}
 	}
 	
@@ -491,10 +485,6 @@ public class DBApp implements Serializable{
 	throws DBAppException, IOException, ClassNotFoundException
 	{
 		
-
-	
-		
-		
 		//find el pages ele feha el 7aga
 		loadTable(strTableName);
 		loadPages(loadedTable);
@@ -512,9 +502,7 @@ public class DBApp implements Serializable{
 	            Object columnValue = htblColNameValue.get(columnName);
 	            
 	            int lineIndex =0;
-	            
-	    	
-	         
+	        
 	    		boolean pk=false;
 	    		int index=0;
 	    		while (line != null) 
@@ -529,101 +517,101 @@ public class DBApp implements Serializable{
 								else
 									index = lineIndex;
 						}
-					
+
 					line = br.readLine();
 					lineIndex++;
-					
+
 				}
 	    		if (pk)
 	    		{
 	    			//binary search
-					int insertRowIndex;
-					int insertPageIndex;
-					boolean found = false;
-					int i =0;
-					while(!found)
-					{
-					 int low = 0;
-					 int high = loadedPages.get(i).getNumUsedRows() - 1;
+	    			int insertRowIndex;
+	    			int insertPageIndex;
+	    			boolean found = false;
+	    			int i =0;
+	    			while(!found)
+	    			{
+	    				int low = 0;
+	    				int high = loadedPages.get(i).getNumUsedRows() - 1;
 
-					    while (low <= high) 
-					    {
-				            int mid = (low + high) / 2;
-				            if(columnValue.getClass().toString() == "java.lang.Double" ||
-				            		columnValue.getClass().toString() == "java.lang.Integer")
-							{
-					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex()) - (Double)columnValue;
+	    				while (low <= high) 
+	    				{
+	    					int mid = (low + high) / 2;
+	    					if(columnValue.getClass().toString() == "java.lang.Double" ||
+	    							columnValue.getClass().toString() == "java.lang.Integer")
+	    					{
+	    						Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(columnName) - (Double)columnValue;
 
-					        if (compare > 0) {
-					        	 high = mid - 1;
-					            
-					        } else if (compare < 0) {
-					        	low = mid + 1;
-					        } else 
-					        	if(compare ==0) {
-					        		found = true;
-					        		break;
-					        	}
-					        	
-					        
-					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
-					        {
-					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-					        	{
-					        		break;
-					        		
-					        	}
-					        	else 
-					        	{
-					        		insertPageIndex = i;
-					        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
-					        	}
-					
-					        }
-							}
-				            else {
-								String x = (String)loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
-						        if (x.compareTo((String)columnValue)<0) 
-						        {
-						        	
-						        	 low = mid + 1;
-						            
-						        } 
-						        else if (x.compareTo((String)columnValue)>0) 
-						        {
-						        	 high = mid - 1;
-						        } 
-						        else 
-						        	if(x.compareTo((String)columnValue)==0) 
-						        	{
-						        		found = true;
-						        		break;
-						        	}
-						        	
-						
-						        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
-						        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-						        	{
-						        		break;
-						        		
-						        	}
-						        	else {
-						        		insertPageIndex = i;
-						        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
-						        	}
-						
-						        }
-							}
-				            if(low ==high) {
-				            	insertPageIndex = i;
-				            	insertRowIndex = low;
-				            }
-					        }
-					    
-					    	i++;       //la2et el value sh5syn delete it 
-	    			
-	    		}
-	    		
+	    						if (compare > 0) {
+	    							high = mid - 1;
+
+	    						} else if (compare < 0) {
+	    							low = mid + 1;
+	    						} else 
+	    							if(compare ==0) {
+	    								found = true;
+	    								break;
+	    							}
+
+
+	    						if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
+	    						{
+	    							if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+	    							{
+	    								break;
+
+	    							}
+	    							else 
+	    							{
+	    								insertPageIndex = i;
+	    								insertRowIndex = loadedPages.get(i).getNumUsedRows();
+	    							}
+
+	    						}
+	    					}
+	    					else {
+	    						String x = (String)loadedPages.get(i).getRow(mid).getValue(columnName);
+	    						if (x.compareTo((String)columnValue)<0) 
+	    						{
+
+	    							low = mid + 1;
+
+	    						} 
+	    						else if (x.compareTo((String)columnValue)>0) 
+	    						{
+	    							high = mid - 1;
+	    						} 
+	    						else 
+	    							if(x.compareTo((String)columnValue)==0) 
+	    							{
+	    								found = true;
+	    								break;
+	    							}
+
+
+	    						if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
+	    							if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+	    							{
+	    								break;
+
+	    							}
+	    							else {
+	    								insertPageIndex = i;
+	    								insertRowIndex = loadedPages.get(i).getNumUsedRows();
+	    							}
+
+	    						}
+	    					}
+	    					if(low ==high) {
+	    						insertPageIndex = i;
+	    						insertRowIndex = low;
+	    					}
+	    				}
+
+	    				i++;       //la2et el value sh5syn delete it 
+
+	    			}
+
 	    		}
 	    		else
 	    		{
@@ -634,58 +622,58 @@ public class DBApp implements Serializable{
 	    				{
 	    					Row row = page.getRow(k);
 	    					int counter=0;
-	    					
-	    					while(counter<row.getNumValues()&&row.getValue(index)==columnValue)
+
+	    					while(counter<row.getNumValues()) //&&row.getValue(index)==columnValue
 	    					{
 	    						if(!columnNames.hasMoreElements())
 	    						{
 	    							page.deleteRow(k);
 	    							break;
 	    						}
-	    						 columnName = columnNames.nextElement();
-	    						 columnValue = htblColNameValue.get(columnName);
-	    			            
-	    						 lineIndex =0;
-	    						 index=0;
-	    						 
-	    			    		 line = br.readLine();
-	    			    	
-	    			    		while (line != null) 
+	    						columnName = columnNames.nextElement();
+	    						columnValue = htblColNameValue.get(columnName);
+
+	    						lineIndex =0;
+	    						index=0;
+
+	    						line = br.readLine();
+
+	    						while (line != null) 
 	    						{
-	    							
+
 	    							String[] content = line.split(",");
 	    							if(content[0]==strTableName)
-	    								{
+	    							{
 	    								if(content[1]==columnName)
-	    											index = lineIndex;
-	    								}
-	    							
+	    									index = lineIndex;
+	    							}
+
 	    							line = br.readLine();
 	    							lineIndex++;
-	    							
+
 	    						}
-	    			    		counter++;
+	    						counter++;
 	    					}
-	    					
+
 	    				}
-	    				
+
 	    			}
 	    		}
-	    			
-	    		
-	    		
-	    		
-	    		
-//	            Page page= loadedPages.get(0);   
-//	            if(!page.isEmpty())
-//	            {
-//	            	
-//	            }
-	            
+
+
+
+
+
+	    		//	            Page page= loadedPages.get(0);   
+	    		//	            if(!page.isEmpty())
+	    		//	            {
+	    		//	            	
+	    		//	            }
+
 	    		line = br.readLine();
 		  }
 	}
-	
+
 
 
 }
@@ -707,18 +695,6 @@ public class DBApp implements Serializable{
 //		
 //	}
 	
-	
-
-
-
-//Dina gmela fsh5 
-
-//alo alo
-
-
-//ana gmela 
-
-
 
 
 //delete bas mesh 7aga 3eb
