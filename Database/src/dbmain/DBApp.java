@@ -268,7 +268,7 @@ public class DBApp implements Serializable{
 					        Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(pk);
 					        int compare = pkValue.compareTo(insertedPkValue);
 
-					        if (compare > 0) {
+					        if (compare > 0) { //Check condition
 					            high = mid - 1;
 					        } else if (compare < 0) {
 					            low = mid + 1;
@@ -381,7 +381,7 @@ public class DBApp implements Serializable{
 	public boolean checkForPrimaryKey(String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
 	{
 		Enumeration<String> columnNames = htblColNameValue.keys();
-		  while (columnNames.hasMoreElements()) 
+		while (columnNames.hasMoreElements()) 
 		  {
 	            String columnName = columnNames.nextElement();
 	            Object columnValue = htblColNameValue.get(columnName);
@@ -394,6 +394,7 @@ public class DBApp implements Serializable{
 	    			String[] content = line.split(",");
 					if(content[0]==strTableName && content[1] == columnName && content[3]== "TRUE")
 						{
+							br.close();
 							return true;
 						}
 					line = br.readLine();
@@ -402,8 +403,6 @@ public class DBApp implements Serializable{
 	    		
 		  }
 		  return false;
-		  
-		  
 	}
 
 	
@@ -418,8 +417,23 @@ public class DBApp implements Serializable{
 	Hashtable<String,Object> htblColNameValue )
 	throws DBAppException
 	{
-		
-		
+		try {
+			loadTable(strTableName);
+			loadPages(loadedTable);
+			
+			int updateRowIndex1 = -1;
+			int updatePageIndex1 = -1;
+			boolean found = false;
+			int page = 0;
+			
+			while (!found && page < loadedPages.size() && updatePageIndex1 == -1) {
+				
+			}
+			
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	// following method could be used to delete one or more rows.
 	// htblColNameValue holds the key and value. This will be used in search
