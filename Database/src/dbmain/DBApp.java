@@ -252,131 +252,52 @@ public class DBApp implements Serializable{
 				{
 					
 					loadPages(loadedTable);
-//					Binary Search
+//					Binary Search			
+//					Suggested change but I will still revise it!!!
+					int insertRowIndex1 = -1;
+					int insertPageIndex1 = -1;
 					boolean found = false;
-					int i =0;
-					while(!found){
-					 int low = 0;
-					 int high = loadedPages.get(i).getNumUsedRows() - 1;
+					int i = 0;
+
+					while (!found && i < loadedPages.size() && insertPageIndex1 == -1) {
+					    int low = 0;
+					    int high = loadedPages.get(i).getNumUsedRows() - 1;
 
 					    while (low <= high) {
-				            int mid = (low + high) / 2;
-				            if(insertedPkValue.getClass().toString() == "java.lang.Double" ||
-									insertedPkValue.getClass().toString() == "java.lang.Integer")
-							{
-					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(pk) - (Double)insertedPkValue;
+					        int mid = (low + high) / 2;
+					        Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(pk);
+					        int compare = pkValue.compareTo(insertedPkValue);
 
 					        if (compare > 0) {
-					        	 high = mid - 1;
-					            
+					            high = mid - 1;
 					        } else if (compare < 0) {
-					        	low = mid + 1;
-					        } else 
-					        	if(compare ==0) {
-					        		found = true;
-					        		break;
-					        	}
-					        	
-					        
-					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
-					        {
-					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-					        	{
-					        		break;
-					        		
-					        	}
-					        	else 
-					        	{
-					        		insertPageIndex = i;
-					        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
-					        	}
-					
+					            low = mid + 1;
+					        } else if(compare == 0) {
+					            found = true;
+					            insertPageIndex1 = i;
+					            insertRowIndex1 = mid;
+					            break;
 					        }
-							}
-				            else {
-								String x = (String)loadedPages.get(i).getRow(mid).getValue(pk);
-						        if (x.compareTo((String)insertedPkValue)<0) 
-						        {
-						        	
-						        	 low = mid + 1;
-						            
-						        } 
-						        else if (x.compareTo((String)insertedPkValue)>0) 
-						        {
-						        	 high = mid - 1;
-						        } 
-						        else 
-						        	if(x.compareTo((String)insertedPkValue)==0) 
-						        	{
-						        		found = true;
-						        		break;
-						        	}
-						        	
-						
-						        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
-						        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
-						        		break;
-						        		
-						        	}
-						        	else {
-						        		insertPageIndex = i;
-						        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
-						        	}
-						
-						        }
-							}
-				            if(low ==high) {
-				            	insertPageIndex = i;
-				            	insertRowIndex = low;
-				            }
-					        }
-					    
-					    	i++;}
-					//Suggested change but I will still revise it!!!
-//					int insertRowIndex = -1;
-//					int insertPageIndex = -1;
-//					boolean found = false;
-//					int i = 0;
-//
-//					while (!found && i < loadedPages.size() && insertPageIndex == -1) {
-//					    int low = 0;
-//					    int high = loadedPages.get(i).getNumUsedRows() - 1;
-//
-//					    while (low <= high) {
-//					        int mid = (low + high) / 2;
-//					        Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(loadedPages.get(i).getRow(mid).getPkIndex());
-//					        int compare = pkValue.compareTo(insertedPkValue);
-//
-//					        if (compare > 0) {
-//					            high = mid - 1;
-//					        } else if (compare < 0) {
-//					            low = mid + 1;
-//					        } else if(compare = 0) {
-//					            found = true;
-//					            insertPageIndex = i;
-//					            insertRowIndex = mid;
-//					            break;
-//					        }
-					//      if(low == high && (!pkValue.compareTo(insertedPkValue) == 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
-					//          insertPageIndex = i;
-					//			insertRowIndex = low;
-					//			break;
-//					    }
-//
-//					    if (!found && loadedPages.get(i).getMaxRows() > loadedPages.get(i).getNumUsedRows()) {
-//					        insertPageIndex = i;
-//					        insertRowIndex = low;
-//					        break;
-//					    }
-//
-//					    i++;
-//					}
-//
-//					}
-//					if (!found && insertRowIndex == -1 && insertPageIndex == -1) {
-//					    insertPageIndex = loadedPages.size();
-//					    insertRowIndex = 0;
+					      if(low == high && (pkValue.compareTo(insertedPkValue) != 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
+					          insertPageIndex1 = i;
+								insertRowIndex1 = low;
+								break;
+					    }
+}
+					    if (!found && loadedPages.get(i).getMaxRows() > loadedPages.get(i).getNumUsedRows() && insertPageIndex1 == -1) {
+					        insertPageIndex1 = i;
+					        insertRowIndex1 = low;
+					        break;
+					    }
 
+					    i++;
+					}
+
+					
+					if (!found && insertRowIndex1 == -1 && insertPageIndex1 == -1) {
+					    insertPageIndex1 = loadedPages.size();
+					    insertRowIndex1 = 0;
+					}
 
 				
 				
@@ -704,3 +625,87 @@ public class DBApp implements Serializable{
 
 
 
+
+
+
+/*
+ * 	boolean found = false;
+					int i =0;
+					while(!found){
+					 int low = 0;
+					 int high = loadedPages.get(i).getNumUsedRows() - 1;
+
+					    while (low <= high) {
+				            int mid = (low + high) / 2;
+				            if(insertedPkValue.getClass().toString() == "java.lang.Double" ||
+									insertedPkValue.getClass().toString() == "java.lang.Integer")
+							{
+					        Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(pk) - (Double)insertedPkValue;
+
+					        if (compare > 0) {
+					        	 high = mid - 1;
+					            
+					        } else if (compare < 0) {
+					        	low = mid + 1;
+					        } else 
+					        	if(compare ==0) {
+					        		found = true;
+					        		break;
+					        	}
+					        	
+					        
+					        if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
+					        {
+					        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+					        	{
+					        		break;
+					        		
+					        	}
+					        	else 
+					        	{
+					        		insertPageIndex = i;
+					        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
+					        	}
+					
+					        }
+							}
+				            else {
+								String x = (String)loadedPages.get(i).getRow(mid).getValue(pk);
+						        if (x.compareTo((String)insertedPkValue)<0) 
+						        {
+						        	
+						        	 low = mid + 1;
+						            
+						        } 
+						        else if (x.compareTo((String)insertedPkValue)>0) 
+						        {
+						        	 high = mid - 1;
+						        } 
+						        else 
+						        	if(x.compareTo((String)insertedPkValue)==0) 
+						        	{
+						        		found = true;
+						        		break;
+						        	}
+						        	
+						
+						        if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
+						        	if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
+						        		break;
+						        		
+						        	}
+						        	else {
+						        		insertPageIndex = i;
+						        		insertRowIndex = loadedPages.get(i).getNumUsedRows();
+						        	}
+						
+						        }
+							}
+				            if(low ==high) {
+				            	insertPageIndex = i;
+				            	insertRowIndex = low;
+				            }
+					        }
+					    
+					    	i++;}
+					    	*/
