@@ -338,7 +338,7 @@ public class DBApp implements Serializable{
 //					boolean found = false;
 //					int i = 0;
 //
-//					while (!found && i < loadedPages.size()) {
+//					while (!found && i < loadedPages.size() && insertPageIndex == -1) {
 //					    int low = 0;
 //					    int high = loadedPages.get(i).getNumUsedRows() - 1;
 //
@@ -351,12 +351,16 @@ public class DBApp implements Serializable{
 //					            high = mid - 1;
 //					        } else if (compare < 0) {
 //					            low = mid + 1;
-//					        } else {
+//					        } else if(compare = 0) {
 //					            found = true;
 //					            insertPageIndex = i;
 //					            insertRowIndex = mid;
 //					            break;
 //					        }
+					//      if(low == high && (!pkValue.compareTo(insertedPkValue) == 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
+					//          insertPageIndex = i;
+					//			insertRowIndex = low;
+					//			break;
 //					    }
 //
 //					    if (!found && loadedPages.get(i).getMaxRows() > loadedPages.get(i).getNumUsedRows()) {
@@ -368,33 +372,15 @@ public class DBApp implements Serializable{
 //					    i++;
 //					}
 //
+//					}
 //					if (!found && insertRowIndex == -1 && insertPageIndex == -1) {
 //					    insertPageIndex = loadedPages.size();
 //					    insertRowIndex = 0;
-//					}
+
 
 				
-					//Vector<String> pages = table.getPages();
-//					int pageSize = pages.size();
-//
-//					while(true) {
-//						int select = pageSize/2;
-//						Page P1 = pages.get(select);
-//						int used = P1.getNumUsedRows();
-//						int rowMid = used/2;
-//						Row R1 = P1.getRow(rowMid);
-//						int PKIndex = R1.getPkIndex();
-//						if(insertedPkValue.equals(R1.getValue(PKIndex))){
-//							throw new DBAppException();
-//						}
-//						else {
-//							//if(inserted)
-//							//Still need to work out how moving to left or right side of tree depending on < or >
-//						}
-//
-//
-//					}
-					
+				
+				//
 					//End of suggested change!!!
 				}
 				
