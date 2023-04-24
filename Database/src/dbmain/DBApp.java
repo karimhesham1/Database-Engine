@@ -196,7 +196,7 @@ public class DBApp implements Serializable{
 									if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
 									{
 										flag=true;
-										if (content [3] == "true")
+										if (content [3] == "TRUE")
 										{
 											//new
 											pk = content[1];
@@ -218,7 +218,7 @@ public class DBApp implements Serializable{
 									if (comparemin >= 0 && comparemax<=0)
 									{
 										flag=true;
-										if (content [3] == "true")
+										if (content [3] == "TRUE")
 										{
 											//new
 											pk = content[1];
@@ -444,26 +444,64 @@ public class DBApp implements Serializable{
 		out.writeObject(p);
 		out.close();
 		}
+		loadedPages=null;
 	}
 	
 	
 	public void loadTable(String tableName) throws ClassNotFoundException, IOException
 	{
 		loadedTable= null;
-		
-		
-			File tableFile = new File(tableName + ".class");
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
-			Table out= (Table) in.readObject();
-			loadedTable=out;
-			in.close();
 
+		File tableFile = new File(tableName + ".class");
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
+		Table out= (Table) in.readObject();
+		loadedTable=out;
+		in.close();
+
+
+	}
+	
+	public void saveTable() throws IOException
+	{
+		File tableFile = new File(loadedTable.getTableName() + ".class");
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
+		out.writeObject(loadedTable);
+		out.close();
 		
+		loadedTable=null;
+	}
+	
+	public boolean checkForPrimaryKey(String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
+	{
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		  while (columnNames.hasMoreElements()) 
+		  {
+	            String columnName = columnNames.nextElement();
+	            Object columnValue = htblColNameValue.get(columnName);
+	            
+	            BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+	    		String line = br.readLine();
+	    		line = br.readLine();
+	    		while(line!=null)
+	    		{
+	    			String[] content = line.split(",");
+					if(content[0]==strTableName && content[1] == columnName && content[3]== "TRUE")
+						{
+							return true;
+						}
+					line = br.readLine();
+	    		}
+	    		br.close();
+	    		
+		  }
+		  return false;
+		  
+		  
 	}
 
 	
 	
-	//alo
+	
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
 	// htblColNameValue will not include clustering key as column name
@@ -481,198 +519,180 @@ public class DBApp implements Serializable{
 	// to identify which rows/tuples to delete.
 	// htblColNameValue enteries are ANDED together
 	public void deleteFromTable(String strTableName,
-	Hashtable<String,Object> htblColNameValue)
-	throws DBAppException, IOException, ClassNotFoundException
+			Hashtable<String,Object> htblColNameValue)
+					throws DBAppException, IOException, ClassNotFoundException
 	{
-		
+
 		//find el pages ele feha el 7aga
 		loadTable(strTableName);
 		loadPages(loadedTable);
-	
-		
-		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-		String line = br.readLine();
-		line = br.readLine();
-		
-		
-		Enumeration<String> columnNames = htblColNameValue.keys();
-		  while (columnNames.hasMoreElements()) 
-		  {
-	            String columnName = columnNames.nextElement();
-	            Object columnValue = htblColNameValue.get(columnName);
-	            
-	            int lineIndex =0;
-	        
-	    		boolean pk=false;
-	    		int index=0;
-	    		while (line != null) 
-				{
-					
-					String[] content = line.split(",");
-					if(content[0]==strTableName)
-						{
-						if(content[1]==columnName)
-								if( content[3]=="True")
-									pk=true;
-								else
-									index = lineIndex;
-						}
+		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue );
+		boolean firstloop = true;
+		Vector<Row> tmpRows = new Vector<Row>();
 
-					line = br.readLine();
-					lineIndex++;
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		while (columnNames.hasMoreElements()) 
+		{
+			String columnName = columnNames.nextElement();
+			Object columnValue = htblColNameValue.get(columnName);
+
+
+			if (hasPk) //idk nour me7tag yeshof el kalam dah
+			{
+				//binary search
+				int insertRowIndex;
+				int insertPageIndex;
+				boolean found = false;
+				int i =0;
+				while(!found)
+				{
+					int low = 0;
+					int high = loadedPages.get(i).getNumUsedRows() - 1;
+
+					while (low <= high) 
+					{
+						int mid = (low + high) / 2;
+						if(columnValue.getClass().toString() == "java.lang.Double" ||
+								columnValue.getClass().toString() == "java.lang.Integer")
+						{
+							Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(columnName) - (Double)columnValue;
+
+							if (compare > 0) {
+								high = mid - 1;
+
+							} else if (compare < 0) {
+								low = mid + 1;
+							} else 
+								if(compare ==0) {
+									found = true;
+									break;
+								}
+
+
+							if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
+							{
+								if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+								{
+									break;
+
+								}
+								else 
+								{
+									insertPageIndex = i;
+									insertRowIndex = loadedPages.get(i).getNumUsedRows();
+								}
+
+							}
+						}
+						else {
+							String x = (String)loadedPages.get(i).getRow(mid).getValue(columnName);
+							if (x.compareTo((String)columnValue)<0) 
+							{
+
+								low = mid + 1;
+
+							} 
+							else if (x.compareTo((String)columnValue)>0) 
+							{
+								high = mid - 1;
+							} 
+							else 
+								if(x.compareTo((String)columnValue)==0) 
+								{
+									found = true;
+									break;
+								}
+
+
+							if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
+								if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
+								{
+									break;
+
+								}
+								else {
+									insertPageIndex = i;
+									insertRowIndex = loadedPages.get(i).getNumUsedRows();
+								}
+
+							}
+						}
+						if(low ==high) {
+							insertPageIndex = i;
+							insertRowIndex = low;
+						}
+					}
+
+					i++;       //la2et el value sh5syn delete it 
 
 				}
-	    		if (pk)
-	    		{
-	    			//binary search
-	    			int insertRowIndex;
-	    			int insertPageIndex;
-	    			boolean found = false;
-	    			int i =0;
-	    			while(!found)
-	    			{
-	    				int low = 0;
-	    				int high = loadedPages.get(i).getNumUsedRows() - 1;
 
-	    				while (low <= high) 
-	    				{
-	    					int mid = (low + high) / 2;
-	    					if(columnValue.getClass().toString() == "java.lang.Double" ||
-	    							columnValue.getClass().toString() == "java.lang.Integer")
-	    					{
-	    						Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(columnName) - (Double)columnValue;
-
-	    						if (compare > 0) {
-	    							high = mid - 1;
-
-	    						} else if (compare < 0) {
-	    							low = mid + 1;
-	    						} else 
-	    							if(compare ==0) {
-	    								found = true;
-	    								break;
-	    							}
+			}
+			else
+			{
+				if(firstloop) //enta fel first loop
+				{
+					
+					for(Page p: loadedPages)
+					{
+						for(Row r : p.getRows())
+						{
+							if (r.getValue(columnName).equals(columnValue))
+								tmpRows.add(r);
+						}
+					}
+					firstloop=false;
 
 
-	    						if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
-	    						{
-	    							if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-	    							{
-	    								break;
+				}
+				else //enta msh fel first loop
+				{
+					for(Row r : tmpRows)
+					{
+						if ( !(r.getValue(columnName).equals(columnValue)) ) //law el second column doesnt satisfy the condition, remove the row from tmp rows
+							tmpRows.remove(r);
 
-	    							}
-	    							else 
-	    							{
-	    								insertPageIndex = i;
-	    								insertRowIndex = loadedPages.get(i).getNumUsedRows();
-	    							}
+					}
+				}
 
-	    						}
-	    					}
-	    					else {
-	    						String x = (String)loadedPages.get(i).getRow(mid).getValue(columnName);
-	    						if (x.compareTo((String)columnValue)<0) 
-	    						{
-
-	    							low = mid + 1;
-
-	    						} 
-	    						else if (x.compareTo((String)columnValue)>0) 
-	    						{
-	    							high = mid - 1;
-	    						} 
-	    						else 
-	    							if(x.compareTo((String)columnValue)==0) 
-	    							{
-	    								found = true;
-	    								break;
-	    							}
-
-
-	    						if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
-	    							if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-	    							{
-	    								break;
-
-	    							}
-	    							else {
-	    								insertPageIndex = i;
-	    								insertRowIndex = loadedPages.get(i).getNumUsedRows();
-	    							}
-
-	    						}
-	    					}
-	    					if(low ==high) {
-	    						insertPageIndex = i;
-	    						insertRowIndex = low;
-	    					}
-	    				}
-
-	    				i++;       //la2et el value sh5syn delete it 
-
-	    			}
-
-	    		}
-	    		else
-	    		{
-	    			for(int d=0; d<loadedPages.size();d++)
-	    			{
-	    				Page page = loadedPages.get(d);
-	    				for(int k=0;k< page.getNumUsedRows();k++)
-	    				{
-	    					Row row = page.getRow(k);
-	    					int counter=0;
-
-	    					while(counter<row.getNumValues()) //&&row.getValue(index)==columnValue
-	    					{
-	    						if(!columnNames.hasMoreElements())
-	    						{
-	    							page.deleteRow(k);
-	    							break;
-	    						}
-	    						columnName = columnNames.nextElement();
-	    						columnValue = htblColNameValue.get(columnName);
-
-	    						lineIndex =0;
-	    						index=0;
-
-	    						line = br.readLine();
-
-	    						while (line != null) 
-	    						{
-
-	    							String[] content = line.split(",");
-	    							if(content[0]==strTableName)
-	    							{
-	    								if(content[1]==columnName)
-	    									index = lineIndex;
-	    							}
-
-	    							line = br.readLine();
-	    							lineIndex++;
-
-	    						}
-	    						counter++;
-	    					}
-
-	    				}
-
-	    			}
-	    		}
+			}
 
 
 
-
-
-	    		//	            Page page= loadedPages.get(0);   
-	    		//	            if(!page.isEmpty())
-	    		//	            {
-	    		//	            	
-	    		//	            }
-
-	    		line = br.readLine();
-		  }
+		}
+		//tle3t bara el while loop, no more conditions
+		//start deleting the rows
+		for (Page p : loadedPages)
+		{
+			for(Row r : tmpRows)
+			{
+				if(p.getRows().contains(r))
+				{
+					p.deleteRow(r);
+					//implement delete the page if empty here
+					if (p.isEmpty())
+					{
+						 File pageFile = new File(p.getPageName()+ ".class");
+						 loadedTable.getPages().remove(p.getPageName()+ ".class");
+						 loadedPages.remove(p);
+						 pageFile.delete();
+					}
+					tmpRows.remove(r);
+				}
+			}
+		}
+		
+		savePages();
+		saveTable();
+		
 	}
+
+
+
+
+
+
+
 
 
 
@@ -694,53 +714,7 @@ public class DBApp implements Serializable{
 //	{
 //		
 //	}
-	
 
-
-//delete bas mesh 7aga 3eb
-
-	
-//    Table table = getTable(strTableName);
-//    
-//    
-//    
-//    	ArrayList<Page> loadedPages = table.loadPages();
-//
-//    // Find the page and row to delete
-//    int deletePageIndex = -1;
-//    int deleteRowIndex = -1;
-//    for (int i = 0; i < loadedPages.size(); i++) {
-//        int low = 0;
-//        int high = loadedPages.get(i).getNumUsedRows() - 1;
-//
-//        while (low <= high) {
-//            int mid = (low + high) / 2;
-//            if (isRowMatch(loadedPages.get(i).getRow(mid), htblColNameValue)) {
-//                deletePageIndex = i;
-//                deleteRowIndex = mid;
-//                break;
-//            } else if (compareRow(loadedPages.get(i).getRow(mid), htblColNameValue) < 0) {
-//                low = mid + 1;
-//            } else {
-//                high = mid - 1;
-//            }
-//        }
-//
-//        if (deletePageIndex != -1) {
-//            break;
-//        }
-//    }
-//
-//    // Delete the row if found
-//    if (deletePageIndex != -1) {
-//        loadedPages.get(deletePageIndex).deleteRow(deleteRowIndex);
-//        table.incrementTableVersion();
-//        saveTable(table);
-//    }
-//}
-//// .getLoadedPages() and getNumUsedRows() ,getRow() , deleteRow(), incrementTableVersion() and saveTable()
-//
-//
 
 
 

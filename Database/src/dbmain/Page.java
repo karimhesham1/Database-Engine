@@ -49,20 +49,18 @@ public class Page implements Serializable {
         return numUsedRows == 0;
     }
 
-    public void addRow(Row row, int index) {
+    public void addRow(Row row, int index) throws DBAppException {
         if (isFull()) {
-            throw new RuntimeException("Page is full");
+            throw new DBAppException("Page is full");
         }
         rows.add(index, row);
         numUsedRows++;
         
     }
 
-    public void deleteRow(int index) {
-        if (isEmpty()) {
-            throw new RuntimeException("Page is empty");
-        }
-        rows.remove(index);
+    public void deleteRow(Object o) {
+      
+        rows.remove(o);
         numUsedRows--;
     }
 
@@ -72,6 +70,13 @@ public class Page implements Serializable {
         }
         return rows.get(index);
     }
+    
+    public Vector<Row> getRows() {
+       
+        return this.rows;
+        
+    }
+    
 
     public int getMaxRows() {
         return maxRows;
