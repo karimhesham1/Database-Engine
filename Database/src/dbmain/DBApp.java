@@ -455,64 +455,96 @@ public class DBApp implements Serializable{
 					
 					}
 				
+				
 				line=br.readLine();
 			}
 			
-			boolean found= false;
-			while(!found)
-			{
-			//binary search
-			int deleteRowIndex1 = -1;
-			int deletePageIndex1 = -1;
+			Object insertedPk=strClusteringKeyValue;
 			
-			int pageIndex = 0;
+			if(pkType== "java.lang.Double"|| pkType=="java.lang.Integer")
+			{
+				insertedPk= Integer.parseInt(strClusteringKeyValue);
+			}
+			
+			
+			
+			boolean found = false;
+			
 			int lowPage = 0;
 			int highPage = loadedPages.size() - 1;
 			int midPage = (lowPage + highPage) / 2;
 			int lowRow = 0;
 			int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 			int midRow = (lowRow + highRow) / 2;
-			
-			
-			
-			 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
-		        int compare = pkValue.compareTo(strClusteringKeyValue);
-			
-	
+			while(!found)
 			{
-				if((double) loadedPages.get(midPage).getRow(midRow).getValue(pkName) >(double) strClusteringKeyValue) 
-				{
-					if((double) loadedPages.get(midPage).getRow(lowRow).getValue(pkName) > (double) strClusteringKeyValue)
+				 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
+			        int compare = pkValue.compareTo(insertedPk);
+			        
+			        
+			        if(compare >0) 
 					{
-						highPage = midPage - 1;
-						midPage = (lowPage + highPage) / 2;
-						highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
-						midRow = (lowRow + highRow) / 2;
+						 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(pkName);
+					        int compare2 = pkValue2.compareTo(insertedPk);
+						if(compare2> 0)
+						{
+							highPage = midPage - 1;
+							midPage = (lowPage + highPage) / 2;
+							highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+							midRow = (lowRow + highRow) / 2;
+						}
+						else
+						{
+							highRow = midRow;
+							midRow = (lowRow + highRow) / 2;
+						}
 					}
-					else
+			        else if(compare<0) 
 					{
-						highRow = midRow;
-						midRow = (lowRow + highRow) / 2;
-					}
-				} else if((double) loadedPages.get(midPage).getRow(midRow).getValue(pkName) < (double) strClusteringKeyValue) 
-				{
-					if((double) loadedPages.get(midPage).getRow(highRow).getValue(pkName) < (double) strClusteringKeyValue)
-					{
-						lowPage = midPage + 1;
-						midPage = (lowPage + highPage) / 2;
-						highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
-						midRow = (lowRow + highRow) / 2;
-					}
-					else
-					{
-						lowRow = midRow;
-						midRow = (lowRow + highRow) / 2 ;
-					}
-				} 
-//				else //b2o equal le b3d 5las 
+						 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow).getValue(pkName);
+					        int compare2 = pkValue2.compareTo(insertedPk);
+						if(compare2< 0)
+						{
+							lowPage = midPage + 1;
+							midPage = (lowPage + highPage) / 2;
+							highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+							midRow = (lowRow + highRow) / 2;
+						}
+						else
+						{
+							lowRow = midRow;
+							midRow = (lowRow + highRow) / 2 ;
+						}
+					} 
+			        else
+			        {
+			        	while (columnNames.hasMoreElements()) 
+						{
+			        		found=true;
+							String columnName = columnNames.nextElement();
+							Object columnValue = htblColNameValue.get(columnName);
+							
+							//check en el hash valid (helper)
+							boolean valid=false; //methoddddddd
+						//update el 7aga  
+							if(valid)
+								loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
+							
+							
+							
+							
+							
+							
+						}
+			        }
 			
 			
 			}
+			
+			
+			
+			
+		
 			
 			
 			
@@ -526,32 +558,7 @@ public class DBApp implements Serializable{
 			
 			
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			while (columnNames.hasMoreElements()) 
-			{
-				String columnName = columnNames.nextElement();
-				Object columnValue = htblColNameValue.get(columnName);
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-			}
+
 			
 			
 			
@@ -594,10 +601,9 @@ public class DBApp implements Serializable{
 			if (hasPk) //idk nour me7tag yeshof el kalam dah
 			{
 				//binary search
-				int deleteRowIndex1 = -1;
-				int deletePageIndex1 = -1;
+				
 				boolean found = false;
-				int pageIndex = 0;
+				
 				int lowPage = 0;
 				int highPage = loadedPages.size() - 1;
 				int midPage = (lowPage + highPage) / 2;
@@ -608,12 +614,11 @@ public class DBApp implements Serializable{
 				{
 					 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(columnName);
 				        int compare = pkValue.compareTo(columnValue);
-					{
 						if(compare >0) 
 						{
 							 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(columnName);
 						        int compare2 = pkValue2.compareTo(columnValue);
-							if((double) loadedPages.get(midPage).getRow(lowRow).getValue(columnName) > (double) columnValue)
+							if(compare2> 0)
 							{
 								highPage = midPage - 1;
 								midPage = (lowPage + highPage) / 2;
@@ -627,7 +632,9 @@ public class DBApp implements Serializable{
 							}
 						} else if(compare<0) 
 						{
-							if((double) loadedPages.get(midPage).getRow(highRow).getValue(columnName) < (double) columnValue)
+							 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow).getValue(columnName);
+						        int compare2 = pkValue2.compareTo(columnValue);
+							if(compare2< 0)
 							{
 								lowPage = midPage + 1;
 								midPage = (lowPage + highPage) / 2;
@@ -645,7 +652,7 @@ public class DBApp implements Serializable{
 							//found immediately  check ba2et el cases 
 							
 							
-							
+							found=true;
 							boolean hnmsa7=true ;
 							 
 							 while(columnNames.hasMoreElements())
@@ -682,98 +689,11 @@ public class DBApp implements Serializable{
 									}
 								 
 							 }
-							 
-							
-							 
-							
-							
-							
-							
-							
-							
-							
-							
+						
 							
 						}
 					}
 
-//					while (low <= high) 
-//					{
-//						int mid = (low + high) / 2;
-//						if(columnValue.getClass().toString() == "java.lang.Double" ||
-//								columnValue.getClass().toString() == "java.lang.Integer")
-//						{
-//							Double compare = (Double)loadedPages.get(pageIndex).getRow(mid).getValue(columnName) - (Double)columnValue;
-//
-//							if (compare > 0) {
-//								high = mid - 1;
-//
-//							} else if (compare < 0) {
-//								low = mid + 1;
-//							} else 
-//								if(compare ==0) {
-//									found = true;
-//									break;
-//								}
-//
-//
-//							if(low >=loadedPages.get(pageIndex).getNumUsedRows() - 1) 
-//							{
-//								if(loadedPages.get(pageIndex).getMaxRows()==loadedPages.get(pageIndex).getNumUsedRows()) 
-//								{
-//									break;
-//
-//								}
-//								else 
-//								{
-//									deletePageIndex1 = pageIndex;
-//									deleteRowIndex1 = loadedPages.get(pageIndex).getNumUsedRows();
-//								}
-//
-//							}
-//						}
-//						else {
-//							String x = (String)loadedPages.get(pageIndex).getRow(mid).getValue(columnName);
-//							if (x.compareTo((String)columnValue)<0) 
-//							{
-//
-//								low = mid + 1;
-//
-//							} 
-//							else if (x.compareTo((String)columnValue)>0) 
-//							{
-//								high = mid - 1;
-//							} 
-//							else 
-//								if(x.compareTo((String)columnValue)==0) 
-//								{
-//									found = true;
-//									break;
-//								}
-//
-//
-//							if(low >=loadedPages.get(pageIndex).getNumUsedRows() - 1) {
-//								if(loadedPages.get(pageIndex).getMaxRows()==loadedPages.get(pageIndex).getNumUsedRows()) 
-//								{
-//									break;
-//
-//								}
-//								else {
-//									deletePageIndex1 = pageIndex;
-//									deleteRowIndex1 = loadedPages.get(pageIndex).getNumUsedRows();
-//								}
-//
-//							}
-//						}
-//						if(low ==high) {
-//							deletePageIndex1 = pageIndex;
-//							deleteRowIndex1 = low;
-//						}
-//					}
-//
-//					pageIndex++;       //la2et el value sh5syn delete it 
-
-				}
 
 			}
 			else
