@@ -461,90 +461,128 @@ public class DBApp implements Serializable{
 			if (hasPk) //idk nour me7tag yeshof el kalam dah
 			{
 				//binary search
-				int insertRowIndex;
-				int insertPageIndex;
+				int deleteRowIndex1 = -1;
+				int deletePageIndex1 = -1;
 				boolean found = false;
-				int i =0;
+				int pageIndex = 0;
+				int lowPage = 0;
+				int highPage = loadedPages.size() - 1;
+				int midPage = (lowPage + highPage) / 2;
+				int lowRow = 0;
+				int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+				int midRow = (lowRow + highRow) / 2;
 				while(!found)
 				{
-					int low = 0;
-					int high = loadedPages.get(i).getNumUsedRows() - 1;
-
-					while (low <= high) 
+					if(columnValue.getClass().toString() == "java.lang.Double" ||
+							columnValue.getClass().toString() == "java.lang.Integer") 
 					{
-						int mid = (low + high) / 2;
-						if(columnValue.getClass().toString() == "java.lang.Double" ||
-								columnValue.getClass().toString() == "java.lang.Integer")
+						if((double) loadedPages.get(midPage).getRow(midRow).getValue(columnName) < (double) columnValue) 
 						{
-							Double compare = (Double)loadedPages.get(i).getRow(mid).getValue(columnName) - (Double)columnValue;
-
-							if (compare > 0) {
-								high = mid - 1;
-
-							} else if (compare < 0) {
-								low = mid + 1;
-							} else 
-								if(compare ==0) {
-									found = true;
-									break;
-								}
-
-
-							if(low >=loadedPages.get(i).getNumUsedRows() - 1) 
+							if((double) loadedPages.get(midPage).getRow(lowRow).getValue(columnName) > (double) columnValue)
 							{
-								if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-								{
-									break;
-
-								}
-								else 
-								{
-									insertPageIndex = i;
-									insertRowIndex = loadedPages.get(i).getNumUsedRows();
-								}
-
+								highPage = midPage - 1;
+								midPage = (lowPage + highPage) / 2;
+								highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+								midRow = (lowRow + highRow) / 2;
+							} else
+							{
+								highRow = midRow;
+								midRow = (lowRow + highRow) / 2;
 							}
-						}
-						else {
-							String x = (String)loadedPages.get(i).getRow(mid).getValue(columnName);
-							if (x.compareTo((String)columnValue)<0) 
+						} else if((double) loadedPages.get(midPage).getRow(midRow).getValue(columnName) < (double) columnValue) 
+						{
+							if((double) loadedPages.get(midPage).getRow(highRow).getValue(columnName) < (double) columnValue)
 							{
-
-								low = mid + 1;
-
-							} 
-							else if (x.compareTo((String)columnValue)>0) 
+								lowPage = midPage + 1;
+								midPage = (lowPage + highPage) / 2;
+								highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+								midRow = (lowRow + highRow) / 2;
+							} else
 							{
-								high = mid - 1;
-							} 
-							else 
-								if(x.compareTo((String)columnValue)==0) 
-								{
-									found = true;
-									break;
-								}
-
-
-							if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
-								if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) 
-								{
-									break;
-
-								}
-								else {
-									insertPageIndex = i;
-									insertRowIndex = loadedPages.get(i).getNumUsedRows();
-								}
-
+								lowRow = midRow;
+								midRow = (lowRow + highRow) / 2 ;
 							}
-						}
-						if(low ==high) {
-							insertPageIndex = i;
-							insertRowIndex = low;
+						} else 
+						{
+							//found immediately
 						}
 					}
 
-					i++;       //la2et el value sh5syn delete it 
+//					while (low <= high) 
+//					{
+//						int mid = (low + high) / 2;
+//						if(columnValue.getClass().toString() == "java.lang.Double" ||
+//								columnValue.getClass().toString() == "java.lang.Integer")
+//						{
+//							Double compare = (Double)loadedPages.get(pageIndex).getRow(mid).getValue(columnName) - (Double)columnValue;
+//
+//							if (compare > 0) {
+//								high = mid - 1;
+//
+//							} else if (compare < 0) {
+//								low = mid + 1;
+//							} else 
+//								if(compare ==0) {
+//									found = true;
+//									break;
+//								}
+//
+//
+//							if(low >=loadedPages.get(pageIndex).getNumUsedRows() - 1) 
+//							{
+//								if(loadedPages.get(pageIndex).getMaxRows()==loadedPages.get(pageIndex).getNumUsedRows()) 
+//								{
+//									break;
+//
+//								}
+//								else 
+//								{
+//									deletePageIndex1 = pageIndex;
+//									deleteRowIndex1 = loadedPages.get(pageIndex).getNumUsedRows();
+//								}
+//
+//							}
+//						}
+//						else {
+//							String x = (String)loadedPages.get(pageIndex).getRow(mid).getValue(columnName);
+//							if (x.compareTo((String)columnValue)<0) 
+//							{
+//
+//								low = mid + 1;
+//
+//							} 
+//							else if (x.compareTo((String)columnValue)>0) 
+//							{
+//								high = mid - 1;
+//							} 
+//							else 
+//								if(x.compareTo((String)columnValue)==0) 
+//								{
+//									found = true;
+//									break;
+//								}
+//
+//
+//							if(low >=loadedPages.get(pageIndex).getNumUsedRows() - 1) {
+//								if(loadedPages.get(pageIndex).getMaxRows()==loadedPages.get(pageIndex).getNumUsedRows()) 
+//								{
+//									break;
+//
+//								}
+//								else {
+//									deletePageIndex1 = pageIndex;
+//									deleteRowIndex1 = loadedPages.get(pageIndex).getNumUsedRows();
+//								}
+//
+//							}
+//						}
+//						if(low ==high) {
+//							deletePageIndex1 = pageIndex;
+//							deleteRowIndex1 = low;
+//						}
+//					}
+//
+//					pageIndex++;       //la2et el value sh5syn delete it 
 
 				}
 
