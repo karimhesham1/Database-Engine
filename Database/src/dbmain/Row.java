@@ -20,6 +20,11 @@ public class Row implements Serializable {
         return colNameValue.get(colName);
     }
     
+//    public void setValue(String colName, Object colValue)
+//    {
+//    	colNameValue.put(colName, colValue);
+//    }
+    
     public Hashtable<String, Object> getRowHashtable()
     {
     	return this.colNameValue;
@@ -29,5 +34,6 @@ public class Row implements Serializable {
         return colNameValue.size();
     }
 
+    
     
 }
