@@ -476,7 +476,7 @@ public class DBApp implements Serializable{
 					if(columnValue.getClass().toString() == "java.lang.Double" ||
 							columnValue.getClass().toString() == "java.lang.Integer") 
 					{
-						if((double) loadedPages.get(midPage).getRow(midRow).getValue(columnName) < (double) columnValue) 
+						if((double) loadedPages.get(midPage).getRow(midRow).getValue(columnName) >(double) columnValue) 
 						{
 							if((double) loadedPages.get(midPage).getRow(lowRow).getValue(columnName) > (double) columnValue)
 							{
@@ -484,7 +484,8 @@ public class DBApp implements Serializable{
 								midPage = (lowPage + highPage) / 2;
 								highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 								midRow = (lowRow + highRow) / 2;
-							} else
+							}
+							else
 							{
 								highRow = midRow;
 								midRow = (lowRow + highRow) / 2;
@@ -497,14 +498,64 @@ public class DBApp implements Serializable{
 								midPage = (lowPage + highPage) / 2;
 								highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 								midRow = (lowRow + highRow) / 2;
-							} else
+							}
+							else
 							{
 								lowRow = midRow;
 								midRow = (lowRow + highRow) / 2 ;
 							}
-						} else 
+						} 
+						else //b2o equal le b3d 5las 
 						{
-							//found immediately
+							//found immediately  check ba2et el cases 
+							
+							
+							
+							boolean hnmsa7=true ;
+							 
+							 while(columnNames.hasMoreElements())
+							 {
+								 columnName = columnNames.nextElement();
+								 columnValue = htblColNameValue.get(columnName);
+										if( loadedPages.get(midPage).getRow(midRow).getValue(columnName) !=  columnValue)
+											{
+											hnmsa7=false;
+											break;
+											}
+											
+											
+							 }
+							 if(hnmsa7)  // lw kol el conditions kanet 7lwa fa mfesh 7aga 3'yret el flag hmsa7 el row da 
+							 {
+								 loadedPages.get(midPage).deleteRow(loadedPages.get(midPage).getRow(midRow));
+								 savePages();
+								 saveTable();
+								 
+								 //if the page is empty ba2a :)
+								 
+									if(loadedPages.get(midPage).isEmpty())
+									{
+										
+										//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
+										File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
+										 loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName()+ ".class");
+										 loadedPages.remove((loadedPages.get(midPage)));
+										 pageFile.delete();
+									}
+								 
+							 }
+							 
+							
+							 
+							
+							
+							
+							
+							
+							
+							
+							
+							
 						}
 					}
 
