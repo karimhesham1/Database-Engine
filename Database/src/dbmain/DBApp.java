@@ -313,6 +313,7 @@ public class DBApp implements Serializable{
 				Row row = new Row(htblColNameValue);
 				loadedPages.get(insertPageIndex).addRow(row, insertRowIndex);
 				//write pages back to disk
+				//Check law last element 3ada el max
 				savePages();
 			
 				// Write table back to disk
