@@ -283,6 +283,8 @@ public class DBApp implements Serializable{
 								insertRowIndex1 = low;
 								break;
 					    }
+					      
+					      //m7tag shift
 }
 					    if (!found && loadedPages.get(i).getMaxRows() > loadedPages.get(i).getNumUsedRows() && insertPageIndex1 == -1) {
 					        insertPageIndex1 = i;
@@ -418,17 +420,148 @@ public class DBApp implements Serializable{
 	throws DBAppException
 	{
 		try {
+//			loadTable(strTableName);
+//			loadPages(loadedTable);
+//			
+//			int updateRowIndex1 = -1;
+//			int updatePageIndex1 = -1;
+//			boolean found = false;
+//			int page = 0;
+//			
+//			while (!found && page < loadedPages.size() && updatePageIndex1 == -1) {
+//				
+//			}
 			loadTable(strTableName);
 			loadPages(loadedTable);
 			
-			int updateRowIndex1 = -1;
-			int updatePageIndex1 = -1;
-			boolean found = false;
-			int page = 0;
 			
-			while (!found && page < loadedPages.size() && updatePageIndex1 == -1) {
+			Enumeration<String> columnNames = htblColNameValue.keys();
+			
+			
+			
+			
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			line = br.readLine();
+			String pkName="";
+			String pkType="";
+			while (line != null) 
+			{
+				String[] content = line.split(",");
+				if(content[0]==strTableName && content[3]=="TRUE")
+					{
+					pkName=content[1];
+					pkType=content[2];
+					
+					}
+				
+				line=br.readLine();
+			}
+			
+			boolean found= false;
+			while(!found)
+			{
+			//binary search
+			int deleteRowIndex1 = -1;
+			int deletePageIndex1 = -1;
+			
+			int pageIndex = 0;
+			int lowPage = 0;
+			int highPage = loadedPages.size() - 1;
+			int midPage = (lowPage + highPage) / 2;
+			int lowRow = 0;
+			int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+			int midRow = (lowRow + highRow) / 2;
+			
+			
+			
+			 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
+		        int compare = pkValue.compareTo(strClusteringKeyValue);
+			
+	
+			{
+				if((double) loadedPages.get(midPage).getRow(midRow).getValue(pkName) >(double) strClusteringKeyValue) 
+				{
+					if((double) loadedPages.get(midPage).getRow(lowRow).getValue(pkName) > (double) strClusteringKeyValue)
+					{
+						highPage = midPage - 1;
+						midPage = (lowPage + highPage) / 2;
+						highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+						midRow = (lowRow + highRow) / 2;
+					}
+					else
+					{
+						highRow = midRow;
+						midRow = (lowRow + highRow) / 2;
+					}
+				} else if((double) loadedPages.get(midPage).getRow(midRow).getValue(pkName) < (double) strClusteringKeyValue) 
+				{
+					if((double) loadedPages.get(midPage).getRow(highRow).getValue(pkName) < (double) strClusteringKeyValue)
+					{
+						lowPage = midPage + 1;
+						midPage = (lowPage + highPage) / 2;
+						highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
+						midRow = (lowRow + highRow) / 2;
+					}
+					else
+					{
+						lowRow = midRow;
+						midRow = (lowRow + highRow) / 2 ;
+					}
+				} 
+//				else //b2o equal le b3d 5las 
+			
+			
+			}
+			
+			
+			
+			
+		
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			while (columnNames.hasMoreElements()) 
+			{
+				String columnName = columnNames.nextElement();
+				Object columnValue = htblColNameValue.get(columnName);
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				
 			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
@@ -473,11 +606,13 @@ public class DBApp implements Serializable{
 				int midRow = (lowRow + highRow) / 2;
 				while(!found)
 				{
-					if(columnValue.getClass().toString() == "java.lang.Double" ||
-							columnValue.getClass().toString() == "java.lang.Integer") 
+					 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(columnName);
+				        int compare = pkValue.compareTo(columnValue);
 					{
-						if((double) loadedPages.get(midPage).getRow(midRow).getValue(columnName) >(double) columnValue) 
+						if(compare >0) 
 						{
+							 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(columnName);
+						        int compare2 = pkValue2.compareTo(columnValue);
 							if((double) loadedPages.get(midPage).getRow(lowRow).getValue(columnName) > (double) columnValue)
 							{
 								highPage = midPage - 1;
@@ -490,7 +625,7 @@ public class DBApp implements Serializable{
 								highRow = midRow;
 								midRow = (lowRow + highRow) / 2;
 							}
-						} else if((double) loadedPages.get(midPage).getRow(midRow).getValue(columnName) < (double) columnValue) 
+						} else if(compare<0) 
 						{
 							if((double) loadedPages.get(midPage).getRow(highRow).getValue(columnName) < (double) columnValue)
 							{
@@ -541,6 +676,9 @@ public class DBApp implements Serializable{
 										 loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName()+ ".class");
 										 loadedPages.remove((loadedPages.get(midPage)));
 										 pageFile.delete();
+										 
+										 savePages();
+										 saveTable();
 									}
 								 
 							 }
