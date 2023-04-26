@@ -638,7 +638,7 @@ public class DBApp implements Serializable{
 			int lowRow = 0;
 			int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 			int midRow = (lowRow + highRow) / 2;
-			while(!found)
+			while(!found && lowPage <= highPage && lowRow<=highRow)
 			{
 				 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
 			        int compare = pkValue.compareTo(insertedPk);
