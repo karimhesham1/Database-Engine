@@ -445,6 +445,34 @@ public class DBApp implements Serializable{
 		  return false;
 	}
 	
+	public String getPrimaryKey(String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
+	{
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		while (columnNames.hasMoreElements()) 
+		  {
+	            String columnName = columnNames.nextElement();
+	            Object columnValue = htblColNameValue.get(columnName);
+	            
+	            BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+	    		String line = br.readLine();
+	    		line = br.readLine();
+	    		while(line!=null)
+	    		{
+	    			String[] content = line.split(",");
+					if(content[0]==strTableName && content[1] == columnName && content[3]== "TRUE")
+						{
+							br.close();
+							return content[1];
+						}
+					line = br.readLine();
+	    		}
+	    		br.close();
+	    		
+		  }
+		  return "";
+	}
+	
+	
 	public boolean validateHashtable (String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
 	{
 	
@@ -718,8 +746,30 @@ public class DBApp implements Serializable{
 				int lowRow = 0;
 				int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 				int midRow = (lowRow + highRow) / 2;
-				while(!found)
+				//5ale el pk fel colName
+				columnName= getPrimaryKey(strTableName, htblColNameValue );
+				columnValue = htblColNameValue.get(columnName);
+				
+				
+				
+				
+				
+//				if(!loadedTable.getPages().contains(columnValue))
+//					throw new DBAppException();
+//				
+//				
+//				for(int i=0;i<loadedTable.getPages().size(); i++)
+//				{
+//					Page p= loadedTable.getPages().get(i);
+//					
+//				}
+				
+				
+				//law el value ely badawar 3aleha aslan msh 3andy?? daniela
+				while(!found && lowPage <= highPage && lowRow<=highRow)
 				{
+					
+					
 					 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(columnName);
 				        int compare = pkValue.compareTo(columnValue);
 						if(compare >0) 
@@ -735,7 +785,7 @@ public class DBApp implements Serializable{
 							}
 							else
 							{
-								highRow = midRow;
+								highRow = midRow-1;
 								midRow = (lowRow + highRow) / 2;
 							}
 						} else if(compare<0) 
@@ -751,7 +801,7 @@ public class DBApp implements Serializable{
 							}
 							else
 							{
-								lowRow = midRow;
+								lowRow = midRow+1;
 								midRow = (lowRow + highRow) / 2 ;
 							}
 						} 
@@ -797,7 +847,7 @@ public class DBApp implements Serializable{
 							
 						}
 					}
-					//law el value ely badawar 3aleha aslan msh 3andy?? dinaaa
+					
 				savePages();
 				saveTable();
 
