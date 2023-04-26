@@ -50,9 +50,7 @@ public class Page implements Serializable {
     }
 
     public void addRow(Row row, int index) throws DBAppException {
-        if (isFull()) {
-            throw new DBAppException("Page is full");
-        }
+       
         rows.add(index, row);
         numUsedRows++;
         

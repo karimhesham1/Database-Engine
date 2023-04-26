@@ -150,10 +150,7 @@ public class DBApp implements Serializable{
 		            throw new DBAppException();
 		        }
 
-		        // Load table from disk
-		        ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
-		        Table table = (Table) in.readObject();
-		        in.close();
+		       loadTable(strTableName);
 		        
 		        
 		        
@@ -301,25 +298,30 @@ public class DBApp implements Serializable{
 					    insertRowIndex1 = 0;
 					}
 
-				
-				
-				//
+					
 					//End of suggested change!!!
 				}
 				
        
-
+				
 				// Insert row into table
-				Row row = new Row(htblColNameValue);
-				loadedPages.get(insertPageIndex).addRow(row, insertRowIndex);
-				//write pages back to disk
+				Row newRow = new Row(htblColNameValue);
 				//Check law last element 3ada el max
+				if(loadedPages.get(insertPageIndex).getNumUsedRows() == loadedPages.get(insertPageIndex).getMaxRows())
+				{
+					Row shiftedRow = loadedPages.get(insertPageIndex).getRow(loadedPages.get(insertPageIndex).getMaxRows()-1);
+					loadedPages.get(insertPageIndex).deleteRow(shiftedRow);
+					loadedPages.get(insertPageIndex).addRow(newRow, insertPageIndex);
+					//insert el shifted row fel page el tanya awel 7aga
+					loadedPages.get(insertPageIndex + 1).addRow(shiftedRow, 0);
+					//law el page ely waraha kaman full hane3mel eh?
+					//law mafesh aslan page waraha hane3mel eh?
+					
+				}
+
 				savePages();
+				saveTable();
 			
-				// Write table back to disk
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
-				out.writeObject(table);
-				out.close();
 		    } catch (Exception e) {
 		    	System.out.println("An error occurred while inserting row into table " + strTableName + ": " + e.getMessage());
 		    	throw new DBAppException();
@@ -406,6 +408,88 @@ public class DBApp implements Serializable{
 	    		
 		  }
 		  return false;
+	}
+	
+	public boolean validateHashtable (String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
+	{
+		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+		String line = br.readLine();
+		line = br.readLine();
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		while (line != null) 
+		{
+			String[] content = line.split(",");
+			
+			if(columnNames.hasMoreElements()== false)
+				break;
+			
+			if(content[0] == strTableName && htblColNameValue.containsKey(content[1])) //law el line ely ana masko mawgod fel htbl
+			{				
+				String insertedColName = columnNames.nextElement();
+				Object insertedvalue = htblColNameValue.get(insertedColName);
+
+					if(content[2] == insertedvalue.getClass().toString())
+					{
+						if(insertedvalue.getClass().toString() == "java.lang.Double" ||
+								insertedvalue.getClass().toString() == "java.lang.Integer")
+						{
+							int min = Integer.parseInt(content[6]);
+							int max = Integer.parseInt(content[7]);
+
+							if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+							{
+								htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+//								if (content [3] == "TRUE")
+//								{
+//									//new
+//									pk = content[1];
+//									insertedPkValue = htblColNameValue.get(pk);
+//									if(!insertedPkValue.equals(null)) {
+//										primaryexists = true;
+//									}
+//								}
+							}
+						}
+
+						else 
+						{
+							String min = content[6];
+							String max = content[7];
+							String insertedvalstring = (String) insertedvalue;
+							int comparemin = insertedvalstring.compareTo(min);
+							int comparemax = insertedvalstring.compareTo(max);
+							if (comparemin >= 0 && comparemax<=0)
+							{
+								htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+//								if (content [3] == "TRUE")
+//								{
+//									//new
+//									pk = content[1];
+//									insertedPkValue = htblColNameValue.get(pk);
+//									if(!insertedPkValue.equals(null)) {
+//										primaryexists = true;
+//									}
+//								}
+							}
+						}
+
+
+					}
+
+
+			}
+			
+			
+			line = br.readLine();
+		}
+		
+		br.close();
+		
+		if (htblColNameValue.isEmpty())
+			return true;
+		else
+			return false;
+	
 	}
 
 	
@@ -532,42 +616,11 @@ public class DBApp implements Serializable{
 								loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
 							
 							
-							
-							
-							
-							
 						}
 			        }
 			
 			
 			}
-			
-			
-			
-			
-		
-			
-			
-			
-			
-		
-			
-			
-			
-			
-			
-			
-			
-			
-
-			
-			
-			
-			
-			
-			
-			
-			
 			
 			
 			
