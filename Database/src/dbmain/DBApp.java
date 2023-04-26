@@ -657,7 +657,7 @@ public class DBApp implements Serializable{
 						}
 						else
 						{
-							highRow = midRow;
+							highRow = midRow-1;
 							midRow = (lowRow + highRow) / 2;
 						}
 					}
@@ -674,7 +674,7 @@ public class DBApp implements Serializable{
 						}
 						else
 						{
-							lowRow = midRow;
+							lowRow = midRow+1;
 							midRow = (lowRow + highRow) / 2 ;
 						}
 					} 
