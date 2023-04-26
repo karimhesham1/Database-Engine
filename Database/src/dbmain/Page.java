@@ -27,7 +27,7 @@ public class Page implements Serializable {
 
         this.tableName = table.getTableName();
         this.numUsedRows = 0;
-        this.rows = new Vector<Row>(maxRows);
+        this.rows = new Vector<Row>(maxRows+1);
         int tmp = table.getNumOfPages() +1;
         this.pageName = this.tableName + tmp;
         //add page to table.pages
@@ -39,8 +39,9 @@ public class Page implements Serializable {
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pageFile));
         out.writeObject(this); //not sure momken yedy error
         out.close();
+       
     }
-
+ 
     public boolean isFull() {
         return numUsedRows == maxRows;
     }
@@ -49,7 +50,7 @@ public class Page implements Serializable {
         return numUsedRows == 0;
     }
 
-    public void addRow(Row row, int index) throws DBAppException {
+    public void addRow(Row row, int index) {
        
         rows.add(index, row);
         numUsedRows++;

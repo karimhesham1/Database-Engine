@@ -111,7 +111,7 @@ public class DBApp implements Serializable{
 		
 	}
 	
-	public static void main(String[] args) throws DBAppException {
+	public static void main(String[] args) throws DBAppException, IOException {
 		String strTableName = "Student";
 		DBApp dbApp = new DBApp( );
 		Hashtable<String,String> htblColNameType = new Hashtable<String, String>( );
@@ -127,10 +127,14 @@ public class DBApp implements Serializable{
 		htblColNameMax.put("name", "99");
 		htblColNameMax.put("gpa", "4");
 		
-		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		
+//		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+//		Table table = new Table("student");
+//		Page page = new Page(table);
+//		System.out.println(htblColNameType);
 		//manga awy
 		String manga = "manga";
-		System.out.println(manga);
+		
 	}
 	
 
@@ -163,8 +167,6 @@ public class DBApp implements Serializable{
 				Object insertedPkValue = null;
 				String tableName;
 				String pk = null;
-				int insertRowIndex=0;
-				int insertPageIndex=0;
 				while (line != null) 
 				{
 					boolean flag = false;
@@ -245,15 +247,16 @@ public class DBApp implements Serializable{
 				
 				br.close();
 				
+				int insertRowIndex1 = -1;
+				int insertPageIndex1 = -1;
+				boolean found = false;
 				if(primaryexists)
 				{
 					
 					loadPages(loadedTable);
 //					Binary Search			
 //					Suggested change but I will still revise it!!!
-					int insertRowIndex1 = -1;
-					int insertPageIndex1 = -1;
-					boolean found = false;
+
 					int i = 0;
 
 					while (!found && i < loadedPages.size() && insertPageIndex1 == -1) {
@@ -261,38 +264,41 @@ public class DBApp implements Serializable{
 					    int high = loadedPages.get(i).getNumUsedRows() - 1;
 
 					    while (low <= high) {
-					        int mid = (low + high) / 2;
-					        Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(pk);
-					        int compare = pkValue.compareTo(insertedPkValue);
+					    	int mid = (low + high) / 2;
+					    	Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(pk);
+					    	int compare = pkValue.compareTo(insertedPkValue);
 
-					        if (compare > 0) { //Check condition
-					            high = mid - 1;
-					        } else if (compare < 0) {
-					            low = mid + 1;
-					        } else if(compare == 0) {
-					            found = true;
-					            insertPageIndex1 = i;
-					            insertRowIndex1 = mid;
-					            break;
-					        }
-					      if(low == high && (pkValue.compareTo(insertedPkValue) != 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
-					          insertPageIndex1 = i;
-								insertRowIndex1 = low;
-								break;
-					    }
-					      
-					      //m7tag shift
-}
+					    	if (compare > 0) { //Check condition
+					    		high = mid - 1;
+					    	} else if (compare < 0) {
+					    		low = mid + 1;
+					    	} else if(compare == 0) {
+					    		found = true;
+					    		insertPageIndex1 = i;
+					    		insertRowIndex1 = mid;
+					    		break;
+					    	}
+					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
+					    	if(low == high && (pkValue.compareTo(insertedPkValue) != 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
+					    		insertPageIndex1 = i;
+					    		insertRowIndex1 = low;
+					    		break;
+					    	}
+
+					    	//m7tag shift
+					    }	//de law el page msh full, fa insert 3ady fe a5er el page
 					    if (!found && loadedPages.get(i).getMaxRows() > loadedPages.get(i).getNumUsedRows() && insertPageIndex1 == -1) {
-					        insertPageIndex1 = i;
-					        insertRowIndex1 = low;
-					        break;
+					    	insertPageIndex1 = i;
+					    	insertRowIndex1 = low;
+					    	break;
 					    }
 
 					    i++;
 					}
 
-					
+					//el page full, fa 3ayzeen page gdeda 
+					//check en law el insertpage index = size bta3 el loaded pages yeb2a create new page,
+					//wel insert row index heya awel row fel page el gdeda
 					if (!found && insertRowIndex1 == -1 && insertPageIndex1 == -1) {
 					    insertPageIndex1 = loadedPages.size();
 					    insertRowIndex1 = 0;
@@ -302,22 +308,51 @@ public class DBApp implements Serializable{
 					//End of suggested change!!!
 				}
 				
+				if(!primaryexists || found)
+					throw new DBAppException("primary doesnt exist or duplicate");
        
 				
 				// Insert row into table
 				Row newRow = new Row(htblColNameValue);
-				//Check law last element 3ada el max
-				if(loadedPages.get(insertPageIndex).getNumUsedRows() == loadedPages.get(insertPageIndex).getMaxRows())
+				int s1= insertPageIndex1;
+				
+				//create new page, assign it to the table
+				//ely da5ely max, w mafesh page lel max dah, fa create new page
+				if(insertPageIndex1 == loadedPages.size())
 				{
-					Row shiftedRow = loadedPages.get(insertPageIndex).getRow(loadedPages.get(insertPageIndex).getMaxRows()-1);
-					loadedPages.get(insertPageIndex).deleteRow(shiftedRow);
-					loadedPages.get(insertPageIndex).addRow(newRow, insertPageIndex);
-					//insert el shifted row fel page el tanya awel 7aga
-					loadedPages.get(insertPageIndex + 1).addRow(shiftedRow, 0);
-					//law el page ely waraha kaman full hane3mel eh?
-					//law mafesh aslan page waraha hane3mel eh?
-					
+					Page newPage = new Page(loadedTable);
+					newPage.addRow(newRow, 0);
 				}
+				//insert fel nos aw a5er page feha makan
+				else
+				{
+					while(s1 < loadedPages.size()-1) //loop 3ala kol el pages ely ba3d ely hamel feha insert, shifting
+					{
+						if(loadedPages.get(s1).getNumUsedRows() >= loadedPages.get(s1).getMaxRows()) //>: nozbot el shifting =: awel mara bned5ol nshof law feha makan wla la 
+						{
+							Row shiftedRow = loadedPages.get(s1).getRow(loadedPages.get(s1).getMaxRows()-1);
+							loadedPages.get(s1).deleteRow(shiftedRow);
+							loadedPages.get(s1 + 1).addRow(shiftedRow, 0);
+							if(loadedPages.get(s1 + 1).getNumUsedRows() <= loadedPages.get(s1 + 1).getMaxRows())
+								break;  // law el page ely ba3deha msh me7taga shifting break;
+							
+						}
+						else
+							break; //law el page ely ana feha msh me7taga shifting
+						s1++;
+					}
+					//ba3d kol el shifting betshof a5er page me3adeya el max wla la, 3shan te create new page
+					if (loadedPages.get(loadedPages.size()-1).getNumUsedRows() > loadedPages.get(loadedPages.size()-1).getMaxRows())
+					{
+						Page newPage = new Page(loadedTable);
+						Row shiftedRow = loadedPages.get(loadedPages.size()-1).getRow(loadedPages.get(loadedPages.size()-1).getMaxRows());
+						loadedPages.get(loadedPages.size()-1).deleteRow(shiftedRow);
+						newPage.addRow(shiftedRow, 0);
+					}
+					//insert ba2a
+					loadedPages.get(s1).addRow(newRow, insertRowIndex1);
+				}
+				
 
 				savePages();
 				saveTable();
@@ -412,78 +447,90 @@ public class DBApp implements Serializable{
 	
 	public boolean validateHashtable (String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
 	{
-		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-		String line = br.readLine();
-		line = br.readLine();
+	
 		Enumeration<String> columnNames = htblColNameValue.keys();
-		while (line != null) 
+		boolean firstloop = true;
+		while(columnNames.hasMoreElements()== true) //ben loop 3ala el hashtable
 		{
-			String[] content = line.split(",");
-			
-			if(columnNames.hasMoreElements()== false)
-				break;
-			
-			if(content[0] == strTableName && htblColNameValue.containsKey(content[1])) //law el line ely ana masko mawgod fel htbl
-			{				
-				String insertedColName = columnNames.nextElement();
-				Object insertedvalue = htblColNameValue.get(insertedColName);
+			String insertedColName = columnNames.nextElement();
+			Object insertedvalue = htblColNameValue.get(insertedColName);
 
-					if(content[2] == insertedvalue.getClass().toString())
-					{
-						if(insertedvalue.getClass().toString() == "java.lang.Double" ||
-								insertedvalue.getClass().toString() == "java.lang.Integer")
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			
+			if (firstloop)
+				line = br.readLine();
+			
+			firstloop = false;
+			while (line != null) 
+			{
+				String[] content = line.split(",");
+				
+				
+				if(content[0] == strTableName && insertedColName == content[1]) //law el line ely ana masko mawgod fel htbl
+				{				
+					
+						if(content[2] == insertedvalue.getClass().toString())
 						{
-							int min = Integer.parseInt(content[6]);
-							int max = Integer.parseInt(content[7]);
-
-							if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+							if(insertedvalue.getClass().toString() == "java.lang.Double" ||
+									insertedvalue.getClass().toString() == "java.lang.Integer")
 							{
-								htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
-//								if (content [3] == "TRUE")
-//								{
-//									//new
-//									pk = content[1];
-//									insertedPkValue = htblColNameValue.get(pk);
-//									if(!insertedPkValue.equals(null)) {
-//										primaryexists = true;
+								int min = Integer.parseInt(content[6]);
+								int max = Integer.parseInt(content[7]);
+
+								if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+								{
+									htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+									break;
+//									if (content [3] == "TRUE")
+//									{
+//										//new
+//										pk = content[1];
+//										insertedPkValue = htblColNameValue.get(pk);
+//										if(!insertedPkValue.equals(null)) {
+//											primaryexists = true;
+//										}
 //									}
-//								}
+								}
 							}
+
+							else 
+							{
+								String min = content[6];
+								String max = content[7];
+								String insertedvalstring = (String) insertedvalue;
+								int comparemin = insertedvalstring.compareTo(min);
+								int comparemax = insertedvalstring.compareTo(max);
+								if (comparemin >= 0 && comparemax<=0)
+								{
+									htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+									break;
+//									if (content [3] == "TRUE")
+//									{
+//										//new
+//										pk = content[1];
+//										insertedPkValue = htblColNameValue.get(pk);
+//										if(!insertedPkValue.equals(null)) {
+//											primaryexists = true;
+//										}
+//									}
+								}
+							}
+
+
 						}
 
-						else 
-						{
-							String min = content[6];
-							String max = content[7];
-							String insertedvalstring = (String) insertedvalue;
-							int comparemin = insertedvalstring.compareTo(min);
-							int comparemax = insertedvalstring.compareTo(max);
-							if (comparemin >= 0 && comparemax<=0)
-							{
-								htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
-//								if (content [3] == "TRUE")
-//								{
-//									//new
-//									pk = content[1];
-//									insertedPkValue = htblColNameValue.get(pk);
-//									if(!insertedPkValue.equals(null)) {
-//										primaryexists = true;
-//									}
-//								}
-							}
-						}
 
-
-					}
-
-
+				}
+				
+				
+				line = br.readLine();
 			}
 			
+			br.close();
 			
-			line = br.readLine();
-		}
-		
-		br.close();
+		}//a5er el while bta3et el htbl
+	
 		
 		if (htblColNameValue.isEmpty())
 			return true;
@@ -519,7 +566,9 @@ public class DBApp implements Serializable{
 			loadTable(strTableName);
 			loadPages(loadedTable);
 			
-			
+			boolean valid=validateHashtable(strTableName, htblColNameValue);
+			if (!valid)
+				throw new DBAppException("htbl not valid");
 			Enumeration<String> columnNames = htblColNameValue.keys();
 			
 			
@@ -604,26 +653,27 @@ public class DBApp implements Serializable{
 			        else
 			        {
 			        	while (columnNames.hasMoreElements()) 
-						{
+			        	{
 			        		found=true;
-							String columnName = columnNames.nextElement();
-							Object columnValue = htblColNameValue.get(columnName);
-							
-							//check en el hash valid (helper)
-							boolean valid=false; //methoddddddd
-						//update el 7aga  
-							if(valid)
-								loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
-							
-							
-						}
+			        		String columnName = columnNames.nextElement();
+			        		Object columnValue = htblColNameValue.get(columnName);
+
+			        		//check en el hash valid (helper)
+			        		
+			        		//update el 7aga  
+			        		
+			        			loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
+			        	
+
+
+			        	}
 			        }
-			
-			
+
+
 			}
-			
-			
-			
+
+
+
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -641,18 +691,22 @@ public class DBApp implements Serializable{
 		//find el pages ele feha el 7aga
 		loadTable(strTableName);
 		loadPages(loadedTable);
+		
+		boolean valid=validateHashtable(strTableName, htblColNameValue);
+		if (!valid)
+			throw new DBAppException("htbl not valid");
+		
 		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue );
 		boolean firstloop = true;
 		Vector<Row> tmpRows = new Vector<Row>();
 
+		
 		Enumeration<String> columnNames = htblColNameValue.keys();
-		while (columnNames.hasMoreElements()) 
-		{
 			String columnName = columnNames.nextElement();
 			Object columnValue = htblColNameValue.get(columnName);
 
 
-			if (hasPk) //idk nour me7tag yeshof el kalam dah
+			if (hasPk) 
 			{
 				//binary search
 				
@@ -709,64 +763,70 @@ public class DBApp implements Serializable{
 							found=true;
 							boolean hnmsa7=true ;
 							 
-							 while(columnNames.hasMoreElements())
-							 {
-								 columnName = columnNames.nextElement();
-								 columnValue = htblColNameValue.get(columnName);
-										if( loadedPages.get(midPage).getRow(midRow).getValue(columnName) !=  columnValue)
-											{
-											hnmsa7=false;
-											break;
-											}
-											
-											
-							 }
-							 if(hnmsa7)  // lw kol el conditions kanet 7lwa fa mfesh 7aga 3'yret el flag hmsa7 el row da 
-							 {
-								 loadedPages.get(midPage).deleteRow(loadedPages.get(midPage).getRow(midRow));
-								 savePages();
-								 saveTable();
-								 
-								 //if the page is empty ba2a :)
-								 
-									if(loadedPages.get(midPage).isEmpty())
-									{
-										
-										//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
-										File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
-										 loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName()+ ".class");
-										 loadedPages.remove((loadedPages.get(midPage)));
-										 pageFile.delete();
-										 
-										 savePages();
-										 saveTable();
-									}
-								 
-							 }
-						
+							while(columnNames.hasMoreElements())
+							{
+								columnName = columnNames.nextElement();
+								columnValue = htblColNameValue.get(columnName);
+								if( loadedPages.get(midPage).getRow(midRow).getValue(columnName) !=  columnValue)
+								{
+									hnmsa7=false;
+									break;
+								}
+
+
+							}
+							if(hnmsa7)  // lw kol el conditions kanet 7lwa fa mfesh 7aga 3'yret el flag hmsa7 el row da 
+							{
+								loadedPages.get(midPage).deleteRow(loadedPages.get(midPage).getRow(midRow));
+								
+								//if the page is empty ba2a :)
+
+								if(loadedPages.get(midPage).isEmpty())
+								{
+
+									//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
+									File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
+									loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName()+ ".class");
+									loadedPages.remove((loadedPages.get(midPage)));
+									pageFile.delete();
+
+								}
+
+							}
+
 							
 						}
 					}
-
+					//law el value ely badawar 3aleha aslan msh 3andy?? dinaaa
+				savePages();
+				saveTable();
 
 			}
+
 			else
 			{
-				if(firstloop) //enta fel first loop
+				columnNames = htblColNameValue.keys();
+				while (columnNames.hasMoreElements()) 
 				{
-					
-					for(Page p: loadedPages)
+					columnName = columnNames.nextElement();
+					columnValue = htblColNameValue.get(columnName);
+
+
+					if(firstloop) //enta fel first loop
 					{
-						for(Row r : p.getRows())
+
+						for(Page p: loadedPages)
 						{
-							if (r.getValue(columnName).equals(columnValue))
-								tmpRows.add(r);
+							for(Row r : p.getRows())
+							{
+								if (r.getValue(columnName).equals(columnValue))
+									tmpRows.add(r);
+							}
 						}
+						firstloop=false;
+
+
 					}
-					firstloop=false;
-
-
-				}
 				else //enta msh fel first loop
 				{
 					for(Row r : tmpRows)
@@ -778,34 +838,36 @@ public class DBApp implements Serializable{
 				}
 
 			}
-
-
-
-		}
-		//tle3t bara el while loop, no more conditions
-		//start deleting the rows
-		for (Page p : loadedPages)
-		{
-			for(Row r : tmpRows)
-			{
-				if(p.getRows().contains(r))
+				
+				//tle3t bara el while loop, no more conditions
+				//start deleting the rows
+				for (Page p : loadedPages)
 				{
-					p.deleteRow(r);
-					//implement delete the page if empty here
-					if (p.isEmpty())
+					for(Row r : tmpRows)
 					{
-						 File pageFile = new File(p.getPageName()+ ".class");
-						 loadedTable.getPages().remove(p.getPageName()+ ".class");
-						 loadedPages.remove(p);
-						 pageFile.delete();
+						if(p.getRows().contains(r))
+						{
+							p.deleteRow(r);
+							//implement delete the page if empty here
+							if (p.isEmpty())
+							{
+								 File pageFile = new File(p.getPageName()+ ".class");
+								 loadedTable.getPages().remove(p.getPageName()+ ".class");
+								 loadedPages.remove(p);
+								 pageFile.delete();
+							}
+							tmpRows.remove(r);
+						}
 					}
-					tmpRows.remove(r);
 				}
+				
+				savePages();
+				saveTable();
+
+
+
 			}
-		}
-		
-		savePages();
-		saveTable();
+	
 		
 	}
 
