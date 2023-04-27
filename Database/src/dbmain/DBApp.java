@@ -114,25 +114,34 @@ public class DBApp implements Serializable{
 	public static void main(String[] args) throws DBAppException, IOException {
 		String strTableName = "Student";
 		DBApp dbApp = new DBApp( );
+		
+		//table htbl names and type and max/min
 		Hashtable<String,String> htblColNameType = new Hashtable<String, String>( );
 		Hashtable<String,String> htblColNameMin = new Hashtable<String, String>( );
 		Hashtable<String,String> htblColNameMax = new Hashtable<String, String>( );
 		htblColNameType.put("id", "java.lang.Integer");
 		htblColNameType.put("name", "java.lang.String");
-		htblColNameType.put("gpa", "java.lang.double");
+		htblColNameType.put("gpa", "java.lang.Double");
 		htblColNameMin.put("id", "0");
-		htblColNameMin.put("name", "0");
+		htblColNameMax.put("id", "999999999");
+		htblColNameMin.put("name", "a");
+		htblColNameMax.put("name", "ZZZZZZZZ");
 		htblColNameMin.put("gpa", "0");
-		htblColNameMax.put("id", "1000");
-		htblColNameMax.put("name", "99");
 		htblColNameMax.put("gpa", "4");
 		
+		//create the table, done, working
+		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
 		
-//		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
-//		Table table = new Table("student");
-//		Page page = new Page(table);
-//		System.out.println(htblColNameType);
-		//manga awy
+		//inserting some records in the database
+		Hashtable<String, Object> htblColNameValue = new Hashtable( );
+		htblColNameValue.put("id", new Integer( 2343432 ));
+		htblColNameValue.put("name", new String("Ahmed Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+
+		//System.out.println(htblColNameType);
+		
 		String manga = "manga";
 		
 	}
@@ -175,19 +184,20 @@ public class DBApp implements Serializable{
 					if(columnNames.hasMoreElements()== false)
 						break;
 					
-					if(content[0] == strTableName)
+					if(content[0].equals(strTableName))
 					{
 						tableName = strTableName;
 						
 						String insertedColName = columnNames.nextElement();
 						Object insertedvalue = htblColNameValue.get(insertedColName);
 
-						if (content[1] == insertedColName)
+						if (content[1].equals(insertedColName))
 						{
-							if(content[2] == insertedvalue.getClass().toString())
+							
+							if(content[2].equals(insertedvalue.getClass().getName()))
 							{
-								if(insertedvalue.getClass().toString() == "java.lang.Double" ||
-										insertedvalue.getClass().toString() == "java.lang.Integer")
+								if(insertedvalue.getClass().getName() == "java.lang.Double" ||
+										insertedvalue.getClass().getName() == "java.lang.Integer")
 								{
 									int min = Integer.parseInt(content[6]);
 									int max = Integer.parseInt(content[7]);
@@ -195,7 +205,7 @@ public class DBApp implements Serializable{
 									if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
 									{
 										flag=true;
-										if (content [3] == "TRUE")
+										if (content [3].equals( "TRUE"))
 										{
 											//new
 											pk = content[1];
@@ -217,7 +227,7 @@ public class DBApp implements Serializable{
 									if (comparemin >= 0 && comparemax<=0)
 									{
 										flag=true;
-										if (content [3] == "TRUE")
+										if (content [3].equals( "TRUE"))
 										{
 											//new
 											pk = content[1];
@@ -432,8 +442,9 @@ public class DBApp implements Serializable{
 	    		while(line!=null)
 	    		{
 	    			String[] content = line.split(",");
-					if(content[0]==strTableName && content[1] == columnName && content[3]== "TRUE")
+					if(content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("TRUE"))
 						{
+						
 							br.close();
 							return true;
 						}
@@ -459,7 +470,7 @@ public class DBApp implements Serializable{
 	    		while(line!=null)
 	    		{
 	    			String[] content = line.split(",");
-					if(content[0]==strTableName && content[1] == columnName && content[3]== "TRUE")
+	    			if(content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("TRUE"))
 						{
 							br.close();
 							return content[1];
@@ -495,13 +506,13 @@ public class DBApp implements Serializable{
 				String[] content = line.split(",");
 				
 				
-				if(content[0] == strTableName && insertedColName == content[1]) //law el line ely ana masko mawgod fel htbl
+				if(content[0].equals(strTableName) && insertedColName.equals(content[1]) )//law el line ely ana masko mawgod fel htbl
 				{				
 					
-						if(content[2] == insertedvalue.getClass().toString())
+						if(content[2].equals(insertedvalue.getClass().getName()) )
 						{
-							if(insertedvalue.getClass().toString() == "java.lang.Double" ||
-									insertedvalue.getClass().toString() == "java.lang.Integer")
+							if(insertedvalue.getClass().getName() == "java.lang.Double" ||
+									insertedvalue.getClass().getName() == "java.lang.Integer")
 							{
 								int min = Integer.parseInt(content[6]);
 								int max = Integer.parseInt(content[7]);
