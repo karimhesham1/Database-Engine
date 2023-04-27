@@ -202,7 +202,7 @@ public class DBApp implements Serializable{
 									int min = Integer.parseInt(content[6]);
 									int max = Integer.parseInt(content[7]);
 
-									if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+									if ( (double)insertedvalue >= min && (double)insertedvalue <= max)
 									{
 										flag=true;
 										if (content [3].equals( "TRUE"))
@@ -222,8 +222,8 @@ public class DBApp implements Serializable{
 									String min = content[6];
 									String max = content[7];
 									String insertedvalstring = (String) insertedvalue;
-									int comparemin = insertedvalstring.compareTo(min);
-									int comparemax = insertedvalstring.compareTo(max);
+									int comparemin = insertedvalstring.compareToIgnoreCase(min);
+									int comparemax = insertedvalstring.compareToIgnoreCase(max);
 									if (comparemin >= 0 && comparemax<=0)
 									{
 										flag=true;
@@ -245,7 +245,7 @@ public class DBApp implements Serializable{
 
 						}
 
-						if(flag == false || !primaryexists)
+						if(flag == false)
 							throw new DBAppException();
 
 
@@ -254,6 +254,8 @@ public class DBApp implements Serializable{
 					
 					line = br.readLine();
 				}
+				if(!primaryexists)
+					throw new DBAppException();
 				
 				br.close();
 				
