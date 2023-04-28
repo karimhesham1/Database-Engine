@@ -293,6 +293,7 @@ public class DBApp implements Serializable{
 						Row newRow = new Row(htblColNameValue);
 						Page newPage = new Page(loadedTable);
 						newPage.addRow(newRow, 0);
+						loadedPages.add(newPage);
 						savePages();
 						saveTable();
 						return;
@@ -409,7 +410,7 @@ public class DBApp implements Serializable{
 	
 	public void loadPages (Table table) throws ClassNotFoundException, IOException
 	{
-		loadedPages = null;
+		loadedPages = new  Vector<Page>();
 		Vector<String> pages = table.getPages();
 		for(String s : pages)
 		{
@@ -438,7 +439,7 @@ public class DBApp implements Serializable{
 	
 	public void loadTable(String tableName) throws ClassNotFoundException, IOException
 	{
-		loadedTable= null;
+		loadedTable= new Table(tableName);
 
 		File tableFile = new File(tableName + ".class");
 		ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
