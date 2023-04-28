@@ -20,7 +20,7 @@ public class Page implements Serializable {
     public Page(Table table) throws IOException {
     	
     	Properties props = new Properties();
-    	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("DBApp.config");
+    	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("resources/DBApp.config");
     	props.load(inputStream);
 
     	this.maxRows = Integer.parseInt(props.getProperty("MaximumRowsCountinTablePage"));

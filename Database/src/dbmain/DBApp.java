@@ -286,7 +286,17 @@ public class DBApp implements Serializable{
 					
 					loadPages(loadedTable);
 //					Binary Search			
-//					Suggested change but I will still revise it!!!
+
+					//if the record we are inserting is the first record, table has no pages aslan (new) error fixing
+					if(loadedPages == null)
+					{
+						Row newRow = new Row(htblColNameValue);
+						Page newPage = new Page(loadedTable);
+						newPage.addRow(newRow, 0);
+						savePages();
+						saveTable();
+						return;
+					}
 
 					int i = 0;
 
