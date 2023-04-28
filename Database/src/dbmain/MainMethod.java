@@ -62,6 +62,14 @@ public class MainMethod {
 		htblColNameValue.put("gpa", new Double( 0.88 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 1 ));
+		htblColNameValue.put("name", new String("Zaky Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.88 ) );
+		//dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		dbApp.deleteFromTable(strTableName, htblColNameValue);
+		
 		
 		//print the table
 		dbApp.printTable(strTableName);

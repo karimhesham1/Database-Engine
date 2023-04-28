@@ -527,8 +527,7 @@ public class DBApp implements Serializable{
 					
 						if(content[2].equals(insertedvalue.getClass().getName()) )
 						{
-							if(insertedvalue.getClass().getName() == "java.lang.Double" ||
-									insertedvalue.getClass().getName() == "java.lang.Integer")
+							if(insertedvalue.getClass().getName() == "java.lang.Integer")
 							{
 								int min = Integer.parseInt(content[6]);
 								int max = Integer.parseInt(content[7]);
@@ -547,6 +546,30 @@ public class DBApp implements Serializable{
 //										}
 //									}
 								}
+							}
+							
+							else if(insertedvalue.getClass().getName() == "java.lang.Double")
+							{
+
+								int min = Integer.parseInt(content[6]);
+								int max = Integer.parseInt(content[7]);
+
+								if ( (double)insertedvalue >= min && (double)insertedvalue <= max)
+								{
+									htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+									break;
+//									if (content [3] == "TRUE")
+//									{
+//										//new
+//										pk = content[1];
+//										insertedPkValue = htblColNameValue.get(pk);
+//										if(!insertedPkValue.equals(null)) {
+//											primaryexists = true;
+//										}
+//									}
+								}
+								
+								
 							}
 
 							else 
