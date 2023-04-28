@@ -252,7 +252,7 @@ public class DBApp implements Serializable{
 //					Binary Search			
 
 					//if the record we are inserting is the first record, table has no pages aslan (new) error fixing
-					if(loadedPages == null)
+					if(loadedPages.isEmpty())
 					{
 						Row newRow = new Row(htblColNameValue);
 						Page newPage = new Page(loadedTable);
@@ -270,7 +270,7 @@ public class DBApp implements Serializable{
 					    int high = loadedPages.get(i).getNumUsedRows() - 1;
 
 					    while (low <= high) {
-					    	int mid = (low + high) / 2;
+					    	int mid = ((low + high) / 2); //new error fix
 					    	Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(pk);
 					    	int compare = pkValue.compareTo(insertedPkValue);
 
@@ -284,10 +284,22 @@ public class DBApp implements Serializable{
 					    		insertRowIndex1 = mid;
 					    		break;
 					    	}
+					    	if(low == high && pkValue.compareTo(insertedPkValue)>0 ) //law el inserted as8ar mn ely ana wa2ef 3aleh
+					    	{
+					    		insertPageIndex1 = i;
+					    		insertRowIndex1 = low;
+					    		break;
+					    	}
+					    	if(low == high && pkValue.compareTo(insertedPkValue)<0 ) //el3aks
+					    	{
+					    		insertPageIndex1 = i;
+					    		insertRowIndex1 = low+1;
+					    		break;
+					    	}
 					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
 					    	if(low == high && (pkValue.compareTo(insertedPkValue) != 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
 					    		insertPageIndex1 = i;
-					    		insertRowIndex1 = low;
+					    		insertRowIndex1 = low +1;
 					    		break;
 					    	}
 
