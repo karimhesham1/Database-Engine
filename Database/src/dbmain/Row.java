@@ -33,6 +33,13 @@ public class Row implements Serializable {
     public int getNumValues() {
         return colNameValue.size();
     }
+    
+    public void printRow() {
+        for (String colName : colNameValue.keySet()) {
+            System.out.print(colName + ": " + colNameValue.get(colName) + " ");
+        }
+    }
+
 
     
     

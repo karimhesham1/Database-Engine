@@ -111,42 +111,6 @@ public class DBApp implements Serializable{
 		
 	}
 	
-	public static void main(String[] args) throws DBAppException, IOException {
-		String strTableName = "Student";
-		DBApp dbApp = new DBApp( );
-		
-		//table htbl names and type and max/min
-		Hashtable<String,String> htblColNameType = new Hashtable<String, String>( );
-		Hashtable<String,String> htblColNameMin = new Hashtable<String, String>( );
-		Hashtable<String,String> htblColNameMax = new Hashtable<String, String>( );
-		htblColNameType.put("id", "java.lang.Integer");
-		htblColNameType.put("name", "java.lang.String");
-		htblColNameType.put("gpa", "java.lang.Double");
-		htblColNameMin.put("id", "0");
-		htblColNameMax.put("id", "999999999");
-		htblColNameMin.put("name", "a");
-		htblColNameMax.put("name", "ZZZZZZZZ");
-		htblColNameMin.put("gpa", "0");
-		htblColNameMax.put("gpa", "4");
-		
-		//create the table, done, working
-		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
-		
-		//inserting some records in the database
-		Hashtable<String, Object> htblColNameValue = new Hashtable( );
-		htblColNameValue.put("id", new Integer( 2343432 ));
-		htblColNameValue.put("name", new String("Ahmed Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.95 ) );
-		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-
-		//System.out.println(htblColNameType);
-		
-		String manga = "manga";
-		
-	}
-	
-
 	
 
 	// following method inserts one row only.
@@ -405,6 +369,26 @@ public class DBApp implements Serializable{
 		    }
 
 
+		
+	}
+	
+	public void printTable (String tablename) throws ClassNotFoundException, IOException
+	{
+		loadTable(tablename);
+		loadPages(loadedTable);
+		for(Page p : loadedPages)
+		{
+			System.out.println("Start of page");
+			for (int i = 0; i < p.getRows().size() ; i++)
+			{
+				p.getRow(i).printRow();
+				System.out.println(" ");
+			}
+		}
+		savePages();
+		saveTable();
+		
+		
 		
 	}
 	
