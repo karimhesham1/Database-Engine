@@ -305,15 +305,20 @@ public class DBApp implements Serializable{
 					    		break;
 					    	}
 					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
-					    	if(low >= high && (pkValueHigh.compareTo(insertedPkValue) < 0) && (high == (loadedPages.get(i).getNumUsedRows()-1))){
+					    	if(low >= high && (pkValueHigh.compareTo(insertedPkValue) < 0) && (high == (loadedPages.get(i).getNumUsedRows()-1)) && loadedPages.get(i).getNumUsedRows()< loadedPages.get(i).getNumUsedRows()){
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = high +1;
 					    		break;
 					    	}
-					    	if(low >= high && pkValueLow.compareTo(insertedPkValue)<0 ) //el3ak
+					    	if(low >= high && pkValueLow.compareTo(insertedPkValue)<0 && high != loadedPages.get(i).getMaxRows()-1) //el3ak
 					    	{
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = low + 1;
+					    		break;
+					    	}
+					    	if(low >= high && pkValueLow.compareTo(insertedPkValue)<0 && high == loadedPages.get(i).getMaxRows()-1) //el3ak
+					    	{
+					    		
 					    		break;
 					    	}
 					    	
@@ -332,7 +337,7 @@ public class DBApp implements Serializable{
 					//el page full, fa 3ayzeen page gdeda 
 					//check en law el insertpage index = size bta3 el loaded pages yeb2a create new page,
 					//wel insert row index heya awel row fel page el gdeda
-					if (!found && insertRowIndex1 == -1 && insertPageIndex1 == -1) {
+					if (!found && insertRowIndex1 == -1 && insertPageIndex1 == -1 ) {
 					    insertPageIndex1 = loadedPages.size();
 					    insertRowIndex1 = 0;
 					}
@@ -354,7 +359,7 @@ public class DBApp implements Serializable{
 				if(insertPageIndex1 == loadedPages.size())
 				{
 					Page newPage = new Page(loadedTable);
-					newPage.addRow(newRow, 0);
+					newPage.addRow(newRow,insertRowIndex1);
 				}
 				//insert fel nos aw a5er page feha makan
 				else

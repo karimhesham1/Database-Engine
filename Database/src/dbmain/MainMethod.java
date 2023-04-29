@@ -57,26 +57,35 @@ public class MainMethod {
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 8 ));
+		htblColNameValue.put("id", new Integer( 4 ));
 		htblColNameValue.put("name", new String("Zaky Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.88 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 
 		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 9 ));
+		htblColNameValue.put("id", new Integer( 2 ));
 		htblColNameValue.put("name", new String("Nour" ) );
 		htblColNameValue.put("gpa", new Double( 1.25 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		htblColNameValue.clear( );
-		//htblColNameValue.put("id", new Integer( 99 ));
-		htblColNameValue.put("name", new String("Kareem" ) );
-		htblColNameValue.put("gpa", new Double( 0.5 ) );
+		htblColNameValue.put("id", new Integer( 7 ));
+		htblColNameValue.put("name", new String("Moh" ) );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-		//dbApp.deleteFromTable(strTableName, htblColNameValue);
-		String id = "6";
-		dbApp.updateTable(strTableName, id, htblColNameValue);
+		
+		////for(int i=0;i<4;i++) {
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( 201 ));
+			htblColNameValue.put("name", new String("Name" ) );
+			htblColNameValue.put("gpa", new Double( 0.7 ) );
+			//dbApp.insertIntoTable( strTableName , htblColNameValue );
+		//}
+		
+		dbApp.deleteFromTable(strTableName, htblColNameValue);
+		String id = "660";
+		//dbApp.updateTable(strTableName, id, htblColNameValue);
 		
 		//print the table
 		dbApp.printTable(strTableName);
