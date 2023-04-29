@@ -779,18 +779,18 @@ public class DBApp implements Serializable{
 			        		//check en el hash valid (helper)
 			        		
 			        		//update el 7aga  
-			        			Row curRow=loadedPages.get(midPage).getRow(midRow);
-			        			curRow.updateRow(columnName, columnValue, curRow.getValue(pkName));
 			        			
-
-
+			        			loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
 			        	}
+		
 			        }
 
 
 			}
+			
 
-
+			savePages();
+			saveTable();
 
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block

@@ -71,7 +71,7 @@ public class MainMethod {
 		htblColNameValue.clear( );
 		//htblColNameValue.put("id", new Integer( 99 ));
 		htblColNameValue.put("name", new String("Kareem" ) );
-		htblColNameValue.put("gpa", new Double( 0.44 ) );
+		htblColNameValue.put("gpa", new Double( 0.5 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
