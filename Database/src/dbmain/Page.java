@@ -94,4 +94,6 @@ public class Page implements Serializable {
     	return tableName;
     	
     }
+    
+
 }

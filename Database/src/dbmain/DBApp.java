@@ -710,12 +710,12 @@ public class DBApp implements Serializable{
 				line=br.readLine();
 			}
 			
-			Object insertedPk=strClusteringKeyValue;
-			
-			if(pkType== "java.lang.Double"|| pkType=="java.lang.Integer")
-			{
-				insertedPk= Integer.parseInt(strClusteringKeyValue);
-			}
+//			Object insertedPk=strClusteringKeyValue;
+//			
+//			if(pkType== "java.lang.Double"|| pkType=="java.lang.Integer")
+//			{
+//				insertedPk= Integer.parseInt(strClusteringKeyValue);
+//			}
 			
 			
 			
@@ -730,13 +730,13 @@ public class DBApp implements Serializable{
 			while(!found && lowPage <= highPage && lowRow<=highRow)
 			{
 				 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
-			        int compare = pkValue.compareTo(insertedPk);
+			        int compare = (pkValue+"").compareTo(strClusteringKeyValue);
 			        
 			        
 			        if(compare >0) 
 					{
 						 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(pkName);
-					        int compare2 = pkValue2.compareTo(insertedPk);
+					        int compare2 = (pkValue2+"").compareTo(strClusteringKeyValue);
 						if(compare2> 0)
 						{
 							highPage = midPage - 1;
@@ -753,7 +753,7 @@ public class DBApp implements Serializable{
 			        else if(compare<0) 
 					{
 						 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow).getValue(pkName);
-					        int compare2 = pkValue2.compareTo(insertedPk);
+					        int compare2 = (pkValue2+"").compareTo(strClusteringKeyValue);
 						if(compare2< 0)
 						{
 							lowPage = midPage + 1;
@@ -771,6 +771,7 @@ public class DBApp implements Serializable{
 			        {
 			        	while (columnNames.hasMoreElements()) 
 			        	{
+//			        		System.out.print(loadedPages.get(midPage).getRow(midRow).getValue(pkName));
 			        		found=true;
 			        		String columnName = columnNames.nextElement();
 			        		Object columnValue = htblColNameValue.get(columnName);
@@ -778,9 +779,9 @@ public class DBApp implements Serializable{
 			        		//check en el hash valid (helper)
 			        		
 			        		//update el 7aga  
-			        		
-			        			loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
-			        	
+			        			Row curRow=loadedPages.get(midPage).getRow(midRow);
+			        			curRow.updateRow(columnName, columnValue, curRow.getValue(pkName));
+			        			
 
 
 			        	}

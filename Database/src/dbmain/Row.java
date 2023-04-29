@@ -13,6 +13,7 @@ public class Row implements Serializable {
     }
 
     public void addValue(String colName, Object value) {
+    
     	colNameValue.put(colName, value);
     }
 
@@ -37,6 +38,11 @@ public class Row implements Serializable {
     public void printRow() {
         for (String colName : colNameValue.keySet()) {
             System.out.print(colName + ": " + colNameValue.get(colName) + " ");
+        }
+    }
+    public void updateRow(String name, Object value, Object key) {
+        if(colNameValue.contains(key)) {
+            colNameValue.put(name, value);
         }
     }
 
