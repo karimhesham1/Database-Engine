@@ -284,24 +284,25 @@ public class DBApp implements Serializable{
 					    		insertRowIndex1 = mid;
 					    		break;
 					    	}
-					    	if(low == high && pkValue.compareTo(insertedPkValue)>0 ) //law el inserted as8ar mn ely ana wa2ef 3aleh
+					    	if(low >= high && pkValue.compareTo(insertedPkValue)>0 ) //law el inserted as8ar mn ely ana wa2ef 3aleh
 					    	{
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = low;
 					    		break;
 					    	}
-					    	if(low == high && pkValue.compareTo(insertedPkValue)<0 ) //el3aks
+					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
+					    	if(low >= high && (pkValue.compareTo(insertedPkValue) < 0) && (high == (loadedPages.get(i).getNumUsedRows()-1))){
+					    		insertPageIndex1 = i;
+					    		insertRowIndex1 = high +1;
+					    		break;
+					    	}
+					    	if(low >= high && pkValue.compareTo(insertedPkValue)<0 ) //el3ak
 					    	{
 					    		insertPageIndex1 = i;
-					    		insertRowIndex1 = low+1;
+					    		insertRowIndex1 = low;
 					    		break;
 					    	}
-					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
-					    	if(low == high && (pkValue.compareTo(insertedPkValue) != 0) && (high != (loadedPages.get(i).getNumUsedRows()-1))){
-					    		insertPageIndex1 = i;
-					    		insertRowIndex1 = low +1;
-					    		break;
-					    	}
+					    	
 
 					    	//m7tag shift
 					    }	//de law el page msh full, fa insert 3ady fe a5er el page
