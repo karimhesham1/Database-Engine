@@ -272,34 +272,42 @@ public class DBApp implements Serializable{
 					    while (low <= high) {
 					    	int mid = ((low + high) / 2); //new error fix
 					    	Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(i).getRow(mid).getValue(pk);
+					    	Comparable<Object> pkValueLow = (Comparable<Object>) loadedPages.get(i).getRow(low).getValue(pk);
+					    	Comparable<Object> pkValueHigh = (Comparable<Object>) loadedPages.get(i).getRow(high).getValue(pk);
+
+
 					    	int compare = pkValue.compareTo(insertedPkValue);
 
 					    	if (compare > 0) { //Check condition
 					    		high = mid - 1;
+						    	pkValueHigh = (Comparable<Object>) loadedPages.get(i).getRow(high).getValue(pk);
+
 					    	} else if (compare < 0) {
 					    		low = mid + 1;
+						    	pkValueLow = (Comparable<Object>) loadedPages.get(i).getRow(low).getValue(pk);
+
 					    	} else if(compare == 0) {
 					    		found = true;
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = mid;
 					    		break;
 					    	}
-					    	if(low >= high && pkValue.compareTo(insertedPkValue)>0 ) //law el inserted as8ar mn ely ana wa2ef 3aleh
+					    	if(low >= high && pkValueLow.compareTo(insertedPkValue)>0 ) //law el inserted as8ar mn ely ana wa2ef 3aleh
 					    	{
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = low;
 					    		break;
 					    	}
 					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
-					    	if(low >= high && (pkValue.compareTo(insertedPkValue) < 0) && (high == (loadedPages.get(i).getNumUsedRows()-1))){
+					    	if(low >= high && (pkValueHigh.compareTo(insertedPkValue) < 0) && (high == (loadedPages.get(i).getNumUsedRows()-1))){
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = high +1;
 					    		break;
 					    	}
-					    	if(low >= high && pkValue.compareTo(insertedPkValue)<0 ) //el3ak
+					    	if(low >= high && pkValueLow.compareTo(insertedPkValue)<0 ) //el3ak
 					    	{
 					    		insertPageIndex1 = i;
-					    		insertRowIndex1 = low;
+					    		insertRowIndex1 = low + 1;
 					    		break;
 					    	}
 					    	

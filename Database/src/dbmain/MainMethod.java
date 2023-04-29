@@ -104,6 +104,12 @@ public class MainMethod {
 		htblColNameValue.put("gpa", new Double( 0.88 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 9 ));
+		htblColNameValue.put("name", new String("Nour" ) );
+		htblColNameValue.put("gpa", new Double( 1.25 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
 		
 		
