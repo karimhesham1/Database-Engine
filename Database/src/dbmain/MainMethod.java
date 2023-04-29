@@ -69,13 +69,14 @@ public class MainMethod {
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 9 ));
-		//htblColNameValue.put("name", new String("John Noor" ) );
-		//htblColNameValue.put("gpa", new Double( 1.5 ) );
+		//htblColNameValue.put("id", new Integer( 99 ));
+		htblColNameValue.put("name", new String("Kareem" ) );
+		htblColNameValue.put("gpa", new Double( 0.44 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
-		
+		String id = "6";
+		dbApp.updateTable(strTableName, id, htblColNameValue);
 		
 		//print the table
 		dbApp.printTable(strTableName);

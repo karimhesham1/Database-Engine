@@ -699,7 +699,7 @@ public class DBApp implements Serializable{
 			while (line != null) 
 			{
 				String[] content = line.split(",");
-				if(content[0]==strTableName && content[3]=="TRUE")
+				if(content[0].equals(strTableName) && content[3].equals("true"))
 					{
 					pkName=content[1];
 					pkType=content[2];
