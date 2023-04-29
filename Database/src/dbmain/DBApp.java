@@ -284,6 +284,12 @@ public class DBApp implements Serializable{
 
 					    	} else if (compare < 0) {
 					    		low = mid + 1;
+					    		if(loadedPages.get(i).getNumUsedRows() == 1)
+					    		{
+					    			insertPageIndex1 = i;
+					    			insertRowIndex1 = low;
+					    			break;
+					    		}
 						    	pkValueLow = (Comparable<Object>) loadedPages.get(i).getRow(low).getValue(pk);
 
 					    	} else if(compare == 0) {
@@ -376,7 +382,7 @@ public class DBApp implements Serializable{
 						loadedPages.get(loadedPages.size()-1).deleteRow(shiftedRow);
 						newPage.addRow(shiftedRow, 0);
 					}
-					//insert ba2a
+					//insert ba2a.
 					loadedPages.get(s1).addRow(newRow, insertRowIndex1);
 				}
 				
@@ -479,7 +485,7 @@ public class DBApp implements Serializable{
 	    		while(line!=null)
 	    		{
 	    			String[] content = line.split(",");
-					if(content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("TRUE"))
+					if(content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("true"))
 						{
 						
 							br.close();
@@ -507,7 +513,7 @@ public class DBApp implements Serializable{
 	    		while(line!=null)
 	    		{
 	    			String[] content = line.split(",");
-	    			if(content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("TRUE"))
+	    			if(content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("true"))
 						{
 							br.close();
 							return content[1];
@@ -523,13 +529,25 @@ public class DBApp implements Serializable{
 	
 	public boolean validateHashtable (String strTableName, Hashtable<String,Object> htblColNameValue) throws IOException
 	{
+		
+		
+		Hashtable<String,Object> tmphtbl = new Hashtable<String,Object>();
+		Enumeration<String> columnNamestmp = htblColNameValue.keys();
+		String columnName = columnNamestmp.nextElement();
+		Object columnValue = htblColNameValue.get(columnName);
+		while (columnNamestmp.hasMoreElements())
+		{
+			tmphtbl.put(columnName, columnValue);
+			columnNamestmp.nextElement();
+		}
+		
 	
-		Enumeration<String> columnNames = htblColNameValue.keys();
+		Enumeration<String> columnNames = tmphtbl.keys();
 		boolean firstloop = true;
 		while(columnNames.hasMoreElements()== true) //ben loop 3ala el hashtable
 		{
 			String insertedColName = columnNames.nextElement();
-			Object insertedvalue = htblColNameValue.get(insertedColName);
+			Object insertedvalue = tmphtbl.get(insertedColName);
 
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 			String line = br.readLine();
@@ -555,7 +573,7 @@ public class DBApp implements Serializable{
 
 								if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
 								{
-									htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+									tmphtbl.remove(insertedColName);//remove el entry mn htbl law valid
 									break;
 //									if (content [3] == "TRUE")
 //									{
@@ -577,7 +595,7 @@ public class DBApp implements Serializable{
 
 								if ( (double)insertedvalue >= min && (double)insertedvalue <= max)
 								{
-									htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+									tmphtbl.remove(insertedColName);//remove el entry mn htbl law valid
 									break;
 //									if (content [3] == "TRUE")
 //									{
@@ -598,11 +616,11 @@ public class DBApp implements Serializable{
 								String min = content[6];
 								String max = content[7];
 								String insertedvalstring = (String) insertedvalue;
-								int comparemin = insertedvalstring.compareTo(min);
-								int comparemax = insertedvalstring.compareTo(max);
+								int comparemin = insertedvalstring.compareToIgnoreCase(min);
+								int comparemax = insertedvalstring.compareToIgnoreCase(max);
 								if (comparemin >= 0 && comparemax<=0)
 								{
-									htblColNameValue.remove(insertedColName);//remove el entry mn htbl law valid
+									tmphtbl.remove(insertedColName);//remove el entry mn htbl law valid
 									break;
 //									if (content [3] == "TRUE")
 //									{
@@ -631,7 +649,7 @@ public class DBApp implements Serializable{
 		}//a5er el while bta3et el htbl
 	
 		
-		if (htblColNameValue.isEmpty())
+		if (tmphtbl.isEmpty())
 			return true;
 		else
 			return false;
@@ -791,6 +809,10 @@ public class DBApp implements Serializable{
 		loadTable(strTableName);
 		loadPages(loadedTable);
 		
+	
+
+		
+		
 		boolean valid=validateHashtable(strTableName, htblColNameValue);
 		if (!valid)
 			throw new DBAppException("htbl not valid");
@@ -800,9 +822,9 @@ public class DBApp implements Serializable{
 		Vector<Row> tmpRows = new Vector<Row>();
 
 		
-		Enumeration<String> columnNames = htblColNameValue.keys();
-			String columnName = columnNames.nextElement();
-			Object columnValue = htblColNameValue.get(columnName);
+//		Enumeration<String> columnNames = htblColNameValue.keys();
+//			String columnName = columnNames.nextElement();
+//			Object columnValue = htblColNameValue.get(columnName);
 
 
 			if (hasPk) 
@@ -818,8 +840,9 @@ public class DBApp implements Serializable{
 				int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 				int midRow = (lowRow + highRow) / 2;
 				//5ale el pk fel colName
-				columnName= getPrimaryKey(strTableName, htblColNameValue );
-				columnValue = htblColNameValue.get(columnName);
+				String columnName= getPrimaryKey(strTableName, htblColNameValue );
+				Object columnValue = htblColNameValue.get(columnName);
+				
 				
 				
 				
@@ -877,24 +900,27 @@ public class DBApp implements Serializable{
 							}
 						} 
 						else //b2o equal le b3d 5las 
+							
 						{
-							//found immediately  check ba2et el cases 
+							//found immediately  check b2et el cases 
 							
 							
 							found=true;
 							boolean hnmsa7=true ;
-							 
+							Enumeration<String> columnNames = htblColNameValue.keys();
 							while(columnNames.hasMoreElements())
 							{
+								
 								columnName = columnNames.nextElement();
 								columnValue = htblColNameValue.get(columnName);
-								if( loadedPages.get(midPage).getRow(midRow).getValue(columnName) !=  columnValue)
+								
+								if( !(loadedPages.get(midPage).getRow(midRow).getValue(columnName).equals(columnValue)) )
 								{
 									hnmsa7=false;
 									break;
 								}
 
-
+								
 							}
 							if(hnmsa7)  // lw kol el conditions kanet 7lwa fa mfesh 7aga 3'yret el flag hmsa7 el row da 
 							{
@@ -907,7 +933,7 @@ public class DBApp implements Serializable{
 
 									//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
 									File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
-									loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName()+ ".class");
+									loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName());
 									loadedPages.remove((loadedPages.get(midPage)));
 									pageFile.delete();
 
@@ -926,6 +952,10 @@ public class DBApp implements Serializable{
 
 			else
 			{
+				Enumeration<String> columnNames = htblColNameValue.keys();
+				String columnName;
+				Object columnValue;
+				
 				columnNames = htblColNameValue.keys();
 				while (columnNames.hasMoreElements()) 
 				{
@@ -938,8 +968,9 @@ public class DBApp implements Serializable{
 
 						for(Page p: loadedPages)
 						{
-							for(Row r : p.getRows())
+							for(int i = 0 ; i<p.getRows().size() ; i++)
 							{
+								Row r = p.getRow(i);
 								if (r.getValue(columnName).equals(columnValue))
 									tmpRows.add(r);
 							}
@@ -950,8 +981,9 @@ public class DBApp implements Serializable{
 					}
 				else //enta msh fel first loop
 				{
-					for(Row r : tmpRows)
+					for(int i = 0 ; i<tmpRows.size() ; i++)
 					{
+						Row r = tmpRows.get(i);
 						if ( !(r.getValue(columnName).equals(columnValue)) ) //law el second column doesnt satisfy the condition, remove the row from tmp rows
 							tmpRows.remove(r);
 
@@ -962,10 +994,12 @@ public class DBApp implements Serializable{
 				
 				//tle3t bara el while loop, no more conditions
 				//start deleting the rows
-				for (Page p : loadedPages)
+				for (int i =0 ; i<loadedPages.size() ; i++)
 				{
-					for(Row r : tmpRows)
+					Page p = loadedPages.get(i);
+					for(int j = 0 ; i<tmpRows.size() ; j++)
 					{
+						Row r = tmpRows.get(j);
 						if(p.getRows().contains(r))
 						{
 							p.deleteRow(r);
@@ -973,12 +1007,15 @@ public class DBApp implements Serializable{
 							if (p.isEmpty())
 							{
 								 File pageFile = new File(p.getPageName()+ ".class");
-								 loadedTable.getPages().remove(p.getPageName()+ ".class");
+								 loadedTable.getPages().remove(p.getPageName());
 								 loadedPages.remove(p);
 								 pageFile.delete();
 							}
 							tmpRows.remove(r);
+							if(tmpRows.isEmpty())
+								break;
 						}
+						
 					}
 				}
 				
