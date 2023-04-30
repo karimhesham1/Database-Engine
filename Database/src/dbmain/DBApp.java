@@ -978,9 +978,9 @@ public class DBApp implements Serializable{
 									{
 
 										//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
-										File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
-										loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName());
-										loadedPages.remove((loadedPages.get(midPage)));
+										File pageFile = new File((loadedPages.get(midPage+1)).getPageName()+ ".class");
+										loadedTable.getPages().remove((loadedPages.get(midPage+1)).getPageName());
+										loadedPages.remove((loadedPages.get(midPage+1)));
 										pageFile.delete();
 
 									}
@@ -1017,7 +1017,7 @@ public class DBApp implements Serializable{
 
 						for(Page p: loadedPages)
 						{
-							for(int i = 0 ; i<p.getRows().size() ; i++)
+							for(int i = 0 ; i<p.getNumUsedRows() ; i++)
 							{
 								Row r = p.getRow(i);
 								if (r.getValue(columnName).equals(columnValue))
@@ -1046,7 +1046,7 @@ public class DBApp implements Serializable{
 				for (int i =0 ; i<loadedPages.size() ; i++)
 				{
 					Page p = loadedPages.get(i);
-					for(int j = 0 ; i<tmpRows.size() ; j++)
+					for(int j = 0 ; j<tmpRows.size() ; j++)
 					{
 						Row r = tmpRows.get(j);
 						if(p.getRows().contains(r))

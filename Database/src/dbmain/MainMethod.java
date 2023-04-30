@@ -75,17 +75,39 @@ public class MainMethod {
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 205 ));
+		htblColNameValue.put("name", new String("Moh" ) );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+//		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 207 ));
+		htblColNameValue.put("name", new String("Moh" ) );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+//		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 206 ));
+		htblColNameValue.put("name", new String("Moh" ) );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+//		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		
 		////for(int i=0;i<4;i++) {
 			htblColNameValue.clear( );
-			//htblColNameValue.put("id", new Integer( 6969 ));
-			htblColNameValue.put("name", new Integer( 6969 ));
-			htblColNameValue.put("gpa", new String( "d" ) );
+//			htblColNameValue.put("id", new Integer( 197 ));
+//			htblColNameValue.put("name", new Integer( 6969 ));
+			htblColNameValue.put("gpa", new Double( 1.25 ) );
 			//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//}
 		
-		//dbApp.deleteFromTable(strTableName, htblColNameValue);
-		String id = "201";
-		dbApp.updateTable(strTableName, id, htblColNameValue);
+			dbApp.deleteFromTable(strTableName, htblColNameValue);
+//		String id = "201";
+//		dbApp.updateTable(strTableName, id, htblColNameValue);
 		
 		//print the table
 		dbApp.printTable(strTableName);
