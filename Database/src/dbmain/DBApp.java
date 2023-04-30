@@ -807,6 +807,10 @@ public class DBApp implements Serializable{
 			loadTable(strTableName);
 			loadPages(loadedTable);
 			
+			if(loadedPages.size() == 0) {
+				throw new DBAppException("The table is empty");
+			}
+			
 			boolean valid=validateHashtable(strTableName, htblColNameValue);
 			if (!valid)
 				throw new DBAppException("htbl not valid");
@@ -942,7 +946,6 @@ public class DBApp implements Serializable{
 		loadTable(strTableName);
 		loadPages(loadedTable);
 		
-	
 
 		
 		
@@ -958,7 +961,10 @@ public class DBApp implements Serializable{
 //		Enumeration<String> columnNames = htblColNameValue.keys();
 //			String columnName = columnNames.nextElement();
 //			Object columnValue = htblColNameValue.get(columnName);
-
+		
+		if(loadedPages.size() == 0) {
+			throw new DBAppException("The table is empty");
+		}
 
 			if (hasPk) 
 			{
@@ -969,6 +975,7 @@ public class DBApp implements Serializable{
 				int lowPage = 0;
 				int highPage = loadedPages.size() - 1;
 				int midPage = (lowPage + highPage) / 2;
+				
 				int lowRow = 0;
 				int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 				int midRow = (lowRow + highRow) / 2;
