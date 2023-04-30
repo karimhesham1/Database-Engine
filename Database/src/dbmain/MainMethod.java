@@ -114,25 +114,35 @@ public class MainMethod {
 //		
 		
 		
-		String strTableName = "Checkkkks";
+		String strTableName = "Student";
 		DBApp dbApp = new DBApp( );
 		
 		//table htbl names and type and max/min
-		Hashtable<String,String> htblColNameType = new Hashtable<String, String>( );
-		Hashtable<String,String> htblColNameMin = new Hashtable<String, String>( );
-		Hashtable<String,String> htblColNameMax = new Hashtable<String, String>( );
-		htblColNameType.put("id", "java.lang.Integer");
-		htblColNameType.put("name", "java.lang.String");
-		htblColNameType.put("gpa", "java.lang.Double");
-		htblColNameMin.put("id", "0");
-		htblColNameMax.put("id", "999999999");
-		htblColNameMin.put("name", "a");
-		htblColNameMax.put("name", "ZZZZZZZZ");
-		htblColNameMin.put("gpa", "0");
-		htblColNameMax.put("gpa", "4");
+//		Hashtable<String,String> htblColNameType = new Hashtable<String, String>( );
+//		Hashtable<String,String> htblColNameMin = new Hashtable<String, String>( );
+//		Hashtable<String,String> htblColNameMax = new Hashtable<String, String>( );
+//		htblColNameType.put("id", "java.lang.Integer");
+//		htblColNameType.put("gpa", "java.lang.Double");
+//		htblColNameMin.put("id", "0");
+//		htblColNameMax.put("id", "999999999");
+//		htblColNameMin.put("gpa", "0");
+//		htblColNameMax.put("gpa", "4");
 		
 		//create the table, done, working
-		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		
+		Hashtable<String, Object> htblColNameValue = new Hashtable();
+		htblColNameValue.put("id", new Integer( 10000000 ));
+		htblColNameValue.put("name", new String("MANGAAAAAAAAAAAAA") );
+		//htblColNameValue.put("gpa", new Double( 0.95 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		
+//		htblColNameValue.put("id", new Integer( 400 ));
+//		htblColNameValue.put("name", new String("Ahmed Noor" ) );
+//		htblColNameValue.put("gpa", new Double( 0.95 ) );
+//		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		dbApp.printTable(strTableName);
 	}
 	
 

@@ -212,13 +212,16 @@ public class DBApp implements Serializable{
 				Object insertedPkValue = null;
 				String tableName;
 				String pk = null;
+				while(columnNames.hasMoreElements()) {
+					
+				
 				while (line != null) 
 				{
 					boolean flag = false;
 					String[] content = line.split(",");
 					
-					if(!(columnNames.hasMoreElements()) )
-						break;
+//					if(!(columnNames.hasMoreElements()) )
+//						break;
 					
 					if(content[0].equals(strTableName))
 					{
@@ -308,6 +311,7 @@ public class DBApp implements Serializable{
 					
 					
 					line = br.readLine();
+				}
 				}
 				if(!primaryexists)
 					throw new DBAppException();
@@ -486,7 +490,7 @@ public class DBApp implements Serializable{
 			ArrayList<String> missingAtt = new ArrayList<String>();
 			while((line = br.readLine()) != null) {
 				String[] values = line.split(",");
-				if(values[0] == strTableName) {
+				if(values[0].equals(strTableName)) {
 					missingAtt.add(values[1]);
 				}
 			}

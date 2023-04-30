@@ -2,8 +2,3 @@ Table Name,Column Name,Column Type,Clustering Key,IndexName,IndexType,Min,Max
 Student,gpa,java.lang.Double,false,Null,Null,0,4
 Student,name,java.lang.String,false,Null,Null,a,ZZZZZZZZ
 Student,id,java.lang.Integer,true,Null,Null,0,999999999
-Check,gpa,java.lang.Double,false,Null,Null,0,4
-Checkkkk,gpa,java.lang.Double,false,Null,Null,0,4
-Checkkkks,gpa,java.lang.Double,false,Null,Null,0,4
-Checkkkks,name,java.lang.String,false,Null,Null,a,ZZZZZZZZ
-Checkkkks,id,java.lang.Integer,true,Null,Null,0,999999999
