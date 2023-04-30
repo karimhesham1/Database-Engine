@@ -677,27 +677,15 @@ public class DBApp implements Serializable{
 	throws DBAppException
 	{
 		try {
-//			loadTable(strTableName);
-//			loadPages(loadedTable);
-//			
-//			int updateRowIndex1 = -1;
-//			int updatePageIndex1 = -1;
-//			boolean found = false;
-//			int page = 0;
-//			
-//			while (!found && page < loadedPages.size() && updatePageIndex1 == -1) {
-//				
-//			}
+
 			loadTable(strTableName);
 			loadPages(loadedTable);
 			
 			boolean valid=validateHashtable(strTableName, htblColNameValue);
 			if (!valid)
 				throw new DBAppException("htbl not valid");
+			
 			Enumeration<String> columnNames = htblColNameValue.keys();
-			
-			
-			
 			
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 			String line = br.readLine();
@@ -718,14 +706,8 @@ public class DBApp implements Serializable{
 				line=br.readLine();
 			}
 			
-//			Object insertedPk=strClusteringKeyValue;
-//			
-//			if(pkType== "java.lang.Double"|| pkType=="java.lang.Integer")
-//			{
-//				insertedPk= Integer.parseInt(strClusteringKeyValue);
-//			}
-			
-			
+		    if(htblColNameValue.containsKey(pkName))
+		    	throw new DBAppException("Cannot update primary key!");
 			
 			boolean found = false;
 			
@@ -779,12 +761,9 @@ public class DBApp implements Serializable{
 			        {
 			        	while (columnNames.hasMoreElements()) 
 			        	{
-//			        		System.out.print(loadedPages.get(midPage).getRow(midRow).getValue(pkName));
 			        		found=true;
 			        		String columnName = columnNames.nextElement();
 			        		Object columnValue = htblColNameValue.get(columnName);
-
-			        		//check en el hash valid (helper)
 			        		
 			        		//update el 7aga  
 			        			
@@ -795,14 +774,16 @@ public class DBApp implements Serializable{
 
 
 			}
+			if(!found)
+				throw new DBAppException("Pk is not found");
 			
 
 			savePages();
 			saveTable();
 
-		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
+			throw new DBAppException(e.getMessage());
 		}
 	}
 	// following method could be used to delete one or more rows.

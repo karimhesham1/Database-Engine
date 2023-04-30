@@ -77,15 +77,15 @@ public class MainMethod {
 		
 		////for(int i=0;i<4;i++) {
 			htblColNameValue.clear( );
-			htblColNameValue.put("id", new Integer( 201 ));
-			htblColNameValue.put("name", new String("Name" ) );
-			htblColNameValue.put("gpa", new Double( 0.7 ) );
-			dbApp.insertIntoTable( strTableName , htblColNameValue );
+			//htblColNameValue.put("id", new Integer( 6969 ));
+			htblColNameValue.put("name", new String("mangooo" ) );
+			htblColNameValue.put("gpa", new Double( 1.5 ) );
+			//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//}
 		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
-		String id = "660";
-		//dbApp.updateTable(strTableName, id, htblColNameValue);
+		String id = "201";
+		dbApp.updateTable(strTableName, id, htblColNameValue);
 		
 		//print the table
 		dbApp.printTable(strTableName);
