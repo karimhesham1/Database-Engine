@@ -106,16 +106,11 @@ public class DBApp implements Serializable{
 		            String max = htblColNameMax.get(columnName);
 		            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
 		            String indexed = "Null"; 
-		            
-<<<<<<< HEAD
-//		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
-//		            	throw new DBAppException("Error with data consistency");
-//		            }
-=======
-		            
->>>>>>> 4f09843535ceaff41d89098adbaee17eb18a3f80
-		            
-		            
+
+		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
+		            	throw new DBAppException("Error with data consistency");
+		            }
+            
 
 		            writer.write(strTableName + "," + columnName + "," + columnType + "," + clusteringKey + "," + indexed + "," + indexed + "," + min + "," + max + "\n");
 		        }
