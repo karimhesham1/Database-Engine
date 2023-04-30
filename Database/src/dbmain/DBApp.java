@@ -107,9 +107,6 @@ public class DBApp implements Serializable{
 		            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
 		            String indexed = "Null"; 
 
-		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
-		            	throw new DBAppException("Error with data consistency");
-		            }
             
 
 		            writer.write(strTableName + "," + columnName + "," + columnType + "," + clusteringKey + "," + indexed + "," + indexed + "," + min + "," + max + "\n");
@@ -427,6 +424,7 @@ public class DBApp implements Serializable{
        
 				
 				// Insert row into table
+				insertNullValues(htblColNameValue, strTableName);
 				Row newRow = new Row(htblColNameValue);
 				int s1= insertPageIndex1;
 				
@@ -479,6 +477,36 @@ public class DBApp implements Serializable{
 
 
 		
+	}
+	
+	private void insertNullValues(Hashtable<String, Object> htblColNameValue, String strTableName) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			ArrayList<String> missingAtt = new ArrayList<String>();
+			while((line = br.readLine()) != null) {
+				String[] values = line.split(",");
+				if(values[0] == strTableName) {
+					missingAtt.add(values[1]);
+				}
+			}
+			br.close();
+			
+			Enumeration<String> e = htblColNameValue.keys();
+			while(e.hasMoreElements()) {
+				String s = (String) e.nextElement();
+				if(missingAtt.contains(s)) {
+					missingAtt.remove(s);
+				}
+			}
+			
+			for(String s : missingAtt) {
+				htblColNameValue.put(s, new nullWrapper());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void printTable (String tablename) throws ClassNotFoundException, IOException
