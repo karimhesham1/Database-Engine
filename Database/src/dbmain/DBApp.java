@@ -153,7 +153,7 @@ public class DBApp implements Serializable{
 	            }
 	            if(columnType == "java.lang.String") {
 	
-	            	if(min.compareTo(max)>0) {
+	            	if(min.compareTo(max)<0) {
 	            		return false;
 	            	}
 	            }
@@ -282,7 +282,7 @@ public class DBApp implements Serializable{
 									}
 								}
 
-								else 
+								else if((insertedvalue.getClass().getName()).equals("java.lang.String"))
 								{
 									String min = content[6];
 									String max = content[7];
@@ -302,6 +302,10 @@ public class DBApp implements Serializable{
 											}
 										}
 									}
+								}
+								else 
+								{
+									flag=true;
 								}
 
 

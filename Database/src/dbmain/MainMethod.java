@@ -1,6 +1,7 @@
 package dbmain;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Hashtable;
 
 public class MainMethod {
@@ -11,7 +12,7 @@ public class MainMethod {
 
 
 	public static void main(String[] args) throws DBAppException, IOException, ClassNotFoundException {
-		String strTableName = "Student";
+		String strTableName = "Studenttt";
 		DBApp dbApp = new DBApp( );
 		
 		//table htbl names and type and max/min
@@ -21,15 +22,19 @@ public class MainMethod {
 		htblColNameType.put("id", "java.lang.Integer");
 		htblColNameType.put("name", "java.lang.String");
 		htblColNameType.put("gpa", "java.lang.Double");
+		htblColNameType.put("dob", "java.util.Date");
 		htblColNameMin.put("id", "0");
 		htblColNameMax.put("id", "999999999");
 		htblColNameMin.put("name", "a");
 		htblColNameMax.put("name", "ZZZZZZZZ");
 		htblColNameMin.put("gpa", "0");
 		htblColNameMax.put("gpa", "4");
+		htblColNameMin.put("dob", "1990-01-01");
+		htblColNameMax.put("dob", "2000-12-31");
+		
 		
 		//create the table, done, working
-		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		//dbApp.createTable( strTableName, "name", htblColNameType, htblColNameMin, htblColNameMax );
 		
 		//inserting some records in the database
 		Hashtable<String, Object> htblColNameValue = new Hashtable();
@@ -86,24 +91,37 @@ public class MainMethod {
 //			}
 //			else
 //			{
-//			htblColNameValue.clear( );
-//			htblColNameValue.put("id", new Integer( i ));
-//			htblColNameValue.put("name", new String( "manga" ));
-//			htblColNameValue.put("gpa", new Double( 0.4 ) );
-//			dbApp.insertIntoTable( strTableName , htblColNameValue );
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( 2 ));
+			htblColNameValue.put("name", new String( "yo" ));
+			htblColNameValue.put("gpa", new Double( 0.4 ) );
+			Date dob = new Date(1995 - 1900, 4 - 1, 1);
+			htblColNameValue.put("dob", dob );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
+			
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( 2 ));
+			htblColNameValue.put("name", new String( "ahm" ));
+			htblColNameValue.put("gpa", new Double( 0.4 ) );
+			Date dobb = new Date(1995 - 1900, 4 - 1, 1);
+			htblColNameValue.put("dob", dobb );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
 //			}
 //		}
 	
 		
 		htblColNameValue.clear( );
-//		htblColNameValue.put("id", new Integer( 67 ));
+		htblColNameValue.put("id", new Integer( 68 ));
 		htblColNameValue.put("name", new String( "dina" ));
-//		htblColNameValue.put("gpa", new Double( 0.4 ) );
-//		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+		//Date dob = new Date(1995 - 1900, 4 - 1, 1);
+		htblColNameValue.put("dob", dob );
+
+		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 //		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
 		String id = "14";
-		dbApp.updateTable(strTableName, id, htblColNameValue);
+		//dbApp.updateTable(strTableName, id, htblColNameValue);
 		
 		//print the table
 		dbApp.printTable(strTableName);
