@@ -840,13 +840,15 @@ public class DBApp implements Serializable{
 			while(!found && lowPage <= highPage && lowRow<=highRow)
 			{
 				 Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
-			        int compare = (pkValue+"").compareTo(strClusteringKeyValue);
+			        int compare = 
+			        compare(pkValue, strClusteringKeyValue);
 			        
 			        
 			        if(compare >0) 
 					{
 						 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(pkName);
-					        int compare2 = (pkValue2+"").compareTo(strClusteringKeyValue);
+					        int compare2 =
+					        compare(pkValue2, strClusteringKeyValue);
 						if(compare2> 0)
 						{
 							highPage = midPage - 1;
@@ -863,7 +865,8 @@ public class DBApp implements Serializable{
 			        else if(compare<0) 
 					{
 						 Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow).getValue(pkName);
-					        int compare2 = (pkValue2+"").compareTo(strClusteringKeyValue);
+					        int compare2 = 
+					        compare(pkValue2, strClusteringKeyValue);
 						if(compare2< 0)
 						{
 							lowPage = midPage + 1;
@@ -1230,6 +1233,37 @@ public class DBApp implements Serializable{
 	
 		
 	}
+	
+	public int compare(Object x, String y)
+	{
+		if (x instanceof String )
+			return ((String) x).compareTo(y);
+		if(x instanceof Double )
+		{
+			Double yy= Double.parseDouble(y);
+			if ((Double)x>yy)
+				return 1;
+			else
+				if((Double)x<yy)
+					return -1;
+				else 
+					return 0;
+		}
+		
+		Integer yy= Integer.parseInt(y);
+		if((Integer)x>yy)
+			return 1;
+		else 
+			if((Integer)x<yy)
+				return -1;
+		
+				return 0;
+			
+		
+	}
+	
+	
+	
 
 
 

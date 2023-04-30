@@ -96,14 +96,14 @@ public class MainMethod {
 	
 		
 		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 67 ));
-//		//htblColNameValue.put("name", new String( "manga" ));
+//		htblColNameValue.put("id", new Integer( 67 ));
+		htblColNameValue.put("name", new String( "dina" ));
 //		htblColNameValue.put("gpa", new Double( 0.4 ) );
-		dbApp.insertIntoTable( strTableName , htblColNameValue );
+//		dbApp.insertIntoTable( strTableName , htblColNameValue );
 //		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
-//		String id = "201";
-//		dbApp.updateTable(strTableName, id, htblColNameValue);
+		String id = "14";
+		dbApp.updateTable(strTableName, id, htblColNameValue);
 		
 		//print the table
 		dbApp.printTable(strTableName);
