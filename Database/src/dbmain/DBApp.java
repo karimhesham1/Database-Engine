@@ -152,17 +152,15 @@ public class DBApp implements Serializable{
 	            		 return false;
 	            }
 	            if(columnType == "java.lang.String") {
-	            	if(!(min.matches("[a-zA-Z\\s]+") && max.matches("[a-zA-Z]+"))) {
-	            		return false;
-	            }
-	            	if(min.compareTo(max)<0) {
+	
+	            	if(min.compareTo(max)>0) {
 	            		return false;
 	            	}
 	            }
 	            if(columnType == "java.util.Date" || columnType == "java.text.SimpleDateFormat") {
 	            	String format = "YYYY-MM-DD";
 	            	SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-	                dateFormat.setLenient(false);
+	                dateFormat.setLenient(true);
 	                Date date1;
 	                Date date2;
 	                try {
@@ -739,7 +737,7 @@ public class DBApp implements Serializable{
 								
 							}
 
-							else 
+							else if((insertedvalue.getClass().getName()).equals("java.lang.String") )
 							{
 								String min = content[6];
 								String max = content[7];
@@ -760,6 +758,10 @@ public class DBApp implements Serializable{
 //										}
 //									}
 								}
+							}
+							else
+							{
+								tmphtbl.remove(insertedColName);//remove el entry mn htbl law valid
 							}
 
 
