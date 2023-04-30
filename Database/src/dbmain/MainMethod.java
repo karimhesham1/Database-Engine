@@ -78,8 +78,8 @@ public class MainMethod {
 		////for(int i=0;i<4;i++) {
 			htblColNameValue.clear( );
 			//htblColNameValue.put("id", new Integer( 6969 ));
-			htblColNameValue.put("name", new String("mangooo" ) );
-			htblColNameValue.put("gpa", new Double( 1.5 ) );
+			htblColNameValue.put("name", new Integer( 6969 ));
+			htblColNameValue.put("gpa", new String( "d" ) );
 			//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//}
 		

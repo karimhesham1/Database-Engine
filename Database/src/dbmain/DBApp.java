@@ -97,6 +97,13 @@ public class DBApp implements Serializable{
 		            String max = htblColNameMax.get(columnName);
 		            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
 		            String indexed = "Null"; 
+		            
+//		            if(!(columnType.equals(htblColNameMin.get(columnName).getClass().getName()))
+//		            		{
+//		            	
+//		            		}
+		            
+		            
 
 		            writer.write(strTableName + "," + columnName + "," + columnType + "," + clusteringKey + "," + indexed + "," + indexed + "," + min + "," + max + "\n");
 		        }
@@ -146,7 +153,7 @@ public class DBApp implements Serializable{
 					boolean flag = false;
 					String[] content = line.split(",");
 					
-					if(columnNames.hasMoreElements()== false)
+					if(!(columnNames.hasMoreElements()) )
 						break;
 					
 					if(content[0].equals(strTableName))
@@ -161,7 +168,7 @@ public class DBApp implements Serializable{
 							
 							if(content[2].equals(insertedvalue.getClass().getName()))
 							{
-								if(insertedvalue.getClass().getName() == "java.lang.Double")
+								if((insertedvalue.getClass().getName()).equals("java.lang.Double") )
 								{
 									int min = Integer.parseInt(content[6]);
 									int max = Integer.parseInt(content[7]);
@@ -181,7 +188,7 @@ public class DBApp implements Serializable{
 									}
 								}
 								
-								else if(insertedvalue.getClass().getName() == "java.lang.Integer")
+								else if((insertedvalue.getClass().getName()).equals("java.lang.Integer") )
 								{
 									int min = Integer.parseInt(content[6]);
 									int max = Integer.parseInt(content[7]);
@@ -541,18 +548,20 @@ public class DBApp implements Serializable{
 		
 		Hashtable<String,Object> tmphtbl = new Hashtable<String,Object>();
 		Enumeration<String> columnNamestmp = htblColNameValue.keys();
-		String columnName = columnNamestmp.nextElement();
-		Object columnValue = htblColNameValue.get(columnName);
+//		String columnName = columnNamestmp.nextElement();
+//		Object columnValue = htblColNameValue.get(columnName);
 		while (columnNamestmp.hasMoreElements())
 		{
+			String columnName =columnNamestmp.nextElement();
+			Object columnValue = htblColNameValue.get(columnName);
 			tmphtbl.put(columnName, columnValue);
-			columnNamestmp.nextElement();
+//			columnNamestmp.nextElement();
 		}
-		
+	
 	
 		Enumeration<String> columnNames = tmphtbl.keys();
 		boolean firstloop = true;
-		while(columnNames.hasMoreElements()== true) //ben loop 3ala el hashtable
+		while(columnNames.hasMoreElements()) //ben loop 3ala el hashtable
 		{
 			String insertedColName = columnNames.nextElement();
 			Object insertedvalue = tmphtbl.get(insertedColName);
@@ -574,7 +583,7 @@ public class DBApp implements Serializable{
 					
 						if(content[2].equals(insertedvalue.getClass().getName()) )
 						{
-							if(insertedvalue.getClass().getName() == "java.lang.Integer")
+							if((insertedvalue.getClass().getName()).equals("java.lang.Integer")) 
 							{
 								int min = Integer.parseInt(content[6]);
 								int max = Integer.parseInt(content[7]);
@@ -595,7 +604,7 @@ public class DBApp implements Serializable{
 								}
 							}
 							
-							else if(insertedvalue.getClass().getName() == "java.lang.Double")
+							else if((insertedvalue.getClass().getName()).equals("java.lang.Double") )
 							{
 
 								int min = Integer.parseInt(content[6]);
@@ -765,6 +774,20 @@ public class DBApp implements Serializable{
 			        		String columnName = columnNames.nextElement();
 			        		Object columnValue = htblColNameValue.get(columnName);
 			        		
+			        		
+			        		//check for the the data type
+			        		
+			        		
+			        		
+			        		
+			        		
+			        		
+			        		
+			        		
+			        		
+			        		
+			        		 
+			        		
 			        		//update el 7aga  
 			        			
 			        			loadedPages.get(midPage).getRow(midRow).addValue(columnName, columnValue);
@@ -927,6 +950,42 @@ public class DBApp implements Serializable{
 									loadedPages.remove((loadedPages.get(midPage)));
 									pageFile.delete();
 
+								}
+								
+								
+								//upshift mn page le ele ablaha 
+								
+								
+								
+								
+								
+								
+								if(loadedPages.size()> midPage+1)
+								{
+									if(!(loadedPages.get(midPage+1).isEmpty()))
+							
+								{
+									Row shift=loadedPages.get(midPage+1).getRow(0);
+									
+//									this.insertIntoTable(loadedTable.getTableName(), shift);
+									loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getMaxRows()-1));
+									
+									
+									loadedPages.get(midPage+1).deleteRow(0);
+									
+									
+									if(loadedPages.get(midPage+1).isEmpty())
+									{
+
+										//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
+										File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
+										loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName());
+										loadedPages.remove((loadedPages.get(midPage)));
+										pageFile.delete();
+
+									}
+									
+								}
 								}
 
 							}
