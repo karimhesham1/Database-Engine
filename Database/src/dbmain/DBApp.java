@@ -483,7 +483,7 @@ public class DBApp implements Serializable{
 		{
 			Page p = loadedPages.get(j);
 			System.out.println("Start of page");
-			for (int i = 0; i < p.getRows().size() ; i++)
+			for (int i = 0; i < p.getNumUsedRows() ; i++)
 			{
 				p.getRow(i).printRow();
 				System.out.println(" ");
@@ -1030,7 +1030,7 @@ public class DBApp implements Serializable{
 									Row shift=loadedPages.get(midPage+1).getRow(0);
 									
 //									this.insertIntoTable(loadedTable.getTableName(), shift);
-									loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getMaxRows()-1));
+									loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getNumUsedRows()-1));
 									
 									
 									loadedPages.get(midPage+1).deleteRow(0);
@@ -1040,9 +1040,9 @@ public class DBApp implements Serializable{
 									{
 
 										//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
-										File pageFile = new File((loadedPages.get(midPage)).getPageName()+ ".class");
-										loadedTable.getPages().remove((loadedPages.get(midPage)).getPageName());
-										loadedPages.remove((loadedPages.get(midPage)));
+										File pageFile = new File((loadedPages.get(midPage+1)).getPageName()+ ".class");
+										loadedTable.getPages().remove((loadedPages.get(midPage+1)).getPageName());
+										loadedPages.remove((loadedPages.get(midPage+1)));
 										pageFile.delete();
 
 									}
@@ -1079,7 +1079,7 @@ public class DBApp implements Serializable{
 
 						for(Page p: loadedPages)
 						{
-							for(int i = 0 ; i<p.getRows().size() ; i++)
+							for(int i = 0 ; i<p.getNumUsedRows() ; i++)
 							{
 								Row r = p.getRow(i);
 								if (r.getValue(columnName).equals(columnValue))
@@ -1090,25 +1090,27 @@ public class DBApp implements Serializable{
 
 
 					}
-				else //enta msh fel first loop
-				{
-					for(int i = 0 ; i<tmpRows.size() ; i++)
+					else //enta msh fel first loop
 					{
-						Row r = tmpRows.get(i);
-						if ( !(r.getValue(columnName).equals(columnValue)) ) //law el second column doesnt satisfy the condition, remove the row from tmp rows
-							tmpRows.remove(r);
-
+						for(int i = 0 ; i<tmpRows.size() ; i++)
+						{
+							Row r = tmpRows.get(i);
+							if ( !(r.getValue(columnName).equals(columnValue)) )//law el second column doesnt satisfy the condition, remove the row from tmp rows
+							{
+								tmpRows.remove(r);
+								i--;
+							}
+						}
 					}
+
 				}
 
-			}
-				
 				//tle3t bara el while loop, no more conditions
 				//start deleting the rows
 				for (int i =0 ; i<loadedPages.size() ; i++)
 				{
 					Page p = loadedPages.get(i);
-					for(int j = 0 ; i<tmpRows.size() ; j++)
+					for(int j = 0 ; j<tmpRows.size() ; j++)
 					{
 						Row r = tmpRows.get(j);
 						if(p.getRows().contains(r))
@@ -1117,19 +1119,52 @@ public class DBApp implements Serializable{
 							//implement delete the page if empty here
 							if (p.isEmpty())
 							{
-								 File pageFile = new File(p.getPageName()+ ".class");
-								 loadedTable.getPages().remove(p.getPageName());
-								 loadedPages.remove(p);
-								 pageFile.delete();
+								File pageFile = new File(p.getPageName()+ ".class");
+								loadedTable.getPages().remove(p.getPageName());
+								loadedPages.remove(p);
+								i--;
+								pageFile.delete();
 							}
-							tmpRows.remove(r);
-							if(tmpRows.isEmpty())
-								break;
+
+						}
+
+					}
+					
+					if(loadedPages.size()> i+1)
+					{
+						if(!(loadedPages.get(i+1).isEmpty()))
+				
+					{
+						Row shift=loadedPages.get(i+1).getRow(0);
+						
+//						this.insertIntoTable(loadedTable.getTableName(), shift);
+						loadedPages.get(i).addRow(shift, (loadedPages.get(i).getNumUsedRows()-1));
+						
+						
+						loadedPages.get(i+1).deleteRow(0);
+						
+						
+						if(loadedPages.get(i+1).isEmpty())
+						{
+
+							//wa5deno mn ta7t m3rfsh sa7 wla eh el nezam
+							File pageFile = new File((loadedPages.get(i+1)).getPageName()+ ".class");
+							loadedTable.getPages().remove((loadedPages.get(i+1)).getPageName());
+							loadedPages.remove((loadedPages.get(i+1)));
+							pageFile.delete();
+
 						}
 						
 					}
+					}
+					
+					
 				}
 				
+				
+				
+				
+
 				savePages();
 				saveTable();
 
