@@ -75,13 +75,13 @@ public class MainMethod {
 //		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 //
 //		
-//		//for(int i=7;i<20;i++) {
+//		for(int i=7;i<20;i++) {
 //			htblColNameValue.clear( );
 //			htblColNameValue.put("id", new Integer( 25 ));
 //			htblColNameValue.put("name", new String( "kimo" ));
 //			htblColNameValue.put("gpa", new Double( 0.4 ) );
 //			dbApp.insertIntoTable( strTableName , htblColNameValue );
-//		//}
+////		//}
 //		
 //		//dbApp.deleteFromTable(strTableName, htblColNameValue);
 ////		String id = "201";
@@ -96,7 +96,7 @@ public class MainMethod {
 //		String manga = "manga";
 //		
 //		/////////////////////////////////
-		String strTableName1 = "Check";
+		String strTableName1 = "Checkings";
 		DBApp dbApp = new DBApp( );
 		
 		//table htbl names and type and max/min
@@ -112,9 +112,22 @@ public class MainMethod {
 		htblColNameMax1.put("name", "ZZZZZZZZ");
 		htblColNameMin1.put("gpa", "0");
 		htblColNameMax1.put("gpa", "4");
-		dbApp.createTable( strTableName1, "id", htblColNameType1, htblColNameMin1, htblColNameMax1);
+		//dbApp.createTable( strTableName1, "id", htblColNameType1, htblColNameMin1, htblColNameMax1);
 		
+		Hashtable<String, Object> htblColNameValue = new Hashtable();
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 7 ));
+		htblColNameValue.put("name", new String("Moh" ) );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+		//dbApp.insertIntoTable( strTableName1 , htblColNameValue );
+		
+		for(int i=0;i<23;i++) {
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( i+2 ));
+			htblColNameValue.put("name", new String( "kimo" ));
+			htblColNameValue.put("gpa", new Double( 0.4 ) );
+	dbApp.insertIntoTable( strTableName1 , htblColNameValue );
 	}
-	
-
+		dbApp.printTable(strTableName1);
+	}
 }
