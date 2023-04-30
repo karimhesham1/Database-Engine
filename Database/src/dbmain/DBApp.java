@@ -205,69 +205,78 @@ public class DBApp implements Serializable{
 		        
 		        boolean primaryexists = false;
 				
-				BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-				String line = br.readLine();
-				line = br.readLine();
+				
 				Enumeration<String> columnNames = htblColNameValue.keys();
 				Object insertedPkValue = null;
 				String tableName;
 				String pk = null;
-				while(columnNames.hasMoreElements()) {
-					
 				
-				while (line != null) 
-				{
+				
+
+				while(columnNames.hasMoreElements()) {
 					boolean flag = false;
-					String[] content = line.split(",");
-					
-//					if(!(columnNames.hasMoreElements()) )
-//						break;
-					
-					if(content[0].equals(strTableName))
+					String insertedColName = columnNames.nextElement();
+					Object insertedvalue = htblColNameValue.get(insertedColName);
+					BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+					String line = br.readLine();
+					boolean firstloop =true;
+					while (line != null) 
 					{
-						tableName = strTableName;
-						
-						String insertedColName = columnNames.nextElement();
-						Object insertedvalue = htblColNameValue.get(insertedColName);
 
-						if (content[1].equals(insertedColName))
+						if (firstloop)
+							line = br.readLine();
+
+						firstloop = false;
+
+						String[] content = line.split(",");
+
+						//					if(!(columnNames.hasMoreElements()) )
+						//						break;
+
+						if(content[0].equals(strTableName))
 						{
-							
-							if(content[2].equals(insertedvalue.getClass().getName()))
-							{
-								if((insertedvalue.getClass().getName()).equals("java.lang.Double") )
-								{
-									int min = Integer.parseInt(content[6]);
-									int max = Integer.parseInt(content[7]);
+							tableName = strTableName;
 
-									if ( (double)insertedvalue >= min && (double)insertedvalue <= max)
+
+
+							if (content[1].equals(insertedColName))
+							{
+
+								if(content[2].equals(insertedvalue.getClass().getName()))
+								{
+									if((insertedvalue.getClass().getName()).equals("java.lang.Double") )
 									{
-										flag=true;
-										if (content [3].equals( "true"))
+										int min = Integer.parseInt(content[6]);
+										int max = Integer.parseInt(content[7]);
+
+										if ( (double)insertedvalue >= min && (double)insertedvalue <= max)
 										{
-											//new
-											pk = content[1];
-											insertedPkValue = htblColNameValue.get(pk);
-											if(!insertedPkValue.equals(null)) {
-												primaryexists = true;
+											flag=true;
+											if (content [3].equals( "true"))
+											{
+												//new
+												pk = content[1];
+												insertedPkValue = htblColNameValue.get(pk);
+												if(!insertedPkValue.equals(null)) {
+													primaryexists = true;
+												}
 											}
 										}
 									}
-								}
-								
-								else if((insertedvalue.getClass().getName()).equals("java.lang.Integer") )
-								{
-									int min = Integer.parseInt(content[6]);
-									int max = Integer.parseInt(content[7]);
 
-									if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
+									else if((insertedvalue.getClass().getName()).equals("java.lang.Integer") )
 									{
-										flag=true;
-										if (content [3].equals( "true"))
+										int min = Integer.parseInt(content[6]);
+										int max = Integer.parseInt(content[7]);
+
+										if ( (int)insertedvalue >= min && (int)insertedvalue <= max)
 										{
-											//new
-											pk = content[1];
-											insertedPkValue = htblColNameValue.get(pk);
+											flag=true;
+											if (content [3].equals( "true"))
+											{
+												//new
+												pk = content[1];
+												insertedPkValue = htblColNameValue.get(pk);
 											if(!insertedPkValue.equals(null)) {
 												primaryexists = true;
 											}
@@ -303,8 +312,7 @@ public class DBApp implements Serializable{
 
 						}
 
-						if(flag == false)
-							throw new DBAppException();
+					
 
 
 					}
@@ -312,18 +320,21 @@ public class DBApp implements Serializable{
 					
 					line = br.readLine();
 				}
+					br.close();
+					if(flag == false)
+						throw new DBAppException();	
 				}
 				if(!primaryexists)
 					throw new DBAppException();
 				
-				br.close();
+				
 				
 				int insertRowIndex1 = -1;
 				int insertPageIndex1 = -1;
 				boolean found = false;
 				if(primaryexists)
 				{
-					
+					insertNullValues(htblColNameValue, strTableName);
 					loadPages(loadedTable);
 //					Binary Search			
 
@@ -428,7 +439,7 @@ public class DBApp implements Serializable{
        
 				
 				// Insert row into table
-				insertNullValues(htblColNameValue, strTableName);
+				
 				Row newRow = new Row(htblColNameValue);
 				int s1= insertPageIndex1;
 				
