@@ -62,6 +62,13 @@ public class Page implements Serializable {
         rows.remove(o);
         numUsedRows--;
     }
+    
+
+	public void deleteRowAtIndex(int i) {
+		  rows.remove(i);
+	      numUsedRows--;
+		
+	}
 
     public Row getRow(int index) {
         if (index < 0 || index >= numUsedRows) {
@@ -94,6 +101,7 @@ public class Page implements Serializable {
     	return tableName;
     	
     }
+
     
 
 }

@@ -28,6 +28,7 @@ public class DBApp implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Vector<Page> loadedPages;
 	private Table loadedTable;
+	private boolean firstDeletion = true;
 	
 	
 	
@@ -101,9 +102,9 @@ public class DBApp implements Serializable{
 		            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
 		            String indexed = "Null"; 
 		            
-		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
-		            	throw new DBAppException("Error with data consistency");
-		            }
+//		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
+//		            	throw new DBAppException("Error with data consistency");
+//		            }
 		            
 		            
 
@@ -350,7 +351,7 @@ public class DBApp implements Serializable{
 
 					    	if (compare > 0) { //Check condition
 					    		high = mid - 1;
-						    	pkValueHigh = (Comparable<Object>) loadedPages.get(i).getRow(high).getValue(pk);
+						    	
 
 					    	} else if (compare < 0) {
 					    		low = mid + 1;
@@ -375,6 +376,7 @@ public class DBApp implements Serializable{
 					    		break;
 					    	}
 					    	//de law la2ena el location ely el mafrod ne7ot feh el 7aga 
+					    	pkValueHigh = (Comparable<Object>) loadedPages.get(i).getRow(high).getValue(pk);
 					    	if(low >= high && (pkValueHigh.compareTo(insertedPkValue) < 0) && (high == (loadedPages.get(i).getNumUsedRows()-1)) && loadedPages.get(i).getNumUsedRows()< loadedPages.get(i).getNumUsedRows()){
 					    		insertPageIndex1 = i;
 					    		insertRowIndex1 = high +1;
@@ -1017,11 +1019,7 @@ public class DBApp implements Serializable{
 								
 								//upshift mn page le ele ablaha 
 								
-								
-								
-								
-								
-								
+							
 								if(loadedPages.size()> midPage+1)
 								{
 									if(!(loadedPages.get(midPage+1).isEmpty()))
@@ -1030,10 +1028,10 @@ public class DBApp implements Serializable{
 									Row shift=loadedPages.get(midPage+1).getRow(0);
 									
 //									this.insertIntoTable(loadedTable.getTableName(), shift);
-									loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getNumUsedRows()-1));
+									loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getNumUsedRows()));
 									
 									
-									loadedPages.get(midPage+1).deleteRow(0);
+									loadedPages.get(midPage+1).deleteRowAtIndex(0);
 									
 									
 									if(loadedPages.get(midPage+1).isEmpty())
@@ -1058,6 +1056,10 @@ public class DBApp implements Serializable{
 					
 				savePages();
 				saveTable();
+				
+			
+					
+				
 
 			}
 
@@ -1130,6 +1132,8 @@ public class DBApp implements Serializable{
 
 					}
 					
+					//upshift men el page ely ba3daha
+					
 					if(loadedPages.size()> i+1)
 					{
 						if(!(loadedPages.get(i+1).isEmpty()))
@@ -1138,10 +1142,10 @@ public class DBApp implements Serializable{
 						Row shift=loadedPages.get(i+1).getRow(0);
 						
 //						this.insertIntoTable(loadedTable.getTableName(), shift);
-						loadedPages.get(i).addRow(shift, (loadedPages.get(i).getNumUsedRows()-1));
+						loadedPages.get(i).addRow(shift, (loadedPages.get(i).getNumUsedRows()));
 						
 						
-						loadedPages.get(i+1).deleteRow(0);
+						loadedPages.get(i+1).deleteRowAtIndex(0);
 						
 						
 						if(loadedPages.get(i+1).isEmpty())
@@ -1168,7 +1172,12 @@ public class DBApp implements Serializable{
 				savePages();
 				saveTable();
 
-
+				if(firstDeletion)
+				{
+					firstDeletion=false;
+					this.deleteFromTable(strTableName, htblColNameValue);
+					
+				}
 
 			}
 	

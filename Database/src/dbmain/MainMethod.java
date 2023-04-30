@@ -75,13 +75,30 @@ public class MainMethod {
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 
 		
-		//for(int i=7;i<20;i++) {
-			htblColNameValue.clear( );
-			htblColNameValue.put("id", new Integer( 25 ));
-			htblColNameValue.put("name", new String( "kimo" ));
-			htblColNameValue.put("gpa", new Double( 0.4 ) );
-			dbApp.insertIntoTable( strTableName , htblColNameValue );
-		//}
+//		for(int i=0;i<25;i++) {
+//			if(i<6)
+//			{
+//				htblColNameValue.clear( );
+//				htblColNameValue.put("id", new Integer( i ));
+//				htblColNameValue.put("name", new String( "kimo" ));
+//				htblColNameValue.put("gpa", new Double( 0.4 ) );
+//				dbApp.insertIntoTable( strTableName , htblColNameValue );
+//			}
+//			else
+//			{
+//			htblColNameValue.clear( );
+//			htblColNameValue.put("id", new Integer( i ));
+//			htblColNameValue.put("name", new String( "manga" ));
+//			htblColNameValue.put("gpa", new Double( 0.4 ) );
+//			dbApp.insertIntoTable( strTableName , htblColNameValue );
+//			}
+//		}
+	
+		
+		htblColNameValue.clear( );
+//		htblColNameValue.put("id", new Integer( i ));
+		htblColNameValue.put("name", new String( "manga" ));
+//		htblColNameValue.put("gpa", new Double( 0.4 ) );
 		
 		//dbApp.deleteFromTable(strTableName, htblColNameValue);
 //		String id = "201";
