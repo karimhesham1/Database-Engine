@@ -93,6 +93,11 @@ public class DBApp implements Serializable{
 		        }
 
 		        // Loop through columns in hashtable and write to metadata file
+		        
+		        Enumeration<String> columnNames1 = htblColNameType.keys();
+		        if((checkTypeMinMax(columnNames1,htblColNameType,htblColNameMin,htblColNameMax))==false) {
+	            	throw new DBAppException("Error with data consistency");
+	            }
 		        Enumeration<String> columnNames = htblColNameType.keys();
 		        while (columnNames.hasMoreElements()) {
 		            String columnName = columnNames.nextElement();
@@ -102,15 +107,19 @@ public class DBApp implements Serializable{
 		            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
 		            String indexed = "Null"; 
 		            
+<<<<<<< HEAD
 //		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
 //		            	throw new DBAppException("Error with data consistency");
 //		            }
+=======
+		            
+>>>>>>> 4f09843535ceaff41d89098adbaee17eb18a3f80
 		            
 		            
 
 		            writer.write(strTableName + "," + columnName + "," + columnType + "," + clusteringKey + "," + indexed + "," + indexed + "," + min + "," + max + "\n");
 		        }
-
+		        
 		        // Close metadata file
 		        writer.close();
 		    
@@ -154,7 +163,7 @@ public class DBApp implements Serializable{
 	            	if(!(min.matches("[a-zA-Z\\s]+") && max.matches("[a-zA-Z]+"))) {
 	            		return false;
 	            }
-	            	if(min.compareTo(max)>0) {
+	            	if(min.compareTo(max)<0) {
 	            		return false;
 	            	}
 	            }
