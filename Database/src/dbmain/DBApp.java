@@ -18,6 +18,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 
@@ -98,10 +101,9 @@ public class DBApp implements Serializable{
 		            boolean clusteringKey = columnName.equals(strClusteringKeyColumn);
 		            String indexed = "Null"; 
 		            
-//		            if(!(columnType.equals(htblColNameMin.get(columnName).getClass().getName()))
-//		            		{
-//		            	
-//		            		}
+		            if((checkTypeMinMax(columnNames,htblColNameType,htblColNameMin,htblColNameMax))==false) {
+		            	throw new DBAppException("Error with data consistency");
+		            }
 		            
 		            
 
@@ -117,6 +119,66 @@ public class DBApp implements Serializable{
 			 throw new DBAppException(e.getMessage());
 		    }
 		
+	}
+	public boolean checkTypeMinMax(Enumeration<String> columnNames,Hashtable<String,String> htblColNameType,                              
+			Hashtable<String,String> htblColNameMin,
+			Hashtable<String,String> htblColNameMax) {
+		boolean flag=true;
+		 while (columnNames.hasMoreElements()) {
+	            String columnName = columnNames.nextElement();
+	            String columnType = htblColNameType.get(columnName);
+	            String min = htblColNameMin.get(columnName);
+	            String max = htblColNameMax.get(columnName);
+	            if(columnType == "java.lang.Integer") {
+	            	 try {
+	            	        Integer.parseInt(min);
+	            	        Integer.parseInt(max);
+	            	    } catch (NumberFormatException e) {
+	            	        return false;
+	            	    }
+	            	 if(Integer.parseInt(min)> Integer.parseInt(max))
+	            		 return false;
+	            }
+	            if(columnType == "java.lang.Double") {
+	            	 try {
+	            	        Double.parseDouble(min);
+	            	        Double.parseDouble(max);
+	            	    } catch (NumberFormatException e) {
+	            	        return false;
+	            	    }
+	            	 if( Double.parseDouble(min)> Double.parseDouble(max))
+	            		 return false;
+	            }
+	            if(columnType == "java.lang.String") {
+	            	if(!(min.matches("[a-zA-Z\\s]+") && max.matches("[a-zA-Z]+"))) {
+	            		return false;
+	            }
+	            	if(min.compareTo(max)>0) {
+	            		return false;
+	            	}
+	            }
+	            if(columnType == "java.util.Date" || columnType == "java.text.SimpleDateFormat") {
+	            	String format = "YYYY-MM-DD";
+	            	SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+	                dateFormat.setLenient(false);
+	                Date date1;
+	                Date date2;
+	                try {
+	                    dateFormat.parse(min.trim());
+	                    dateFormat.parse(max.trim());
+	                     date1 = dateFormat.parse(min);
+	                     date2 = dateFormat.parse(max);
+	                } catch (ParseException e) {
+	                    return false;
+	                }
+	            	
+	                   if (date1.compareTo(date2) > 0) {
+	                	   return false;
+	                       
+	                    } 
+	            }		 
+		 }
+		return true;
 	}
 	
 	
