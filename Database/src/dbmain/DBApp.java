@@ -105,8 +105,9 @@ public class DBApp implements Serializable{
 		        writer.close();
 		    
 		        System.out.println("Table " + strTableName + " created successfully.");
-		 } catch (IOException e) {
+		 } catch (Exception e) {
 			 e.printStackTrace();
+			 throw new DBAppException(e.getMessage());
 		    }
 		
 	}
@@ -360,6 +361,7 @@ public class DBApp implements Serializable{
 				{
 					Page newPage = new Page(loadedTable);
 					newPage.addRow(newRow,insertRowIndex1);
+					loadedPages.add(newPage); //new error fixing kimo
 				}
 				//insert fel nos aw a5er page feha makan
 				else
@@ -408,8 +410,9 @@ public class DBApp implements Serializable{
 	{
 		loadTable(tablename);
 		loadPages(loadedTable);
-		for(Page p : loadedPages)
+		for(int j=0 ; j<loadedPages.size() ; j++)
 		{
+			Page p = loadedPages.get(j);
 			System.out.println("Start of page");
 			for (int i = 0; i < p.getRows().size() ; i++)
 			{

@@ -80,10 +80,10 @@ public class MainMethod {
 			htblColNameValue.put("id", new Integer( 201 ));
 			htblColNameValue.put("name", new String("Name" ) );
 			htblColNameValue.put("gpa", new Double( 0.7 ) );
-			//dbApp.insertIntoTable( strTableName , htblColNameValue );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//}
 		
-		dbApp.deleteFromTable(strTableName, htblColNameValue);
+		//dbApp.deleteFromTable(strTableName, htblColNameValue);
 		String id = "660";
 		//dbApp.updateTable(strTableName, id, htblColNameValue);
 		
