@@ -1280,7 +1280,12 @@ public class DBApp implements Serializable{
 
 
 
-
+//	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
+//	String[] strarrOperators)
+//	throws DBAppException
+//	{
+//		
+//	}
 
 
 
@@ -1289,12 +1294,7 @@ public class DBApp implements Serializable{
 
 }
 	
-//	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
-//	String[] strarrOperators)
-//	throws DBAppException
-//	{
-//		
-//	}
+
 	
 //	// following method creates an octree
 //	// depending on the count of column names passed.
