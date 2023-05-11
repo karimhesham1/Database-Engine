@@ -20,37 +20,10 @@ public class OctTree {
     {
     	Point p1 = new Point(x,y,z,ref);
     	root.insert(p1);
-    
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
     	
     	//case 1 ehna f child w ma3andenash haga tahteena w el refrences a2al mn 16
     	//case 2  ehna f child w ma3andenash haga tahteena w el refrences equal 16
     	//case 3 ehna f root
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
     	
     	
     	

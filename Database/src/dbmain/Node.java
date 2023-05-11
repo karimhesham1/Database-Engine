@@ -29,6 +29,7 @@ public class Node {
         			 this.children[i].xMin=this.xMin;
         			 this.children[i].yMin=this.yMin;
         			 this.children[i].zMin=this.zMin;
+        	
         		 }
         		 else 
         		 {
@@ -39,8 +40,6 @@ public class Node {
         		 this.children[i].xMax=(int)this.children[i].xMin+ xRange;
         		 this.children[i].yMax=(int)this.children[i].yMin+ yRange;
         		 this.children[i].zMax=(int)this.children[i].zMin+ zRange;
-        		 
-        		 
         		 
         	}
         	//IF DOUBLE
@@ -68,12 +67,7 @@ public class Node {
         		 this.children[i].yMax=(int)this.children[i].yMin+ yRangeD;
         		 this.children[i].zMax=(int)this.children[i].zMin+ zRangeD;
         		 
-        		 
-        		 
         	}
-        	
-        	
-        	
         	
         	
         	
@@ -87,12 +81,10 @@ public class Node {
 //        		Object y = this.rowPoint.get(i).getY();
 //        		Object z = this.rowPoint.get(i).getZ();
 //        		Point p1 = this.rowPoint.get(i);
-//        		
-//        		
-//        		
-//        		
+//  
 //        	}
         	Vector<Point> tmp= new Vector<Point>(this.rowPoint.size());
+        	tmp = rowPoint; //new
         	int i=0;
         	while(!tmp.isEmpty())
         	{
@@ -112,6 +104,7 @@ public class Node {
         			{
         				insert(p1);
         				tmp.remove(i);
+        				i--; //new
         				break;
         			}
         		}
@@ -124,66 +117,47 @@ public class Node {
         	
         }
         public void insert(Point ref) {
-        	
-        	int x=(int) ref.getX();
-        	
-        	
-        	if (this.getChildren().length==0)
-        	{
-        		if(this.getRows().size()<16) 
-        		{
-        			this.rowPoint.add(ref);
-        		}
-        		else 
-        		{
-        			this.newParent();
-        			insert(ref);
-        		//this.root.insert
-        		}
-        		
-        	}
-        	else 
-        	{
-        		
-        	}
-//            if (children != null) {
-//                int octant = getOctantIndex(x, y, z);
-//                children[octant].insert(x, y, z);
-//            } else {
-//                if (xs.length < MAX_ENTRIES) {
-//                    // There's still room in this node, add the point
-//                    int i = xs.length;
-//                    xs[i] = x;
-//                    ys[i] = y;
-//                    zs[i] = z;
-//                } else {
-//                    // Node is full, split into octants
-//                    children = new Node[8];
-//                    double cx = (xs[0] + xs[MAX_ENTRIES-1]) / 2;
-//                    double cy = (ys[0] + ys[MAX_ENTRIES-1]) / 2;
-//                    double cz = (zs[0] + zs[MAX_ENTRIES-1]) / 2;
-//                    for (int i = 0; i < MAX_ENTRIES; i++) {
-//                        int octant = getOctantIndex(xs[i], ys[i], zs[i]);
-//                        if (children[octant] == null) {
-//                            children[octant] = new Node();
-//                        }
-//                        children[octant].insert(xs[i], ys[i], zs[i]);
-//                    }
-//                    xs = null;
-//                    ys = null;
-//                    zs = null;
-//                    insert(x, y, z); // Insert the new point into the new structure
-//                }
-            }
-        
 
-//        private int getOctantIndex(double x, double y, double z) {
-//            int octant = 0;
-//            if (x >= xs[0] && x <= xs[MAX_ENTRIES-1]) octant |= 1;
-//            if (y >= ys[0] && y <= ys[MAX_ENTRIES-1]) octant |= 2;
-//            if (z >= zs[0] && z <= zs[MAX_ENTRIES-1]) octant |= 4;
-//            return octant;
-//        }
+//        	int x=(int) ref.getX();
+//
+//
+//        	if (this.getChildren().length==0)
+//        	{
+//        		if(this.getRows().size()<16) 
+//        		{
+//        			this.rowPoint.add(ref);
+//        		}
+//        		else 
+//        		{
+//        			this.newParent();
+//        			insert(ref);
+//        			//this.root.insert
+//        		}
+//
+//        	}
+//        	else 
+//        	{
+//
+//        	}
+
+        	int x = (int) ref.getX();
+        	int y = (int) ref.getY();
+        	int z = (int) ref.getZ();
+
+
+        	int midx =  ((int) xMin + (int) xMax )/2;
+        	int midy = ((int) yMin + (int) yMax)/2;
+        	int midz = ((int) zMin + (int) zMax)/2;
+
+        	int pos;
+
+
+
+
+        }
+
+
+
         public Node[] getChildren() {
         	return children;
         }
