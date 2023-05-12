@@ -184,6 +184,7 @@ public class DBApp implements Serializable{
 	
 	
 	
+	
 	// following method inserts one row only.
 	// htblColNameValue must include a value for the primary key
 	public void insertIntoTable(String strTableName,
@@ -1277,6 +1278,96 @@ public class DBApp implements Serializable{
 	}
 	
 	
+//	 following method creates an octree
+//	 depending on the count of column names passed.
+//	 If three column names are passed, create an octree.
+//	 If only one or two column names is passed, throw an Exception.
+	public void createIndex(String strTableName,
+			String[] strarrColName) throws DBAppException, IOException
+	{
+		if(strarrColName.length !=3)
+			throw new DBAppException();
+//===============================================================================
+		
+		//validate en el 3 column names dol mawgoden lel table dah
+		
+		for(int j=0; j<3; j++)
+		{
+			String insertedColName = strarrColName[j];
+			boolean valid = false;
+			
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			while (line != null) 
+			{
+				String[] content = line.split(",");
+
+				if(content[0].equals(strTableName) && content[1].equals(insertedColName))
+				{
+					valid=true;
+					break;
+				}
+
+				line=br.readLine();
+			}
+			
+			if(!valid)
+			{
+				br.close();
+				throw new DBAppException("inserted column names dont match the table's column names");
+			}
+
+			br.close();
+		}
+		
+//==================================================================
+		
+		//edit the csv content
+		
+		for(int j=0; j<3; j++)
+		{
+			String insertedColName = strarrColName[j];
+			StringBuilder newMetadata = new StringBuilder();
+			
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			while (line != null) 
+			{
+				String[] content = line.split(",");
+
+				if(content[0].equals(strTableName) && content[1].equals(insertedColName))
+				{
+				    // edit specific columns in the line
+					content[5] = "Octree";
+					content[6] = "\"A\"";
+					content[7] = "\"ZZZZZZZZZZZ\"";
+				}
+				
+				 // append the edited line to the new metadata string
+		        for (int i = 0; i < content.length; i++) {
+		            newMetadata.append(content[i]);
+		            if (i < content.length - 1) {
+		            	newMetadata.append(",");
+		            }
+		        }
+		        newMetadata.append(System.lineSeparator());
+				
+				line=br.readLine();
+				
+			}
+			
+			// write the new metadata string to the metadata file
+			try (FileWriter fw = new FileWriter("metadata.csv")) {
+			    fw.write(newMetadata.toString());
+			} catch (IOException e) {
+				throw new DBAppException(e.getMessage());
+			}
+			
+			br.close();
+		}
+		
+
+	}
 	
 
 
@@ -1297,15 +1388,7 @@ public class DBApp implements Serializable{
 	
 
 	
-//	// following method creates an octree
-//	// depending on the count of column names passed.
-//	// If three column names are passed, create an octree.
-//	// If only one or two column names is passed, throw an Exception.
-//	public void createIndex(String strTableName,
-//	String[] strarrColName) throws DBAppException
-//	{
-//		
-//	}
+
 
 
 
