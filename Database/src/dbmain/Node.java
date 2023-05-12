@@ -91,9 +91,9 @@ public class Node {
         	Object NextY = null;
         	Object zMid = null;
         	Object NextZ = null;
-        	if(xType.equals("java.lang.Integer")||xType.equals("java.lang.Double")) {
+        	if(xType.equals("java.lang.Integer")||xType.equals("java.lang.Double")) { 
         		
-        	 xMid= ((int)this.xMax- (int)this.xMin)/2 ;
+        	 xMid= ((int)this.xMax- (int)this.xMin)/2 ;  //el double hena hayegy error ya nouuuuuuuuuuuuuuuuuuuuurrrrrrrrrrrrr
         	 NextX= (int)xMid+1;
         		if(xType.equals("java.lang.Double")) {
         			 xMid= ((Double)this.xMax- (Double)this.xMin)/2 ;

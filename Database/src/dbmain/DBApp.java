@@ -1324,6 +1324,8 @@ public class DBApp implements Serializable{
 		
 		//edit the csv content
 		
+		String indexName = "";
+		
 		for(int j=0; j<3; j++)
 		{
 			String insertedColName = strarrColName[j];
@@ -1337,10 +1339,15 @@ public class DBApp implements Serializable{
 
 				if(content[0].equals(strTableName) && content[1].equals(insertedColName))
 				{
+					
+					for(int i = 0; i<strarrColName.length; i++)
+					{
+						indexName += strarrColName[i];
+					}
+					
 				    // edit specific columns in the line
+					content[4] = indexName + "Index";
 					content[5] = "Octree";
-					content[6] = "\"A\"";
-					content[7] = "\"ZZZZZZZZZZZ\"";
 				}
 				
 				 // append the edited line to the new metadata string
@@ -1365,6 +1372,16 @@ public class DBApp implements Serializable{
 			
 			br.close();
 		}
+		
+		//ba3mel octree w serialize to disk
+		
+		OctTree index = new OctTree(strTableName, strarrColName);
+		
+		File indexFile = new File(indexName + ".class");
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
+		out.writeObject(index);
+		out.close();
+		
 		
 
 	}
