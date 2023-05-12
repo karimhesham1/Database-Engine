@@ -1,12 +1,27 @@
 package dbmain;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class OctTree {
     private Node root;
     
 
-    public OctTree() {
+    public OctTree(String tableName,String[] columns) {
         this.root = new Node();
         this.root.newParent();
+        try {
+			this.setTypes(tableName,columns);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
+       
+        
+        
+     
         
     }
     
@@ -14,6 +29,61 @@ public class OctTree {
     {
     	this.root = parent;
     	this.root.newParent();
+    	
+    }
+    public void setTypes(String tableName,String[] columns) throws IOException {
+    	for(int i=0;i<columns.length;i++) {
+			boolean flag = false;
+			String insertedColName = columns[i];
+			
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			boolean firstloop =true;
+			while (line != null) 
+			{
+
+				if (firstloop)
+					line = br.readLine();
+
+				firstloop = false;
+
+				String[] content = line.split(",");
+
+				//					if(!(columnNames.hasMoreElements()) )
+				//						break;
+
+				if(content[0].equals(tableName))
+				{
+					
+
+
+
+					if (content[1].equals(insertedColName))
+					{
+
+						switch(i) {
+						case 0:
+							root.setxType(content[2]);
+							root.setxMin(content[6]);
+						    root.setxMax(content[7]);
+						     break;
+						case 1:
+							root.setyType(content[2]);
+							root.setyMin(content[6]);
+						    root.setyMax(content[7]);
+						    break;
+						case 2:
+							root.setzType(content[2]);
+							root.setzMin(content[6]);
+						    root.setzMax(content[7]);
+						    break;
+						default:break;
+						
+						}
+					}
+				}
+			}
+    	}
     }
 
     public void insert(Object x, Object y, Object z, Object ref) 
