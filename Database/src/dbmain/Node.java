@@ -352,46 +352,148 @@ public class Node {
         	
         	
         }
-        public void insert(Point ref) {
-
-//        	int x=(int) ref.getX();
-//
-//
-//        	if (this.getChildren().length==0)
-//        	{
-//        		if(this.getRows().size()<16) 
-//        		{
-//        			this.rowPoint.add(ref);
-//        		}
-//        		else 
-//        		{
-//        			this.newParent();
-//        			insert(ref);
-//        			//this.root.insert
-//        		}
-//
-//        	}
-//        	else 
-//        	{
-//
-//        	}
-
-        	int x = (int) ref.getX();
-        	int y = (int) ref.getY();
-        	int z = (int) ref.getZ();
-
-
-        	int midx =  ((int) xMin + (int) xMax )/2;
-        	int midy = ((int) yMin + (int) yMax)/2;
-        	int midz = ((int) zMin + (int) zMax)/2;
-
-        	int pos;
-
-
-
-
+        public void insert(Point ref) 
+        {
+        	
+        	
+        
+        	
+        	if (this.getChildren().length==0)
+        	{
+        		if(this.getRows().size()<16) 
+        		{
+        			this.rowPoint.add(ref);
+        		}
+        		else 
+        		{
+        			this.newParent();
+        			insert(ref);
+        		//this.root.insert
+        		}
+        		
+        	}
+        	else 
+        	{
+        		
+        		Object x = null;
+        		Object y = null;;
+        		Object z = null;;
+        		
+        		Object midx = null;
+        		Object midy = null;;
+        		Object midz = null;
+        		//int
+            	if(xType.equals("java.lang.Integer"))
+            	{
+            		midx = (int) this.xMax+ (int) this.xMin/2;
+            		x=(int) ref.getX();
+            	}
+                
+            	if(yType.equals("java.lang.Integer"))
+            	{
+            	midy = (int) this.yMax+ (int) this.yMin/2;
+                y=(int) ref.getY();
+            	}
+            	if(zType.equals("java.lang.Integer")) 
+                {
+                midz =(int) this.zMax+ (int) this.zMin/2;
+                z=(int) ref.getZ();
+                }
+                
+            	
+            	//double
+            	if(xType.equals("java.lang.Double"))
+                {
+                	midx = (double)this.xMax+(double) this.xMin/2;
+                	x=(double)ref.getX();
+                }
+                
+                if(yType.equals("java.lang.Double"))
+                {
+                	midy = (double)this.yMax+ (double) this.yMin/2;
+                	y=(int) ref.getY(); 
+                }
+                
+                
+                if(zType.equals("java.lang.Double"))
+                {
+                	midz =(double) this.zMax+ (double) this.zMin/2;
+                	z=(double) ref.getZ();
+                }
+                
+                //string 
+                if(xType.equals("java.lang.String"))
+                {
+            		midy = printMiddleString((String)yMin,(String)yMax);
+            		y=(String) ref.getY(); 
+                }
+             //mksla akmel
+                //date 
+                
+                
+                
+                if(compare(x,midx)<1)
+                	{
+                	if(compare(y,midy)<1)
+                	{
+                		{
+                		if(compare(z,midz)<1) //low low low
+                			this.children[0].insert(ref);
+                		else //low low high
+                			this.children[1].insert(ref);
+                		}
+                
+                
+                	}
+                	else 
+                	{
+                		{
+                    		if(compare(z,midz)<1) //low high low 
+                    			this.children[2].insert(ref);
+                    		else //low high high 
+                    			this.children[3].insert(ref);
+                    		}
+                	}
+                	}
+                else // x aslun high 
+                {
+                	if(compare(y,midy)<1)
+                	{
+                		{
+                		if(compare(z,midz)<1) //high low low
+                			this.children[4].insert(ref);
+                		else //high low high
+                			this.children[5].insert(ref);
+                		}
+                
+                
+                	}
+                	else 
+                	{
+                		{
+                    		if(compare(z,midz)<1) //high high low 
+                    			this.children[6].insert(ref);
+                    		else //high high high 
+                    			this.children[7].insert(ref);
+                    		}
+                	}
+                }
+                		
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+             
+                
+        		
+        	}
         }
-
 
 
         public Node[] getChildren() {
@@ -400,12 +502,24 @@ public class Node {
         public Vector<Point> getRows(){
         	return rowPoint;
         }
-    }
+    
+
+        public static int compare(Object o1, Object o2) {
+            if (o1 instanceof Integer && o2 instanceof Integer) {
+                return Integer.compare((int) o1, (int) o2);
+            } else if (o1 instanceof Double && o2 instanceof Double) {
+                return Double.compare((double) o1, (double) o2);
+            } else if (o1 instanceof String && o2 instanceof String) {
+                return ((String) o1).compareTo((String) o2);
+            } else if (o1 instanceof Date && o2 instanceof Date) {
+                return ((Date) o1).compareTo((Date) o2);
+            } else {
+                throw new IllegalArgumentException("Objects must be of the same type");
+            }
+        }
 
 
-
-
-
+        }
 
 
 
