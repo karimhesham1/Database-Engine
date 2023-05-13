@@ -1,14 +1,18 @@
 package dbmain;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.text.SimpleDateFormat;
 
-public class Node {
-        private static final int MAX_ENTRIES = 16;
+public class Node implements Serializable{
+        /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		private static final int MAX_ENTRIES = 16;
         private Vector<Point> rowPoint;
         private Node[] children;
         private Object xMin,xMax,yMin,yMax,zMin,zMax;
@@ -93,9 +97,9 @@ public class Node {
         	Object zMid = null;
         	Object NextZ = null;
         	if(xType.equals("java.lang.Integer")||xType.equals("java.lang.Double")) { 
-        		
+        		if(xType.equals("java.lang.Integer")) {
         	 xMid= ((int)this.xMax- (int)this.xMin)/2 ;  //el double hena hayegy error ya nouuuuuuuuuuuuuuuuuuuuurrrrrrrrrrrrr
-        	 NextX= (int)xMid+1;
+        	 NextX= (int)xMid+1;}
         		if(xType.equals("java.lang.Double")) {
         			 xMid= ((Double)this.xMax- (Double)this.xMin)/2 ;
                 	 NextX= (Double)xMid+1;
@@ -129,22 +133,49 @@ public class Node {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-        		//NextX Kamel henaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa w ba3daha e3mel nafs el kalam L y and z
+        		try {
+					NextX = getMiddleDatePlusOne((String)xMin,(String)xMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		for(int i=0; i< 4; i++)
+            	{
+            		
+            	this.children[i].xMin = xMin;
+            	this.children[i].xMax = xMid;
+            	this.children[i+4].xMin = NextX;
+            	this.children[i+4].xMax = xMax;
+            	}
         	}
         	//If y int
         	if(yType.equals("java.lang.Integer")||yType.equals("java.lang.Double")) {
-        		
+        		if(yType.equals("java.lang.Integer")) {
            	 yMid= ((int)this.yMax- (int)this.yMin)/2 ;
-           	 NextY= (int)yMid+1;
+           	 NextY= (int)yMid+1;}
            		if(yType.equals("java.lang.Double")) {
            			 yMid= ((Double)this.yMax- (Double)this.yMin)/2 ;
                    	 NextY= (Double)yMid+1;
            		}
            		}
-        	else if(xType.equals("java.lang.String")) {
+        	else if(yType.equals("java.lang.String")) {
         		yMid = printMiddleString((String)yMin,(String)yMax);
         		NextY = getNextString((String)yMid);
         	}
+        	else if(yType.equals("java.util.Date")){
+        		try {
+					yMid = getMiddleDate((String)yMin,(String)yMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		try {
+					NextY = getMiddleDatePlusOne((String)yMin,(String)yMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		}
         	 for(int i=0; i< 4; i++)
          	{
          	switch(i) {
@@ -172,9 +203,10 @@ public class Node {
         	
         	 //If z int
         	if(zType.equals("java.lang.Integer")||zType.equals("java.lang.Double")) {
-        		
+        		if(zType.equals("java.lang.Integer")){
            	 zMid= ((int)this.zMax- (int)this.zMin)/2 ;
            	 NextZ= (int)zMid+1;
+           	 }
            		if(zType.equals("java.lang.Double")) {
            			 zMid= ((Double)this.zMax- (Double)this.zMin)/2 ;
                    	 NextZ= (Double)zMid+1;
@@ -184,6 +216,20 @@ public class Node {
         		zMid = printMiddleString((String)zMin,(String)zMax);
         		NextZ = getNextString((String)zMid);
         	}
+        	else if(zType.equals("java.util.Date")){
+        		try {
+					zMid = getMiddleDate((String)zMin,(String)zMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		try {
+					NextZ = getMiddleDatePlusOne((String)zMin,(String)zMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		}
         	 for(int i=0; i< 4; i++)
          	{
          	switch(i) {
@@ -238,6 +284,25 @@ public class Node {
 	        Date middleDate = new Date(middleTimeInMillis);
 	        return dateFormat.format(middleDate);
 	    }
+		public static String getMiddleDatePlusOne(String startDate, String endDate) throws ParseException {
+		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		    Date start = dateFormat.parse(startDate);
+		    Date end = dateFormat.parse(endDate);
+		    Calendar calendar = Calendar.getInstance();
+		    calendar.setTime(start);
+		    long startTimeInMillis = calendar.getTimeInMillis();
+		    calendar.setTime(end);
+		    long endTimeInMillis = calendar.getTimeInMillis();
+		    long middleTimeInMillis = (startTimeInMillis + endTimeInMillis) / 2;
+		    Date middleDate = new Date(middleTimeInMillis);
+
+		    // Add one day to the middle date
+		    calendar.setTime(middleDate);
+		    calendar.add(Calendar.DAY_OF_MONTH, 1);
+		    Date nextDay = calendar.getTime();
+
+		    return dateFormat.format(nextDay);
+		}
 		public static String getNextString(String s) {
 		    // Convert the string into a number in base 26
 		    int n = 0;
@@ -533,13 +598,9 @@ public class Node {
         
         public boolean search(Point findMe )
         {
-        	
-        	//if point == null ??
-        	
-        	
-        	Object x= null;
-        	Object y= null;
-        	Object z = null;
+        	Object x= findMe.getX();
+        	Object y= findMe.getY();
+        	Object z = findMe.getZ();
         	
         	//lw el point bara el range aslun 
         	//check lw equal mksla afkr now now hfkr fel bus 
@@ -716,12 +777,8 @@ public class Node {
         	// m3nosh 3yal w m3ndosh kalba lesa 
         	return false;
         }
+
         
-        /*
-        hyreturn awel node yla2e feha el point  
-        msh 3arfa ba2a lw mwgoda fe kaza point n handle it wla fakes
-        (lw ah momken n3mel el flag da counter w handle ba2a ta7t if count >1)
-        */
         public Node get(Point findMyNode,  boolean found)
         {
         	
@@ -910,10 +967,6 @@ public class Node {
         			
         }
         
-        
-        
-         
-
 
         public Node[] getChildren() {
         	return children;
@@ -923,6 +976,7 @@ public class Node {
         }
     
 
+        
         public static int compare(Object o1, Object o2) {
             if (o1 instanceof Integer && o2 instanceof Integer) {
                 return Integer.compare((int) o1, (int) o2);
@@ -936,6 +990,7 @@ public class Node {
                 throw new IllegalArgumentException("Objects must be of the same type");
             }
         }
+        
 
 
         }

@@ -3,9 +3,14 @@ package dbmain;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 
-public class OctTree {
-    private Node root;
+public class OctTree implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Node root;
     
 
     public OctTree(String tableName,String[] columns) {
