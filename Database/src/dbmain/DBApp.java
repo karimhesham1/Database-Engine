@@ -53,14 +53,12 @@ public class DBApp implements Serializable{
 		
 	}
 	
-	public static String parseStringToDate(String date) {
+	public static Date parseStringToDate(String date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            Date date1 = format.parse(date);
-            SimpleDateFormat formatOut = new SimpleDateFormat("yyyy-MM-dd");
-            return formatOut.format(date1);
+            return format.parse(date);
         } catch (Exception e) {
-            return null; 
+            return null;
         }
     }
 	
