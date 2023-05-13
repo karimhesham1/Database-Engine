@@ -773,6 +773,195 @@ public class Node {
         	return false;
         }
 
+        
+        public Node get(Point findMyNode,  boolean found)
+        {
+        	
+        	//if point == null ??
+        	
+        	
+        	
+        	if(search(findMyNode )&&  found ==false ) // lw mwgoda aslun 
+        	{
+        		
+        		Object x= null;
+        		Object y= null;
+            	Object z = null;
+            	
+          		Object midx = null;
+        		Object midy = null;;
+        		Object midz = null;
+        		
+        		// ana bgeb el values bs 
+        		if(xType.equals("java.lang.Integer"))
+            	{
+            		midx = (int) this.xMax+ (int) this.xMin/2;
+            		x=(int) findMyNode.getX();
+            	}
+                
+            	if(yType.equals("java.lang.Integer"))
+            	{
+            	midy = (int) this.yMax+ (int) this.yMin/2;
+                y=(int) findMyNode.getY();
+            	}
+            	if(zType.equals("java.lang.Integer")) 
+                {
+                midz =(int) this.zMax+ (int) this.zMin/2;
+                z=(int) findMyNode.getZ();
+                }
+                
+            	
+            	//double
+            	if(xType.equals("java.lang.Double"))
+                {
+                	midx = (double)this.xMax+(double) this.xMin/2;
+                	x=(double)findMyNode.getX();
+                }
+                
+                if(yType.equals("java.lang.Double"))
+                {
+                	midy = (double)this.yMax+ (double) this.yMin/2;
+                	y=(int) findMyNode.getY(); 
+                }
+                
+                
+                if(zType.equals("java.lang.Double"))
+                {
+                	midz =(double) this.zMax+ (double) this.zMin/2;
+                	z=(double) findMyNode.getZ();
+                }
+                
+                //string 
+                if(xType.equals("java.lang.String"))
+                {
+            		midx = printMiddleString((String)xMin,(String)xMax);
+            		x=(String) findMyNode.getX(); 
+                }
+                if(yType.equals("java.lang.String"))
+                {
+            		midy = printMiddleString((String)yMin,(String)yMax);
+            		y=(String) findMyNode.getY(); 
+                }
+                if(zType.equals("java.lang.String"))
+                {
+            		midz = printMiddleString((String)zMin,(String)zMax);
+            		z=(String) findMyNode.getZ(); 
+                }
+             
+                //date 
+                if(xType.equals("java.util.Date"))
+                {
+            		try {
+    					midx = getMiddleDate((String)xMin,(String)xMax);
+    					x=(Date) findMyNode.getX();
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+                
+                if(yType.equals("java.util.Date"))
+                {
+            		try {
+    					midy = getMiddleDate((String)yMin,(String)yMax);
+    					y=(Date) findMyNode.getY();
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+                
+                if(zType.equals("java.util.Date"))
+                {
+            		try {
+    					midz = getMiddleDate((String)zMin,(String)zMax);
+    					z=(Date) findMyNode.getZ();
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+        		
+                
+                
+                //------------------------------------------------------------------------
+                
+                if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+                {
+                	for(int i=0; i<this.rowPoint.size(); i++)
+                	{
+                		if( compare(this.rowPoint.get(i).getX(), x)==0
+                				&& compare(this.rowPoint.get(i).getY(), y)==0
+                				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+                		{
+                				found=true;
+                				return this; 
+                		}
+                	}
+                }
+                else 
+                {
+                	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
+                    if(compare(x,midx)<1)
+                    	{
+                    	if(compare(y,midy)<1)
+                    	{
+                    		{
+                    		if(compare(z,midz)<1) //low low low
+                    			this.children[0].get(findMyNode, found);
+                    		else //low low high
+                    			this.children[1].get(findMyNode, found);
+                    		}
+                    
+                    
+                    	}
+                    	else 
+                    	{
+                    		{
+                        		if(compare(z,midz)<1) //low high low 
+                        			this.children[2].get(findMyNode, found);
+                        		else //low high high 
+                        			this.children[3].get(findMyNode, found);
+                        		}
+                    	}
+                    	}
+                    else // x aslun high 
+                    {
+                    	if(compare(y,midy)<1)
+                    	{
+                    		{
+                    		if(compare(z,midz)<1) //high low low
+                    			this.children[4].get(findMyNode, found);
+                    		else //high low high
+                    			this.children[5].get(findMyNode, found);
+                    		}
+                    
+                    
+                    	}
+                    	else 
+                    	{
+                    		{
+                        		if(compare(z,midz)<1) //high high low 
+                        			this.children[6].get(findMyNode, found);
+                        		else //high high high 
+                        			this.children[7].get(findMyNode, found);
+                        		}
+                    	}
+                    }
+                    		
+                    
+            	}
+  
+                
+        			}
+        	//lw hya msh mwgoda
+        	return null; 
+        			
+        }
+        
 
         public Node[] getChildren() {
         	return children;
@@ -782,6 +971,7 @@ public class Node {
         }
     
 
+        
         public static int compare(Object o1, Object o2) {
             if (o1 instanceof Integer && o2 instanceof Integer) {
                 return Integer.compare((int) o1, (int) o2);
@@ -795,6 +985,7 @@ public class Node {
                 throw new IllegalArgumentException("Objects must be of the same type");
             }
         }
+        
 
 
         }
