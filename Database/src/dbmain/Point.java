@@ -1,14 +1,15 @@
 package dbmain;
 
 public class Point {
-	private Object x,y,z,ref;
+	private Object x,y,z,ref,pk;
 	
-	public  Point(Object x,Object y, Object z, Object ref)
+	public  Point(Object x,Object y, Object z, Object ref, Object pk)
 	{
 		this.ref=ref;
 		this.x=x;
 		this.y=y;
 		this.z=z;
+		this.pk=pk;
 	}
 
 	public Object getX() {
