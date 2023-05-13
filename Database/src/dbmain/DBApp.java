@@ -56,8 +56,11 @@ public class DBApp implements Serializable {
 		}
 	}
 
+//	public static boolean isValidDate(Date date, Date min, Date max) {
+//		return date.before(max) && date.after(min);
+//	}
 	public static boolean isValidDate(Date date, Date min, Date max) {
-		return date.before(max) && date.after(min);
+		return date.compareTo(min) >= 0 && max.compareTo(date) >= 0;
 	}
 
 	// following method creates one table only
