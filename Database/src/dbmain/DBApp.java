@@ -814,9 +814,9 @@ public class DBApp implements Serializable{
 	
 	}
 
-	public static boolean isValidDate(Date date, Date min, Date max) {
-        return date.before(max) && date.after(min);
-    }
+//	public static boolean isValidDate(Date date, Date min, Date max) {
+//        return date.before(max) && date.after(min);
+//    }
 	
 	
 	// following method updates one row only
