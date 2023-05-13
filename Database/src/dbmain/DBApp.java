@@ -326,6 +326,9 @@ public class DBApp implements Serializable{
 								}
 								else 
 								{
+									String min = content[6];
+									String max = content[7];
+									
 									flag=true;
 								}
 
@@ -811,7 +814,9 @@ public class DBApp implements Serializable{
 	
 	}
 
-	
+	public static boolean isValidDate(Date date, Date min, Date max) {
+        return date.before(max) && date.after(min);
+    }
 	
 	
 	// following method updates one row only
@@ -1304,6 +1309,8 @@ public class DBApp implements Serializable{
 	public void createIndex(String strTableName,
 			String[] strarrColName) throws DBAppException, IOException, ClassNotFoundException
 	{
+		String pkname = "";
+		
 		if(strarrColName.length !=3)
 			throw new DBAppException();
 //===============================================================================
@@ -1320,10 +1327,13 @@ public class DBApp implements Serializable{
 			while (line != null) 
 			{
 				String[] content = line.split(",");
-
+				if(content[0].equals(strTableName) && content[3].equals(true))
+					pkname=content[1];
 				if(content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("null") 
 						&& content[5] .equals("null"))
 				{
+					
+					
 					valid=true;
 					break;
 				}
@@ -1407,9 +1417,9 @@ public class DBApp implements Serializable{
 				Object x = r.getValue(strarrColName[0]);
 				Object y = r.getValue(strarrColName[1]);
 				Object z = r.getValue(strarrColName[2]);
+				Object pk = r.getValue(pkname);
 				Object ref = p.getPageName();
-
-				octTree.insert(x, y, z, ref);
+				octTree.insert(x, y, z, ref, pk);
 
 			}
 		}
@@ -1423,8 +1433,6 @@ public class DBApp implements Serializable{
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
 		out.writeObject(octTree);
 		out.close();
-		
-		
 		
 		
 

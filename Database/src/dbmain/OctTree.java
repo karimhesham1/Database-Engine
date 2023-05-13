@@ -93,9 +93,9 @@ public class OctTree implements Serializable {
     	
     }
 
-    public void insert(Object x, Object y, Object z, Object ref) 
+    public void insert(Object x, Object y, Object z, Object ref, Object pk) 
     {
-    	Point p1 = new Point(x,y,z,ref);
+    	Point p1 = new Point(x,y,z,ref, pk);
     	root.insert(p1);
     	
     	//case 1 ehna f child w ma3andenash haga tahteena w el refrences a2al mn 16
