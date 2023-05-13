@@ -25,12 +25,12 @@ public class OctTree {
         
     }
     
-    public OctTree(Node parent)//nezabat el list bta3et el node ely da5lalna enhom ykono distributed 3la children + ely da5el gded
-    {
-    	this.root = parent;
-    	this.root.newParent();
-    	
-    }
+//    public OctTree(Node parent)//nezabat el list bta3et el node ely da5lalna enhom ykono distributed 3la children + ely da5el gded
+//    {
+//    	this.root = parent;
+//    	this.root.newParent();
+//    	
+//    }
     public void setTypes(String tableName,String[] columns) throws IOException {
     	for(int i=0;i<columns.length;i++) {
 			boolean flag = false;
@@ -83,7 +83,9 @@ public class OctTree {
 					}
 				}
 			}
+			br.close(); //msh aref law dy hate3mel moshkela
     	}
+    	
     }
 
     public void insert(Object x, Object y, Object z, Object ref) 
