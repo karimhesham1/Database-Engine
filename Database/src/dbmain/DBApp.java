@@ -312,7 +312,7 @@ public class DBApp implements Serializable {
 				}
 				br.close();
 				if (flag == false)
-					throw new DBAppException();
+					throw new DBAppException("the values u entered are out of range");
 			}
 			if (!primaryexists)
 				throw new DBAppException();

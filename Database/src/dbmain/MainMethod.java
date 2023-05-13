@@ -1,6 +1,7 @@
 package dbmain;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Hashtable;
 
 public class MainMethod {
@@ -21,15 +22,18 @@ public class MainMethod {
 		htblColNameType.put("id", "java.lang.Integer");
 		htblColNameType.put("name", "java.lang.String");
 		htblColNameType.put("gpa", "java.lang.Double");
+		htblColNameType.put("dob", "java.util.Date");
 		htblColNameMin.put("id", "0");
 		htblColNameMax.put("id", "999999999");
 		htblColNameMin.put("name", "a");
 		htblColNameMax.put("name", "ZZZZZZZZ");
 		htblColNameMin.put("gpa", "0");
 		htblColNameMax.put("gpa", "4");
+		htblColNameMin.put("dob", "1990-01-01");
+		htblColNameMax.put("dob", "2025-01-01");
 		
 		//create the table, done, working
-		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
 		
 		//inserting some records in the database
 		Hashtable<String, Object> htblColNameValue = new Hashtable();
@@ -69,9 +73,10 @@ public class MainMethod {
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 7 ));
+		htblColNameValue.put("id", new Integer( 8 ));
 		htblColNameValue.put("name", new String("Moh" ) );
 		htblColNameValue.put("gpa", new Double( 0.4 ) );
+		htblColNameValue.put("dob", new Date(1990 - 1900, 1 - 1, 1));
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 
 		
