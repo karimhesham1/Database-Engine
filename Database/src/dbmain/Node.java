@@ -1,13 +1,18 @@
 package dbmain;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 import java.text.SimpleDateFormat;
 
-public class Node {
-        private static final int MAX_ENTRIES = 16;
+public class Node implements Serializable{
+        /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		private static final int MAX_ENTRIES = 16;
         private Vector<Point> rowPoint;
         private Node[] children;
         private Object xMin,xMax,yMin,yMax,zMin,zMax;

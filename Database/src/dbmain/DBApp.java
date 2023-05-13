@@ -1283,7 +1283,7 @@ public class DBApp implements Serializable{
 //	 If three column names are passed, create an octree.
 //	 If only one or two column names is passed, throw an Exception.
 	public void createIndex(String strTableName,
-			String[] strarrColName) throws DBAppException, IOException
+			String[] strarrColName) throws DBAppException, IOException, ClassNotFoundException
 	{
 		if(strarrColName.length !=3)
 			throw new DBAppException();
@@ -1302,7 +1302,8 @@ public class DBApp implements Serializable{
 			{
 				String[] content = line.split(",");
 
-				if(content[0].equals(strTableName) && content[1].equals(insertedColName))
+				if(content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("null") 
+						&& content[5] .equals("null"))
 				{
 					valid=true;
 					break;
@@ -1314,7 +1315,7 @@ public class DBApp implements Serializable{
 			if(!valid)
 			{
 				br.close();
-				throw new DBAppException("inserted column names dont match the table's column names");
+				throw new DBAppException("inserted column names dont match the table's column names or already has an index");
 			}
 
 			br.close();
@@ -1373,14 +1374,38 @@ public class DBApp implements Serializable{
 			br.close();
 		}
 		
-		//ba3mel octree w serialize to disk
 		
-		OctTree index = new OctTree(strTableName, strarrColName);
+		//create the octree
+		OctTree octTree = new OctTree(strTableName, strarrColName);
+		loadTable(strTableName);
+		loadPages(loadedTable);
+			
+		for(Page p : loadedPages)
+		{
+			for(Row r : p.getRows())
+			{
+
+				Object x = r.getValue(strarrColName[0]);
+				Object y = r.getValue(strarrColName[1]);
+				Object z = r.getValue(strarrColName[2]);
+				Object ref = p.getPageName();
+
+				octTree.insert(x, y, z, ref);
+
+			}
+		}
 		
-		File indexFile = new File(indexName + ".class");
+		savePages();
+		saveTable();
+		
+		
+		// serialize to disk
+		File indexFile = new File(indexName + strTableName + ".class");
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
-		out.writeObject(index);
+		out.writeObject(octTree);
 		out.close();
+		
+		
 		
 		
 
