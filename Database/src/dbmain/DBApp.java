@@ -917,9 +917,6 @@ public class DBApp implements Serializable {
 		if(hasIndex(strTableName,htblColNameValue)) {
 			deleteUsingIndex(strTableName,htblColNameValue);
 		}
-	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue)
-			throws DBAppException, IOException, ClassNotFoundException {
-
 		// find el pages ele feha el 7aga
 		loadTable(strTableName);
 		loadPages(loadedTable);
