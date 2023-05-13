@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.text.SimpleDateFormat;
 
 public class Node {
@@ -93,9 +92,9 @@ public class Node {
         	Object zMid = null;
         	Object NextZ = null;
         	if(xType.equals("java.lang.Integer")||xType.equals("java.lang.Double")) { 
-        		
+        		if(xType.equals("java.lang.Integer")) {
         	 xMid= ((int)this.xMax- (int)this.xMin)/2 ;  //el double hena hayegy error ya nouuuuuuuuuuuuuuuuuuuuurrrrrrrrrrrrr
-        	 NextX= (int)xMid+1;
+        	 NextX= (int)xMid+1;}
         		if(xType.equals("java.lang.Double")) {
         			 xMid= ((Double)this.xMax- (Double)this.xMin)/2 ;
                 	 NextX= (Double)xMid+1;
@@ -129,22 +128,49 @@ public class Node {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-        		//NextX Kamel henaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa w ba3daha e3mel nafs el kalam L y and z
+        		try {
+					NextX = getMiddleDatePlusOne((String)xMin,(String)xMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		for(int i=0; i< 4; i++)
+            	{
+            		
+            	this.children[i].xMin = xMin;
+            	this.children[i].xMax = xMid;
+            	this.children[i+4].xMin = NextX;
+            	this.children[i+4].xMax = xMax;
+            	}
         	}
         	//If y int
         	if(yType.equals("java.lang.Integer")||yType.equals("java.lang.Double")) {
-        		
+        		if(yType.equals("java.lang.Integer")) {
            	 yMid= ((int)this.yMax- (int)this.yMin)/2 ;
-           	 NextY= (int)yMid+1;
+           	 NextY= (int)yMid+1;}
            		if(yType.equals("java.lang.Double")) {
            			 yMid= ((Double)this.yMax- (Double)this.yMin)/2 ;
                    	 NextY= (Double)yMid+1;
            		}
            		}
-        	else if(xType.equals("java.lang.String")) {
+        	else if(yType.equals("java.lang.String")) {
         		yMid = printMiddleString((String)yMin,(String)yMax);
         		NextY = getNextString((String)yMid);
         	}
+        	else if(yType.equals("java.util.Date")){
+        		try {
+					yMid = getMiddleDate((String)yMin,(String)yMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		try {
+					NextY = getMiddleDatePlusOne((String)yMin,(String)yMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		}
         	 for(int i=0; i< 4; i++)
          	{
          	switch(i) {
@@ -172,9 +198,10 @@ public class Node {
         	
         	 //If z int
         	if(zType.equals("java.lang.Integer")||zType.equals("java.lang.Double")) {
-        		
+        		if(zType.equals("java.lang.Integer")){
            	 zMid= ((int)this.zMax- (int)this.zMin)/2 ;
            	 NextZ= (int)zMid+1;
+           	 }
            		if(zType.equals("java.lang.Double")) {
            			 zMid= ((Double)this.zMax- (Double)this.zMin)/2 ;
                    	 NextZ= (Double)zMid+1;
@@ -184,6 +211,20 @@ public class Node {
         		zMid = printMiddleString((String)zMin,(String)zMax);
         		NextZ = getNextString((String)zMid);
         	}
+        	else if(zType.equals("java.util.Date")){
+        		try {
+					zMid = getMiddleDate((String)zMin,(String)zMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		try {
+					NextZ = getMiddleDatePlusOne((String)zMin,(String)zMax);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		}
         	 for(int i=0; i< 4; i++)
          	{
          	switch(i) {
@@ -238,6 +279,25 @@ public class Node {
 	        Date middleDate = new Date(middleTimeInMillis);
 	        return dateFormat.format(middleDate);
 	    }
+		public static String getMiddleDatePlusOne(String startDate, String endDate) throws ParseException {
+		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		    Date start = dateFormat.parse(startDate);
+		    Date end = dateFormat.parse(endDate);
+		    Calendar calendar = Calendar.getInstance();
+		    calendar.setTime(start);
+		    long startTimeInMillis = calendar.getTimeInMillis();
+		    calendar.setTime(end);
+		    long endTimeInMillis = calendar.getTimeInMillis();
+		    long middleTimeInMillis = (startTimeInMillis + endTimeInMillis) / 2;
+		    Date middleDate = new Date(middleTimeInMillis);
+
+		    // Add one day to the middle date
+		    calendar.setTime(middleDate);
+		    calendar.add(Calendar.DAY_OF_MONTH, 1);
+		    Date nextDay = calendar.getTime();
+
+		    return dateFormat.format(nextDay);
+		}
 		public static String getNextString(String s) {
 		    // Convert the string into a number in base 26
 		    int n = 0;
@@ -533,13 +593,9 @@ public class Node {
         
         public boolean search(Point findMe )
         {
-        	
-        	//if point == null ??
-        	
-        	
-        	Object x= null;
-        	Object y= null;
-        	Object z = null;
+        	Object x= findMe.getX();
+        	Object y= findMe.getY();
+        	Object z = findMe.getZ();
         	
         	//lw el point bara el range aslun 
         	//check lw equal mksla afkr now now hfkr fel bus 
@@ -716,203 +772,6 @@ public class Node {
         	// m3nosh 3yal w m3ndosh kalba lesa 
         	return false;
         }
-        
-        /*
-        hyreturn awel node yla2e feha el point  
-        msh 3arfa ba2a lw mwgoda fe kaza point n handle it wla fakes
-        (lw ah momken n3mel el flag da counter w handle ba2a ta7t if count >1)
-        */
-        public Node get(Point findMyNode,  boolean found)
-        {
-        	
-        	//if point == null ??
-        	
-        	
-        	
-        	if(search(findMyNode )&&  found ==false ) // lw mwgoda aslun 
-        	{
-        		
-        		Object x= null;
-        		Object y= null;
-            	Object z = null;
-            	
-          		Object midx = null;
-        		Object midy = null;;
-        		Object midz = null;
-        		
-        		// ana bgeb el values bs 
-        		if(xType.equals("java.lang.Integer"))
-            	{
-            		midx = (int) this.xMax+ (int) this.xMin/2;
-            		x=(int) findMyNode.getX();
-            	}
-                
-            	if(yType.equals("java.lang.Integer"))
-            	{
-            	midy = (int) this.yMax+ (int) this.yMin/2;
-                y=(int) findMyNode.getY();
-            	}
-            	if(zType.equals("java.lang.Integer")) 
-                {
-                midz =(int) this.zMax+ (int) this.zMin/2;
-                z=(int) findMyNode.getZ();
-                }
-                
-            	
-            	//double
-            	if(xType.equals("java.lang.Double"))
-                {
-                	midx = (double)this.xMax+(double) this.xMin/2;
-                	x=(double)findMyNode.getX();
-                }
-                
-                if(yType.equals("java.lang.Double"))
-                {
-                	midy = (double)this.yMax+ (double) this.yMin/2;
-                	y=(int) findMyNode.getY(); 
-                }
-                
-                
-                if(zType.equals("java.lang.Double"))
-                {
-                	midz =(double) this.zMax+ (double) this.zMin/2;
-                	z=(double) findMyNode.getZ();
-                }
-                
-                //string 
-                if(xType.equals("java.lang.String"))
-                {
-            		midx = printMiddleString((String)xMin,(String)xMax);
-            		x=(String) findMyNode.getX(); 
-                }
-                if(yType.equals("java.lang.String"))
-                {
-            		midy = printMiddleString((String)yMin,(String)yMax);
-            		y=(String) findMyNode.getY(); 
-                }
-                if(zType.equals("java.lang.String"))
-                {
-            		midz = printMiddleString((String)zMin,(String)zMax);
-            		z=(String) findMyNode.getZ(); 
-                }
-             
-                //date 
-                if(xType.equals("java.util.Date"))
-                {
-            		try {
-    					midx = getMiddleDate((String)xMin,(String)xMax);
-    					x=(Date) findMyNode.getX();
-    					
-    				} catch (ParseException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
-                }
-                
-                if(yType.equals("java.util.Date"))
-                {
-            		try {
-    					midy = getMiddleDate((String)yMin,(String)yMax);
-    					y=(Date) findMyNode.getY();
-    					
-    				} catch (ParseException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
-                }
-                
-                if(zType.equals("java.util.Date"))
-                {
-            		try {
-    					midz = getMiddleDate((String)zMin,(String)zMax);
-    					z=(Date) findMyNode.getZ();
-    					
-    				} catch (ParseException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
-                }
-        		
-                
-                
-                //------------------------------------------------------------------------
-                
-                if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
-                {
-                	for(int i=0; i<this.rowPoint.size(); i++)
-                	{
-                		if( compare(this.rowPoint.get(i).getX(), x)==0
-                				&& compare(this.rowPoint.get(i).getY(), y)==0
-                				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
-                		{
-                				found=true;
-                				return this; 
-                		}
-                	}
-                }
-                else 
-                {
-                	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
-                    if(compare(x,midx)<1)
-                    	{
-                    	if(compare(y,midy)<1)
-                    	{
-                    		{
-                    		if(compare(z,midz)<1) //low low low
-                    			this.children[0].get(findMyNode, found);
-                    		else //low low high
-                    			this.children[1].get(findMyNode, found);
-                    		}
-                    
-                    
-                    	}
-                    	else 
-                    	{
-                    		{
-                        		if(compare(z,midz)<1) //low high low 
-                        			this.children[2].get(findMyNode, found);
-                        		else //low high high 
-                        			this.children[3].get(findMyNode, found);
-                        		}
-                    	}
-                    	}
-                    else // x aslun high 
-                    {
-                    	if(compare(y,midy)<1)
-                    	{
-                    		{
-                    		if(compare(z,midz)<1) //high low low
-                    			this.children[4].get(findMyNode, found);
-                    		else //high low high
-                    			this.children[5].get(findMyNode, found);
-                    		}
-                    
-                    
-                    	}
-                    	else 
-                    	{
-                    		{
-                        		if(compare(z,midz)<1) //high high low 
-                        			this.children[6].get(findMyNode, found);
-                        		else //high high high 
-                        			this.children[7].get(findMyNode, found);
-                        		}
-                    	}
-                    }
-                    		
-                    
-            	}
-  
-                
-        			}
-        	//lw hya msh mwgoda
-        	return null; 
-        			
-        }
-        
-        
-        
-         
 
 
         public Node[] getChildren() {
