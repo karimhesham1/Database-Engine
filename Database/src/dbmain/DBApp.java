@@ -32,6 +32,7 @@ public class DBApp implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Vector<Page> loadedPages;
 	private Table loadedTable;
+	private OctTree loadedOctree;
 	private boolean firstDeletion = true;
 	
 	
@@ -814,9 +815,6 @@ public class DBApp implements Serializable{
 	
 	}
 
-	public static boolean isValidDate(Date date, Date min, Date max) {
-        return date.before(max) && date.after(min);
-    }
 	
 	
 	// following method updates one row only
@@ -963,10 +961,67 @@ public class DBApp implements Serializable{
 	// htblColNameValue holds the key and value. This will be used in search
 	// to identify which rows/tuples to delete.
 	// htblColNameValue enteries are ANDED together
+	public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColNameValue) throws IOException {
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		
+		
+		int i=0;
+	
+		while(columnNames.hasMoreElements()) {
+			
+			
+			String insertedColName = columnNames.nextElement();
+			//Object insertedvalue = htblColNameValue.get(insertedColName);
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			boolean firstloop =true;
+			while (line != null) 
+			{
+
+				if (firstloop)
+					line = br.readLine();
+
+				firstloop = false;
+
+				String[] content = line.split(",");
+
+				//					if(!(columnNames.hasMoreElements()) )
+				//						break;
+
+				if(content[0].equals(strTableName))
+				{
+
+
+
+					if (content[1].equals(insertedColName)&& !content[4].equals("Null"))
+					{
+						i++;
+					}
+					
+				}
+				
+			}
+			br.close();
+		}
+		if(i==3) {
+			return true;
+		}
+		
+		
+		
+		return false;
+	}
+	public void deleteUsingIndex(String strTableName,
+			Hashtable<String,Object> htblColNameValue) {
+		/////////////////////////HERRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+	}
 	public void deleteFromTable(String strTableName,
 			Hashtable<String,Object> htblColNameValue)
 					throws DBAppException, IOException, ClassNotFoundException
 	{
+		if(hasIndex(strTableName,htblColNameValue)) {
+			deleteUsingIndex(strTableName,htblColNameValue);
+		}
 
 		//find el pages ele feha el 7aga
 		loadTable(strTableName);
