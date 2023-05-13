@@ -20,6 +20,10 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 
@@ -47,6 +51,21 @@ public class DBApp implements Serializable{
 	public void init( )
 	{
 		
+	}
+	
+	public static String parseStringToDate(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date1 = format.parse(date);
+            SimpleDateFormat formatOut = new SimpleDateFormat("yyyy-MM-dd");
+            return formatOut.format(date1);
+        } catch (Exception e) {
+            return null; 
+        }
+    }
+	
+	public static boolean isValidDate(Date date, Date min, Date max) {
+		return date.before(max) && date.after(min);
 	}
 		
 	
