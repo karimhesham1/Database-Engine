@@ -619,14 +619,38 @@ public class DBApp implements Serializable {
 				}
 			}
 			String table = loadedOctree.getName();
-			loadTable(table);
-			loadPages(loadedTable);
+			
 			///hena khod el page number mn el refrence beta3 kol point fel vector w rooh shelhom mn el pages dol
 			loadedOctree.getRoot().del(deletePoints);
 			
 			//////////////////////////////////////////////////////////////
 			//Now You have the points you want to delete in the array deletePoints, 
 			//now you need to remove them from the node and use their references to delete them from the table itself
+			
+			Vector<Object> pksToDelete = new Vector<Object>();
+			for(Point p : deletePoints)
+				pksToDelete.add(p.getPk()); //adds all the pks to this vector
+			
+			
+			loadTable(table);
+			loadPages(deletePoints); //new loadPages method which loads only the pages we need
+			String pkColName = getPrimaryKeyColName(strTableName); //new method, gets col name of pk
+			
+			for(int i=0 ; i<loadedPages.size() ; i++)
+			{
+				Page currPage = loadedPages.get(i);
+				for(int j=0 ; j<currPage.getRows().size() ; j++)
+				{
+					Row currRow = currPage.getRow(j);
+					Object pk = currRow.getValue(pkColName);
+					if(pksToDelete.contains(pk))
+					{
+						currPage.deleteRow(currRow); //deletes the row if this row's pk value is found in the pkstodelete vector
+						j--;
+					}
+				}
+			}
+		
 			
 			savePages();
 			saveTable();
@@ -650,6 +674,7 @@ public class DBApp implements Serializable {
 			throw new DBAppException("htbl not valid");
 		if(hasIndex(strTableName,htblColNameValue)) {
 			deleteUsingIndex(strTableName,htblColNameValue);
+			return;
 		}
 		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue);
 		boolean firstloop = true;
@@ -1044,8 +1069,8 @@ public class DBApp implements Serializable {
 				String[] content = line.split(",");
 				if (content[0].equals(strTableName) && content[3].equals("true"))
 					pkname = content[1];
-				if (content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("null")
-						&& content[5].equals("null")) {
+				if (content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("Null")
+						&& content[5].equals("Null")) {
 
 					valid = true;
 					break;
@@ -1067,12 +1092,12 @@ public class DBApp implements Serializable {
 
 		// edit the csv content
 
+		
 		String indexName = "";
-
 		for (int j = 0; j < 3; j++) {
 			String insertedColName = strarrColName[j];
 			StringBuilder newMetadata = new StringBuilder();
-
+			indexName = "";
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 			String line = br.readLine();
 			while (line != null) {
@@ -1087,6 +1112,9 @@ public class DBApp implements Serializable {
 					// edit specific columns in the line
 					content[4] = indexName + "Index";
 					content[5] = "Octree";
+					
+					
+					
 				}
 
 				// append the edited line to the new metadata string
@@ -1152,7 +1180,24 @@ public class DBApp implements Serializable {
 
 	//----------------LOADS AND SAVES/HELPER METHODS--------------------------------------
 
+	public String getPrimaryKeyColName(String strTableName) throws IOException {
+	
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			line = br.readLine();
+			while (line != null) {
+				String[] content = line.split(",");
+				if (content[0].equals(strTableName) && content[3].equals("true")) {
+					br.close();
+					return content[1];
+				}
+				line = br.readLine();
+			}
+			br.close();
 
+		
+		return "";
+	}
 	public static int compareOP(Object o1, Object o2) {
         if (o1 instanceof Integer && o2 instanceof Integer) {
             return Integer.compare((int) o1, (int) o2);
@@ -1178,6 +1223,29 @@ public class DBApp implements Serializable {
 			loadedPages.add(page);
 			in.close();
 
+		}
+	}
+	
+	public void loadPages(Vector<Point> points) throws IOException, ClassNotFoundException
+	{
+		loadedPages = new Vector<Page>();
+		Vector<String> names = new Vector<String>();
+		names.add((String) points.get(0).getRef()); //adds awel page name
+		
+		for(int i=1; i<points.size() ; i++)
+		{
+			if( !names.contains(points.get(i).getRef())  ) //law el page name dah msh already added
+				names.add((String) points.get(i).getRef());
+		}
+		
+		for(String s : names)
+		{
+			// load the page file from disk
+			File pageFile = new File(s + ".class");
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(pageFile));
+			Page page = (Page) in.readObject();
+			loadedPages.add(page);
+			in.close();
 		}
 	}
 
@@ -1521,7 +1589,22 @@ public class DBApp implements Serializable {
 
 	}
 
+	public void printTable(String tablename) throws ClassNotFoundException, IOException {
+        loadTable(tablename);
+        loadPages(loadedTable);
+        for (int j = 0; j < loadedPages.size(); j++) {
+            Page p = loadedPages.get(j);
+            System.out.println("Start of page");
+            for (int i = 0; i < p.getNumUsedRows(); i++) {
+                p.getRow(i).printRow();
+                System.out.println(" ");
+            }
+        }
+        savePages();
+        saveTable();
 
+
+    }
 
 
 

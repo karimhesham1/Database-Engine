@@ -12,6 +12,10 @@ public class Point {
 		this.pk=pk;
 	}
 
+	public Object getPk() {
+		return pk;
+	}
+
 	public Object getX() {
 		return x;
 	}

@@ -112,8 +112,9 @@ public class MainMethod {
 		
 		//print the table
 		dbApp.printTable(strTableName);
-		
-
+		String[] cols = {"name", "gpa", "dob"};
+		dbApp.createIndex(strTableName, cols);
+		dbApp.printTable(strTableName);
 		//System.out.println(htblColNameType);
 		
 		String manga = "manga";
