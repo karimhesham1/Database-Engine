@@ -583,7 +583,7 @@ public class DBApp implements Serializable {
 		return false;
 	}
 	public void deleteUsingIndex(String strTableName,
-			Hashtable<String,Object> htblColNameValue) {
+			Hashtable<String,Object> htblColNameValue) throws ClassNotFoundException, IOException {
 		/////////////////////////HERRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 		Enumeration<String> columnNames = htblColNameValue.keys();
 		String columnName;
@@ -591,8 +591,8 @@ public class DBApp implements Serializable {
 		Object[] columnsSorted = new Object[3];
 		columnNames = htblColNameValue.keys();
 		Node UseNode;
-		Point[] deletePoints = new Point[16];
-		int k =0;
+		Vector<Point> deletePoints = null;
+		
 		while (columnNames.hasMoreElements()) {
 			columnName = columnNames.nextElement();
 			columnValue = htblColNameValue.get(columnName);
@@ -610,16 +610,27 @@ public class DBApp implements Serializable {
 		if(loadedOctree.getRoot().search(columnsSorted)) {
 			UseNode= loadedOctree.getRoot().get(columnsSorted, false);
 			for(int j=0;j<UseNode.getRows().size();j++) {
-				if(UseNode.getRows().get(j).getX().equals(columnsSorted[0])
-						&&UseNode.getRows().get(j).getY().equals(columnsSorted[1])
-						&&UseNode.getRows().get(j).getZ().equals(columnsSorted[2])) {
-					deletePoints[k]= UseNode.getRows().get(j);
-					k++;
+				if(UseNode.getRows().get(j).get(0).getX().equals(columnsSorted[0])
+						&&UseNode.getRows().get(j).get(0).getY().equals(columnsSorted[1])
+						&&UseNode.getRows().get(j).get(0).getZ().equals(columnsSorted[2])) {
+					deletePoints= UseNode.getRows().get(j);
+					
 
 				}
 			}
+			String table = loadedOctree.getName();
+			loadTable(table);
+			loadPages(loadedTable);
+			///hena khod el page number mn el refrence beta3 kol point fel vector w rooh shelhom mn el pages dol
+			loadedOctree.getRoot().del(deletePoints);
+			
+			//////////////////////////////////////////////////////////////
 			//Now You have the points you want to delete in the array deletePoints, 
 			//now you need to remove them from the node and use their references to delete them from the table itself
+			
+			savePages();
+			saveTable();
+			
 		}
 
 	}

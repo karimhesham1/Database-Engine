@@ -8,10 +8,10 @@ import java.io.Serializable;
 public class OctTree implements Serializable {
     /**
 	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	 */	private static final long serialVersionUID = 1L;
 	private Node root;
 	private String xName,yName,zName;
+	private String tableName;
     
 	
 
@@ -21,6 +21,9 @@ public class OctTree implements Serializable {
     public String getxName() {
 		return xName;
 	}
+    public String getName() {
+    	return this.tableName;
+    }
 
 	public String getyName() {
 		return yName;
@@ -33,6 +36,7 @@ public class OctTree implements Serializable {
 	public OctTree(String tableName,String[] columns) {
         this.root = new Node();
         this.root.newParent();
+        this.tableName = tableName;
         try {
 			this.setTypes(tableName,columns);
 		} catch (IOException e) {

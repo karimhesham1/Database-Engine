@@ -22,6 +22,30 @@ public class Node implements Serializable{
            rowPoint= new Vector< Vector<Point> >(MAX_ENTRIES);
            children = null;
         }
+        public Vector< Vector<Point> > getRows(){
+        	return rowPoint;
+        }
+        public void del(Vector<Point> RemovePoints) {
+        	Object x = RemovePoints.get(0).getX();
+        	Object y = RemovePoints.get(0).getY();
+        	Object z = RemovePoints.get(0).getZ();
+        	Object[] Rem = new Object[3];
+        	Rem[0]=x;
+        	Rem[1]=y;
+        	Rem[2]=z;
+        	int index=0;
+        	Node Target = get(Rem,false);
+        	for(int j=0;j<Target.getRows().size();j++) {
+				if(Target.getRows().get(j).get(0).getX().equals(Rem[0])
+						&&Target.getRows().get(j).get(0).getY().equals(Rem[1])
+						&&Target.getRows().get(j).get(0).getZ().equals(Rem[2])) {
+					index = j;
+					
+
+				}
+        }
+        	this.get(Rem, false).getRowPoint().remove(index);
+        }
         
         public String getxType() {
 			return xType;
