@@ -393,9 +393,16 @@ public class Node implements Serializable{
 //        		Point p1 = this.rowPoint.get(i);
 //  
 //        	}
-        	Vector<Point> tmp= new Vector<Point>(this.rowPoint.size());
+        	
+        	
+        	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>(this.rowPoint.size());
+        	
+        	Vector<Point> tmp= new Vector<Point>(this.rowPoint.get(0).size());
         	tmp = rowPoint.get(0); //new
         	int i=0;
+        	int ii=0;
+        	while(!tmps.isEmpty()) 
+        	{
         	while(!tmp.isEmpty())
         	{
         		
@@ -422,6 +429,9 @@ public class Node implements Serializable{
         		
         		i++;
         		
+        	} 
+        	tmps.remove(ii);
+        	ii++;
         	}
         	
         	
