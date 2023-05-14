@@ -31,6 +31,7 @@ public class DBApp implements Serializable {
 	private Vector<Page> loadedPages;
 	private Table loadedTable;
 	private OctTree loadedOctree;
+	private String loadedIndexName;
 	private boolean firstDeletion = true;
 
 	// Test
@@ -47,21 +48,6 @@ public class DBApp implements Serializable {
 
 	}
 
-	public static Date parseStringToDate(String date) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			return format.parse(date);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-//	public static boolean isValidDate(Date date, Date min, Date max) {
-//		return date.before(max) && date.after(min);
-//	}
-	public static boolean isValidDate(Date date, Date min, Date max) {
-		return date.compareTo(min) >= 0 && max.compareTo(date) >= 0;
-	}
 
 	// following method creates one table only
 	// strClusteringKeyColumn is the name of the column that will be the primary
@@ -131,64 +117,6 @@ public class DBApp implements Serializable {
 			throw new DBAppException(e.getMessage());
 		}
 
-	}
-
-	public boolean checkTypeMinMax(Enumeration<String> columnNames, Hashtable<String, String> htblColNameType,
-			Hashtable<String, String> htblColNameMin, Hashtable<String, String> htblColNameMax) {
-		boolean flag = true;
-		while (columnNames.hasMoreElements()) {
-			String columnName = columnNames.nextElement();
-			String columnType = htblColNameType.get(columnName);
-			String min = htblColNameMin.get(columnName);
-			String max = htblColNameMax.get(columnName);
-			if (columnType == "java.lang.Integer") {
-				try {
-					Integer.parseInt(min);
-					Integer.parseInt(max);
-				} catch (NumberFormatException e) {
-					return false;
-				}
-				if (Integer.parseInt(min) > Integer.parseInt(max))
-					return false;
-			}
-			if (columnType == "java.lang.Double") {
-				try {
-					Double.parseDouble(min);
-					Double.parseDouble(max);
-				} catch (NumberFormatException e) {
-					return false;
-				}
-				if (Double.parseDouble(min) > Double.parseDouble(max))
-					return false;
-			}
-			if (columnType == "java.lang.String") {
-
-				if (min.compareTo(max) < 0) {
-					return false;
-				}
-			}
-			if (columnType == "java.util.Date" || columnType == "java.text.SimpleDateFormat") {
-				String format = "YYYY-MM-DD";
-				SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-				dateFormat.setLenient(true);
-				Date date1;
-				Date date2;
-				try {
-					dateFormat.parse(min.trim());
-					dateFormat.parse(max.trim());
-					date1 = dateFormat.parse(min);
-					date2 = dateFormat.parse(max);
-				} catch (ParseException e) {
-					return false;
-				}
-
-				if (date1.compareTo(date2) > 0) {
-					return false;
-
-				}
-			}
-		}
-		return true;
 	}
 
 	// following method inserts one row only.
@@ -327,7 +255,7 @@ public class DBApp implements Serializable {
 			if (primaryexists) {
 				insertNullValues(htblColNameValue, strTableName);
 				loadPages(loadedTable);
-//					Binary Search			
+				//					Binary Search			
 
 				// if the record we are inserting is the first record, table has no pages aslan
 				// (new) error fixing
@@ -376,7 +304,7 @@ public class DBApp implements Serializable {
 							break;
 						}
 						if (low >= high && pkValueLow.compareTo(insertedPkValue) > 0) // law el inserted as8ar mn ely
-																						// ana wa2ef 3aleh
+							// ana wa2ef 3aleh
 						{
 							insertPageIndex1 = i;
 							insertRowIndex1 = low;
@@ -449,10 +377,10 @@ public class DBApp implements Serializable {
 				while (s1 < loadedPages.size() - 1) // loop 3ala kol el pages ely ba3d ely hamel feha insert, shifting
 				{
 					if (loadedPages.get(s1).getNumUsedRows() >= loadedPages.get(s1).getMaxRows()) // >: nozbot el
-																									// shifting =: awel
-																									// mara bned5ol
-																									// nshof law feha
-																									// makan wla la
+						// shifting =: awel
+						// mara bned5ol
+						// nshof law feha
+						// makan wla la
 					{
 						Row shiftedRow = loadedPages.get(s1).getRow(loadedPages.get(s1).getMaxRows() - 1);
 						loadedPages.get(s1).deleteRow(shiftedRow);
@@ -489,264 +417,8 @@ public class DBApp implements Serializable {
 
 	}
 
-	private void insertNullValues(Hashtable<String, Object> htblColNameValue, String strTableName) {
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-			String line = br.readLine();
-			ArrayList<String> missingAtt = new ArrayList<String>();
-			while ((line = br.readLine()) != null) {
-				String[] values = line.split(",");
-				if (values[0].equals(strTableName)) {
-					missingAtt.add(values[1]);
-				}
-			}
-			br.close();
 
-			Enumeration<String> e = htblColNameValue.keys();
-			while (e.hasMoreElements()) {
-				String s = (String) e.nextElement();
-				if (missingAtt.contains(s)) {
-					missingAtt.remove(s);
-				}
-			}
 
-			for (String s : missingAtt) {
-				htblColNameValue.put(s, new nullWrapper());
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void printTable(String tablename) throws ClassNotFoundException, IOException {
-		loadTable(tablename);
-		loadPages(loadedTable);
-		for (int j = 0; j < loadedPages.size(); j++) {
-			Page p = loadedPages.get(j);
-			System.out.println("Start of page");
-			for (int i = 0; i < p.getNumUsedRows(); i++) {
-				p.getRow(i).printRow();
-				System.out.println(" ");
-			}
-		}
-		savePages();
-		saveTable();
-
-	}
-
-	public void loadPages(Table table) throws ClassNotFoundException, IOException {
-		loadedPages = new Vector<Page>();
-		Vector<String> pages = table.getPages();
-		for (String s : pages) {
-			// load the page file from disk
-			File pageFile = new File(s + ".class");
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(pageFile));
-			Page page = (Page) in.readObject();
-			loadedPages.add(page);
-			in.close();
-
-		}
-	}
-
-	public void savePages() throws IOException {
-		for (Page p : loadedPages) {
-			File pageFile = new File(p.getPageName() + ".class");
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pageFile));
-			out.writeObject(p);
-			out.close();
-		}
-		loadedPages = null;
-	}
-
-	public void loadTable(String tableName) throws ClassNotFoundException, IOException {
-		loadedTable = new Table(tableName);
-
-		File tableFile = new File(tableName + ".class");
-		ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
-		Table out = (Table) in.readObject();
-		loadedTable = out;
-		in.close();
-
-	}
-
-	public void saveTable() throws IOException {
-		File tableFile = new File(loadedTable.getTableName() + ".class");
-		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
-		out.writeObject(loadedTable);
-		out.close();
-
-		loadedTable = null;
-	}
-
-	public boolean checkForPrimaryKey(String strTableName, Hashtable<String, Object> htblColNameValue)
-			throws IOException {
-		Enumeration<String> columnNames = htblColNameValue.keys();
-		while (columnNames.hasMoreElements()) {
-			String columnName = columnNames.nextElement();
-			Object columnValue = htblColNameValue.get(columnName);
-
-			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-			String line = br.readLine();
-			line = br.readLine();
-			while (line != null) {
-				String[] content = line.split(",");
-				if (content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("true")) {
-
-					br.close();
-					return true;
-				}
-				line = br.readLine();
-			}
-			br.close();
-
-		}
-		return false;
-	}
-
-	public String getPrimaryKey(String strTableName, Hashtable<String, Object> htblColNameValue) throws IOException {
-		Enumeration<String> columnNames = htblColNameValue.keys();
-		while (columnNames.hasMoreElements()) {
-			String columnName = columnNames.nextElement();
-			Object columnValue = htblColNameValue.get(columnName);
-
-			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-			String line = br.readLine();
-			line = br.readLine();
-			while (line != null) {
-				String[] content = line.split(",");
-				if (content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("true")) {
-					br.close();
-					return content[1];
-				}
-				line = br.readLine();
-			}
-			br.close();
-
-		}
-		return "";
-	}
-
-	public boolean validateHashtable(String strTableName, Hashtable<String, Object> htblColNameValue)
-			throws IOException {
-
-		Hashtable<String, Object> tmphtbl = new Hashtable<String, Object>();
-		Enumeration<String> columnNamestmp = htblColNameValue.keys();
-//		String columnName = columnNamestmp.nextElement();
-//		Object columnValue = htblColNameValue.get(columnName);
-		while (columnNamestmp.hasMoreElements()) {
-			String columnName = columnNamestmp.nextElement();
-			Object columnValue = htblColNameValue.get(columnName);
-			tmphtbl.put(columnName, columnValue);
-//			columnNamestmp.nextElement();
-		}
-
-		Enumeration<String> columnNames = tmphtbl.keys();
-		boolean firstloop = true;
-		while (columnNames.hasMoreElements()) // ben loop 3ala el hashtable
-		{
-			String insertedColName = columnNames.nextElement();
-			Object insertedvalue = tmphtbl.get(insertedColName);
-
-			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-			String line = br.readLine();
-
-			if (firstloop)
-				line = br.readLine();
-
-			firstloop = false;
-			while (line != null) {
-				String[] content = line.split(",");
-
-				if (content[0].equals(strTableName) && insertedColName.equals(content[1]))// law el line ely ana masko
-																							// mawgod fel htbl
-				{
-
-					if (content[2].equals(insertedvalue.getClass().getName())) {
-						if ((insertedvalue.getClass().getName()).equals("java.lang.Integer")) {
-							int min = Integer.parseInt(content[6]);
-							int max = Integer.parseInt(content[7]);
-
-							if ((int) insertedvalue >= min && (int) insertedvalue <= max) {
-								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
-								break;
-//									if (content [3] == "TRUE")
-//									{
-//										//new
-//										pk = content[1];
-//										insertedPkValue = htblColNameValue.get(pk);
-//										if(!insertedPkValue.equals(null)) {
-//											primaryexists = true;
-//										}
-//									}
-							}
-						}
-
-						else if ((insertedvalue.getClass().getName()).equals("java.lang.Double")) {
-
-							int min = Integer.parseInt(content[6]);
-							int max = Integer.parseInt(content[7]);
-
-							if ((double) insertedvalue >= min && (double) insertedvalue <= max) {
-								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
-								break;
-//									if (content [3] == "TRUE")
-//									{
-//										//new
-//										pk = content[1];
-//										insertedPkValue = htblColNameValue.get(pk);
-//										if(!insertedPkValue.equals(null)) {
-//											primaryexists = true;
-//										}
-//									}
-							}
-
-						}
-
-						else if ((insertedvalue.getClass().getName()).equals("java.lang.String")) {
-							String min = content[6];
-							String max = content[7];
-							String insertedvalstring = (String) insertedvalue;
-							int comparemin = insertedvalstring.compareToIgnoreCase(min);
-							int comparemax = insertedvalstring.compareToIgnoreCase(max);
-							if (comparemin >= 0 && comparemax <= 0) {
-								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
-								break;
-//									if (content [3] == "TRUE")
-//									{
-//										//new
-//										pk = content[1];
-//										insertedPkValue = htblColNameValue.get(pk);
-//										if(!insertedPkValue.equals(null)) {
-//											primaryexists = true;
-//										}
-//									}
-							}
-						} else {
-							tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
-						}
-
-					}
-
-				}
-
-				line = br.readLine();
-			}
-
-			br.close();
-
-		} // a5er el while bta3et el htbl
-
-		if (tmphtbl.isEmpty())
-			return true;
-		else
-			return false;
-
-	}
-
-//	public static boolean isValidDate(Date date, Date min, Date max) {
-//        return date.before(max) && date.after(min);
-//    }
 
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
@@ -856,15 +528,17 @@ public class DBApp implements Serializable {
 	// htblColNameValue holds the key and value. This will be used in search
 	// to identify which rows/tuples to delete.
 	// htblColNameValue enteries are ANDED together
-	public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColNameValue) throws IOException {
+
+
+	public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColNameValue) throws IOException, ClassNotFoundException {
 		Enumeration<String> columnNames = htblColNameValue.keys();
-		
-		
+
+		String indexName = "";
 		int i=0;
-	
+
 		while(columnNames.hasMoreElements()) {
-			
-			
+
+
 			String insertedColName = columnNames.nextElement();
 			//Object insertedvalue = htblColNameValue.get(insertedColName);
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
@@ -891,19 +565,21 @@ public class DBApp implements Serializable {
 					if (content[1].equals(insertedColName)&& !content[4].equals("Null"))
 					{
 						i++;
+						indexName = content[4];
 					}
-					
+
 				}
-				
+
 			}
 			br.close();
 		}
 		if(i==3) {
+			loadIndex(strTableName, indexName);
 			return true;
 		}
-		
-		
-		
+
+
+
 		return false;
 	}
 	public void deleteUsingIndex(String strTableName,
@@ -920,17 +596,17 @@ public class DBApp implements Serializable {
 		while (columnNames.hasMoreElements()) {
 			columnName = columnNames.nextElement();
 			columnValue = htblColNameValue.get(columnName);
-			
-				if(columnName.equals(loadedOctree.getxName())) {
-					columnsSorted[0]=columnValue;
-				}
-				if(columnName.equals(loadedOctree.getyName())) {
-					columnsSorted[1]=columnValue;
-				}
-				if(columnName.equals(loadedOctree.getzName())) {
-					columnsSorted[2]=columnValue;
-				}
+
+			if(columnName.equals(loadedOctree.getxName())) {
+				columnsSorted[0]=columnValue;
 			}
+			if(columnName.equals(loadedOctree.getyName())) {
+				columnsSorted[1]=columnValue;
+			}
+			if(columnName.equals(loadedOctree.getzName())) {
+				columnsSorted[2]=columnValue;
+			}
+		}
 		if(loadedOctree.getRoot().search(columnsSorted)) {
 			UseNode= loadedOctree.getRoot().get(columnsSorted, false);
 			for(int j=0;j<UseNode.getRows().size();j++) {
@@ -939,20 +615,20 @@ public class DBApp implements Serializable {
 						&&UseNode.getRows().get(j).getZ().equals(columnsSorted[2])) {
 					deletePoints[k]= UseNode.getRows().get(j);
 					k++;
-							
+
 				}
 			}
 			//Now You have the points you want to delete in the array deletePoints, 
 			//now you need to remove them from the node and use their references to delete them from the table itself
 		}
-		
-		}
-	
+
+	}
+
 	public void deleteFromTable(String strTableName,
 			Hashtable<String,Object> htblColNameValue)
 					throws DBAppException, IOException, ClassNotFoundException
 	{
-		
+
 		// find el pages ele feha el 7aga
 		loadTable(strTableName);
 		loadPages(loadedTable);
@@ -967,9 +643,9 @@ public class DBApp implements Serializable {
 		boolean firstloop = true;
 		Vector<Row> tmpRows = new Vector<Row>();
 
-//		Enumeration<String> columnNames = htblColNameValue.keys();
-//			String columnName = columnNames.nextElement();
-//			Object columnValue = htblColNameValue.get(columnName);
+		//		Enumeration<String> columnNames = htblColNameValue.keys();
+		//			String columnName = columnNames.nextElement();
+		//			Object columnValue = htblColNameValue.get(columnName);
 
 		if (loadedPages.size() == 0) {
 			throw new DBAppException("The table is empty");
@@ -991,15 +667,15 @@ public class DBApp implements Serializable {
 			String columnName = getPrimaryKey(strTableName, htblColNameValue);
 			Object columnValue = htblColNameValue.get(columnName);
 
-//				if(!loadedTable.getPages().contains(columnValue))
-//					throw new DBAppException();
-//				
-//				
-//				for(int i=0;i<loadedTable.getPages().size(); i++)
-//				{
-//					Page p= loadedTable.getPages().get(i);
-//					
-//				}
+			//				if(!loadedTable.getPages().contains(columnValue))
+			//					throw new DBAppException();
+			//				
+			//				
+			//				for(int i=0;i<loadedTable.getPages().size(); i++)
+			//				{
+			//					Page p= loadedTable.getPages().get(i);
+			//					
+			//				}
 
 			// law el value ely badawar 3aleha aslan msh 3andy?? daniela
 			while (!found && lowPage <= highPage && lowRow <= highRow) {
@@ -1076,7 +752,7 @@ public class DBApp implements Serializable {
 							{
 								Row shift = loadedPages.get(midPage + 1).getRow(0);
 
-//									this.insertIntoTable(loadedTable.getTableName(), shift);
+								//									this.insertIntoTable(loadedTable.getTableName(), shift);
 								loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getNumUsedRows()));
 
 								loadedPages.get(midPage + 1).deleteRowAtIndex(0);
@@ -1131,7 +807,7 @@ public class DBApp implements Serializable {
 					for (int i = 0; i < tmpRows.size(); i++) {
 						Row r = tmpRows.get(i);
 						if (!(r.getValue(columnName).equals(columnValue)))// law el second column doesnt satisfy the
-																			// condition, remove the row from tmp rows
+							// condition, remove the row from tmp rows
 						{
 							tmpRows.remove(r);
 							i--;
@@ -1170,7 +846,7 @@ public class DBApp implements Serializable {
 					{
 						Row shift = loadedPages.get(i + 1).getRow(0);
 
-//						this.insertIntoTable(loadedTable.getTableName(), shift);
+						//						this.insertIntoTable(loadedTable.getTableName(), shift);
 						loadedPages.get(i).addRow(shift, (loadedPages.get(i).getNumUsedRows()));
 
 						loadedPages.get(i + 1).deleteRowAtIndex(0);
@@ -1203,40 +879,18 @@ public class DBApp implements Serializable {
 
 	}
 
-	public int compare(Object x, String y) {
-		if (x instanceof String)
-			return ((String) x).compareTo(y);
-		if (x instanceof Double) {
-			Double yy = Double.parseDouble(y);
-			if ((Double) x > yy)
-				return 1;
-			else if ((Double) x < yy)
-				return -1;
-			else
-				return 0;
-		}
 
-		Integer yy = Integer.parseInt(y);
-		if ((Integer) x > yy)
-			return 1;
-		else if ((Integer) x < yy)
-			return -1;
-
-		return 0;
-
-	}
-
-//	 following method creates an octree
-//	 depending on the count of column names passed.
-//	 If three column names are passed, create an octree.
-//	 If only one or two column names is passed, throw an Exception.
+	//	 following method creates an octree
+	//	 depending on the count of column names passed.
+	//	 If three column names are passed, create an octree.
+	//	 If only one or two column names is passed, throw an Exception.
 	public void createIndex(String strTableName, String[] strarrColName)
 			throws DBAppException, IOException, ClassNotFoundException {
 		String pkname = "";
 
 		if (strarrColName.length != 3)
 			throw new DBAppException();
-//===============================================================================
+		//===============================================================================
 
 		// validate en el 3 column names dol mawgoden lel table dah
 
@@ -1269,7 +923,7 @@ public class DBApp implements Serializable {
 			br.close();
 		}
 
-//==================================================================
+		//==================================================================
 
 		// edit the csv content
 
@@ -1347,55 +1001,380 @@ public class DBApp implements Serializable {
 
 	}
 
-//	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
-//	String[] strarrOperators)
-//	throws DBAppException
-//	{
-//		
-//	}
+	//	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
+	//	String[] strarrOperators)
+	//	throws DBAppException
+	//	{
+	//		
+	//	}
+
+
+
+	//----------------LOADS AND SAVES/HELPER METHODS--------------------------------------
+
+
+	public void loadPages(Table table) throws ClassNotFoundException, IOException {
+		loadedPages = new Vector<Page>();
+		Vector<String> pages = table.getPages();
+		for (String s : pages) {
+			// load the page file from disk
+			File pageFile = new File(s + ".class");
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(pageFile));
+			Page page = (Page) in.readObject();
+			loadedPages.add(page);
+			in.close();
+
+		}
+	}
+
+	public void savePages() throws IOException {
+		for (Page p : loadedPages) {
+			File pageFile = new File(p.getPageName() + ".class");
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(pageFile));
+			out.writeObject(p);
+			out.close();
+		}
+		loadedPages = null;
+	}
+
+	public void loadTable(String tableName) throws ClassNotFoundException, IOException {
+		loadedTable = new Table(tableName);
+
+		File tableFile = new File(tableName + ".class");
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(tableFile));
+		Table out = (Table) in.readObject();
+		loadedTable = out;
+		in.close();
+
+	}
+
+	public void saveTable() throws IOException {
+		File tableFile = new File(loadedTable.getTableName() + ".class");
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tableFile));
+		out.writeObject(loadedTable);
+		out.close();
+
+		loadedTable = null;
+	}
+
+	public void loadIndex(String tableName, String indexName) throws FileNotFoundException, IOException, ClassNotFoundException
+	{
+
+
+		File indexFile = new File(indexName + tableName + ".class");
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(indexFile));
+		OctTree out = (OctTree) in.readObject();
+		loadedOctree = out;
+		loadedIndexName = indexName;
+		in.close();
+	}
+
+	public void saveIndex() throws IOException
+	{
+		File indexFile = new File(loadedIndexName + loadedTable.getTableName() + ".class");
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
+		out.writeObject(loadedOctree);
+		out.close();
+	}
+
+	public static Date parseStringToDate(String date) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			return format.parse(date);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static boolean isValidDate(Date date, Date min, Date max) {
+		return date.compareTo(min) >= 0 && max.compareTo(date) >= 0;
+	}
+
+	public boolean checkTypeMinMax(Enumeration<String> columnNames, Hashtable<String, String> htblColNameType,
+			Hashtable<String, String> htblColNameMin, Hashtable<String, String> htblColNameMax) {
+		boolean flag = true;
+		while (columnNames.hasMoreElements()) {
+			String columnName = columnNames.nextElement();
+			String columnType = htblColNameType.get(columnName);
+			String min = htblColNameMin.get(columnName);
+			String max = htblColNameMax.get(columnName);
+			if (columnType == "java.lang.Integer") {
+				try {
+					Integer.parseInt(min);
+					Integer.parseInt(max);
+				} catch (NumberFormatException e) {
+					return false;
+				}
+				if (Integer.parseInt(min) > Integer.parseInt(max))
+					return false;
+			}
+			if (columnType == "java.lang.Double") {
+				try {
+					Double.parseDouble(min);
+					Double.parseDouble(max);
+				} catch (NumberFormatException e) {
+					return false;
+				}
+				if (Double.parseDouble(min) > Double.parseDouble(max))
+					return false;
+			}
+			if (columnType == "java.lang.String") {
+
+				if (min.compareTo(max) < 0) {
+					return false;
+				}
+			}
+			if (columnType == "java.util.Date" || columnType == "java.text.SimpleDateFormat") {
+				String format = "YYYY-MM-DD";
+				SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+				dateFormat.setLenient(true);
+				Date date1;
+				Date date2;
+				try {
+					dateFormat.parse(min.trim());
+					dateFormat.parse(max.trim());
+					date1 = dateFormat.parse(min);
+					date2 = dateFormat.parse(max);
+				} catch (ParseException e) {
+					return false;
+				}
+
+				if (date1.compareTo(date2) > 0) {
+					return false;
+
+				}
+			}
+		}
+		return true;
+	}
+
+	private void insertNullValues(Hashtable<String, Object> htblColNameValue, String strTableName) {
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			ArrayList<String> missingAtt = new ArrayList<String>();
+			while ((line = br.readLine()) != null) {
+				String[] values = line.split(",");
+				if (values[0].equals(strTableName)) {
+					missingAtt.add(values[1]);
+				}
+			}
+			br.close();
+
+			Enumeration<String> e = htblColNameValue.keys();
+			while (e.hasMoreElements()) {
+				String s = (String) e.nextElement();
+				if (missingAtt.contains(s)) {
+					missingAtt.remove(s);
+				}
+			}
+
+			for (String s : missingAtt) {
+				htblColNameValue.put(s, new nullWrapper());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public boolean checkForPrimaryKey(String strTableName, Hashtable<String, Object> htblColNameValue)
+			throws IOException {
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		while (columnNames.hasMoreElements()) {
+			String columnName = columnNames.nextElement();
+			Object columnValue = htblColNameValue.get(columnName);
+
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			line = br.readLine();
+			while (line != null) {
+				String[] content = line.split(",");
+				if (content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("true")) {
+
+					br.close();
+					return true;
+				}
+				line = br.readLine();
+			}
+			br.close();
+
+		}
+		return false;
+	}
+
+	public String getPrimaryKey(String strTableName, Hashtable<String, Object> htblColNameValue) throws IOException {
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		while (columnNames.hasMoreElements()) {
+			String columnName = columnNames.nextElement();
+			Object columnValue = htblColNameValue.get(columnName);
+
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			line = br.readLine();
+			while (line != null) {
+				String[] content = line.split(",");
+				if (content[0].equals(strTableName) && content[1].equals(columnName) && content[3].equals("true")) {
+					br.close();
+					return content[1];
+				}
+				line = br.readLine();
+			}
+			br.close();
+
+		}
+		return "";
+	}
+
+	public boolean validateHashtable(String strTableName, Hashtable<String, Object> htblColNameValue)
+			throws IOException {
+
+		Hashtable<String, Object> tmphtbl = new Hashtable<String, Object>();
+		Enumeration<String> columnNamestmp = htblColNameValue.keys();
+		//		String columnName = columnNamestmp.nextElement();
+		//		Object columnValue = htblColNameValue.get(columnName);
+		while (columnNamestmp.hasMoreElements()) {
+			String columnName = columnNamestmp.nextElement();
+			Object columnValue = htblColNameValue.get(columnName);
+			tmphtbl.put(columnName, columnValue);
+			//			columnNamestmp.nextElement();
+		}
+
+		Enumeration<String> columnNames = tmphtbl.keys();
+		boolean firstloop = true;
+		while (columnNames.hasMoreElements()) // ben loop 3ala el hashtable
+		{
+			String insertedColName = columnNames.nextElement();
+			Object insertedvalue = tmphtbl.get(insertedColName);
+
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+
+			if (firstloop)
+				line = br.readLine();
+
+			firstloop = false;
+			while (line != null) {
+				String[] content = line.split(",");
+
+				if (content[0].equals(strTableName) && insertedColName.equals(content[1]))// law el line ely ana masko
+					// mawgod fel htbl
+				{
+
+					if (content[2].equals(insertedvalue.getClass().getName())) {
+						if ((insertedvalue.getClass().getName()).equals("java.lang.Integer")) {
+							int min = Integer.parseInt(content[6]);
+							int max = Integer.parseInt(content[7]);
+
+							if ((int) insertedvalue >= min && (int) insertedvalue <= max) {
+								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
+								break;
+								//									if (content [3] == "TRUE")
+								//									{
+								//										//new
+								//										pk = content[1];
+								//										insertedPkValue = htblColNameValue.get(pk);
+								//										if(!insertedPkValue.equals(null)) {
+								//											primaryexists = true;
+								//										}
+								//									}
+							}
+						}
+
+						else if ((insertedvalue.getClass().getName()).equals("java.lang.Double")) {
+
+							int min = Integer.parseInt(content[6]);
+							int max = Integer.parseInt(content[7]);
+
+							if ((double) insertedvalue >= min && (double) insertedvalue <= max) {
+								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
+								break;
+								//									if (content [3] == "TRUE")
+								//									{
+								//										//new
+								//										pk = content[1];
+								//										insertedPkValue = htblColNameValue.get(pk);
+								//										if(!insertedPkValue.equals(null)) {
+								//											primaryexists = true;
+								//										}
+								//									}
+							}
+
+						}
+
+						else if ((insertedvalue.getClass().getName()).equals("java.lang.String")) {
+							String min = content[6];
+							String max = content[7];
+							String insertedvalstring = (String) insertedvalue;
+							int comparemin = insertedvalstring.compareToIgnoreCase(min);
+							int comparemax = insertedvalstring.compareToIgnoreCase(max);
+							if (comparemin >= 0 && comparemax <= 0) {
+								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
+								break;
+								//									if (content [3] == "TRUE")
+								//									{
+								//										//new
+								//										pk = content[1];
+								//										insertedPkValue = htblColNameValue.get(pk);
+								//										if(!insertedPkValue.equals(null)) {
+								//											primaryexists = true;
+								//										}
+								//									}
+							}
+						} else {
+							tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
+						}
+
+					}
+
+				}
+
+				line = br.readLine();
+			}
+
+			br.close();
+
+		} // a5er el while bta3et el htbl
+
+		if (tmphtbl.isEmpty())
+			return true;
+		else
+			return false;
+
+	}
+
+	public int compare(Object x, String y) {
+		if (x instanceof String)
+			return ((String) x).compareTo(y);
+		if (x instanceof Double) {
+			Double yy = Double.parseDouble(y);
+			if ((Double) x > yy)
+				return 1;
+			else if ((Double) x < yy)
+				return -1;
+			else
+				return 0;
+		}
+
+		Integer yy = Integer.parseInt(y);
+		if ((Integer) x > yy)
+			return 1;
+		else if ((Integer) x < yy)
+			return -1;
+
+		return 0;
+
+	}
+
+
+
+
+
+
+
+
+
+
 
 }
 
-/*
- * boolean found = false; int i =0; while(!found){ int low = 0; int high =
- * loadedPages.get(i).getNumUsedRows() - 1;
- * 
- * while (low <= high) { int mid = (low + high) / 2;
- * if(insertedPkValue.getClass().toString() == "java.lang.Double" ||
- * insertedPkValue.getClass().toString() == "java.lang.Integer") { Double
- * compare = (Double)loadedPages.get(i).getRow(mid).getValue(pk) -
- * (Double)insertedPkValue;
- * 
- * if (compare > 0) { high = mid - 1;
- * 
- * } else if (compare < 0) { low = mid + 1; } else if(compare ==0) { found =
- * true; break; }
- * 
- * 
- * if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
- * if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
- * break;
- * 
- * } else { insertPageIndex = i; insertRowIndex =
- * loadedPages.get(i).getNumUsedRows(); }
- * 
- * } } else { String x = (String)loadedPages.get(i).getRow(mid).getValue(pk); if
- * (x.compareTo((String)insertedPkValue)<0) {
- * 
- * low = mid + 1;
- * 
- * } else if (x.compareTo((String)insertedPkValue)>0) { high = mid - 1; } else
- * if(x.compareTo((String)insertedPkValue)==0) { found = true; break; }
- * 
- * 
- * if(low >=loadedPages.get(i).getNumUsedRows() - 1) {
- * if(loadedPages.get(i).getMaxRows()==loadedPages.get(i).getNumUsedRows()) {
- * break;
- * 
- * } else { insertPageIndex = i; insertRowIndex =
- * loadedPages.get(i).getNumUsedRows(); }
- * 
- * } } if(low ==high) { insertPageIndex = i; insertRowIndex = low; } }
- * 
- * i++;}
- */
