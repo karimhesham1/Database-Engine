@@ -396,7 +396,7 @@ public class Node implements Serializable{
         	
         	
         	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>(this.rowPoint.size());
-        	
+        	tmps=rowPoint;
         	Vector<Point> tmp= new Vector<Point>(this.rowPoint.get(0).size());
         	tmp = rowPoint.get(0); //new
         	int i=0;
