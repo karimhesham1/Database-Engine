@@ -13,13 +13,13 @@ public class Node implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 		private static final int MAX_ENTRIES = 16;
-        private Vector<Point> rowPoint;
+        private Vector< Vector<Point> > rowPoint;
         private Node[] children;
         private Object xMin,xMax,yMin,yMax,zMin,zMax;
         private String xType,yType,zType;
 
         public Node() {
-           rowPoint= new Vector<Point>(MAX_ENTRIES);
+           rowPoint= new Vector< Vector<Point> >(MAX_ENTRIES);
            children = null;
         }
         
