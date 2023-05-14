@@ -11,9 +11,26 @@ public class OctTree implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Node root;
+	private String xName,yName,zName;
     
+	
 
-    public OctTree(String tableName,String[] columns) {
+	public Node getRoot() {
+		return root;
+	}
+    public String getxName() {
+		return xName;
+	}
+
+	public String getyName() {
+		return yName;
+	}
+
+	public String getzName() {
+		return zName;
+	}
+
+	public OctTree(String tableName,String[] columns) {
         this.root = new Node();
         this.root.newParent();
         try {
@@ -22,6 +39,9 @@ public class OctTree implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        this.xName=columns[0];
+        this.yName=columns[1];
+        this.zName=columns[2];
        
        
         

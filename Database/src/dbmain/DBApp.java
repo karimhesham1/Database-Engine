@@ -797,13 +797,11 @@ public class DBApp implements Serializable {
 			int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 			int midRow = (lowRow + highRow) / 2;
 			while (!found && lowPage <= highPage && lowRow <= highRow) {
-				Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow)
-						.getValue(pkName);
+				Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
 				int compare = compare(pkValue, strClusteringKeyValue);
 
 				if (compare > 0) {
-					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow)
-							.getValue(pkName);
+					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(pkName);
 					int compare2 = compare(pkValue2, strClusteringKeyValue);
 					if (compare2 > 0) {
 						highPage = midPage - 1;
@@ -815,8 +813,7 @@ public class DBApp implements Serializable {
 						midRow = (lowRow + highRow) / 2;
 					}
 				} else if (compare < 0) {
-					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow)
-							.getValue(pkName);
+					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow).getValue(pkName);
 					int compare2 = compare(pkValue2, strClusteringKeyValue);
 					if (compare2 < 0) {
 						lowPage = midPage + 1;
@@ -912,14 +909,50 @@ public class DBApp implements Serializable {
 	public void deleteUsingIndex(String strTableName,
 			Hashtable<String,Object> htblColNameValue) {
 		/////////////////////////HERRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-	}
+		Enumeration<String> columnNames = htblColNameValue.keys();
+		String columnName;
+		Object columnValue;
+		Object[] columnsSorted = new Object[3];
+		columnNames = htblColNameValue.keys();
+		Node UseNode;
+		Point[] deletePoints = new Point[16];
+		int k =0;
+		while (columnNames.hasMoreElements()) {
+			columnName = columnNames.nextElement();
+			columnValue = htblColNameValue.get(columnName);
+			
+				if(columnName.equals(loadedOctree.getxName())) {
+					columnsSorted[0]=columnValue;
+				}
+				if(columnName.equals(loadedOctree.getyName())) {
+					columnsSorted[1]=columnValue;
+				}
+				if(columnName.equals(loadedOctree.getzName())) {
+					columnsSorted[2]=columnValue;
+				}
+			}
+		if(loadedOctree.getRoot().search(columnsSorted)) {
+			UseNode= loadedOctree.getRoot().get(columnsSorted, false);
+			for(int j=0;j<UseNode.getRows().size();j++) {
+				if(UseNode.getRows().get(j).getX().equals(columnsSorted[0])
+						&&UseNode.getRows().get(j).getY().equals(columnsSorted[1])
+						&&UseNode.getRows().get(j).getZ().equals(columnsSorted[2])) {
+					deletePoints[k]= UseNode.getRows().get(j);
+					k++;
+							
+				}
+			}
+			//Now You have the points you want to delete in the array deletePoints, 
+			//now you need to remove them from the node and use their references to delete them from the table itself
+		}
+		
+		}
+	
 	public void deleteFromTable(String strTableName,
 			Hashtable<String,Object> htblColNameValue)
 					throws DBAppException, IOException, ClassNotFoundException
 	{
-		if(hasIndex(strTableName,htblColNameValue)) {
-			deleteUsingIndex(strTableName,htblColNameValue);
-		}
+		
 		// find el pages ele feha el 7aga
 		loadTable(strTableName);
 		loadPages(loadedTable);
@@ -927,7 +960,9 @@ public class DBApp implements Serializable {
 		boolean valid = validateHashtable(strTableName, htblColNameValue);
 		if (!valid)
 			throw new DBAppException("htbl not valid");
-
+		if(hasIndex(strTableName,htblColNameValue)) {
+			deleteUsingIndex(strTableName,htblColNameValue);
+		}
 		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue);
 		boolean firstloop = true;
 		Vector<Row> tmpRows = new Vector<Row>();
@@ -1213,7 +1248,7 @@ public class DBApp implements Serializable {
 			String line = br.readLine();
 			while (line != null) {
 				String[] content = line.split(",");
-				if (content[0].equals(strTableName) && content[3].equals(true))
+				if (content[0].equals(strTableName) && content[3].equals("true"))
 					pkname = content[1];
 				if (content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("null")
 						&& content[5].equals("null")) {

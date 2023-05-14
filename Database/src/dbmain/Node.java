@@ -595,7 +595,187 @@ public class Node implements Serializable{
         	}
         }
         
-        
+        public boolean search(Object[] findMe )
+        {
+        	Object x= findMe[0];
+        	Object y= findMe[1];
+        	Object z= findMe[2];
+        	
+        	//lw el point bara el range aslun 
+        	//check lw equal mksla afkr now now hfkr fel bus 
+        	
+        	if(compare(x,this.xMin)<0||compare(y,this.yMin)<0||compare(z,this.zMin)<0
+        			||  compare(x,this.xMax)>0|| compare(y,this.yMax)>0|| compare(z,this.zMax)>0)
+        		return false;
+        	
+        	
+        	
+      		Object midx = null;
+    		Object midy = null;;
+    		Object midz = null;
+    		//int
+        	if(xType.equals("java.lang.Integer"))
+        	{
+        		midx = (int) this.xMax+ (int) this.xMin/2;
+        		x=(int) findMe[0];
+        	}
+            
+        	if(yType.equals("java.lang.Integer"))
+        	{
+        	midy = (int) this.yMax+ (int) this.yMin/2;
+            y=(int) findMe[1];
+        	}
+        	if(zType.equals("java.lang.Integer")) 
+            {
+            midz =(int) this.zMax+ (int) this.zMin/2;
+            z=(int) findMe[2];
+            }
+            
+        	
+        	//double
+        	if(xType.equals("java.lang.Double"))
+            {
+            	midx = (double)this.xMax+(double) this.xMin/2;
+            	x=(double)findMe[0];
+            }
+            
+            if(yType.equals("java.lang.Double"))
+            {
+            	midy = (double)this.yMax+ (double) this.yMin/2;
+            	y=(int) findMe[1];
+            }
+            
+            
+            if(zType.equals("java.lang.Double"))
+            {
+            	midz =(double) this.zMax+ (double) this.zMin/2;
+            	z=(double) findMe[2];
+            }
+            
+            //string 
+            if(xType.equals("java.lang.String"))
+            {
+        		midx = printMiddleString((String)xMin,(String)xMax);
+        		x=(String) findMe[0]; 
+            }
+            if(yType.equals("java.lang.String"))
+            {
+        		midy = printMiddleString((String)yMin,(String)yMax);
+        		y=(String) findMe[1]; 
+            }
+            if(zType.equals("java.lang.String"))
+            {
+        		midz = printMiddleString((String)zMin,(String)zMax);
+        		z=(String) findMe[2];
+            }
+         
+            //date 
+            if(xType.equals("java.util.Date"))
+            {
+        		try {
+					midx = getMiddleDate((String)xMin,(String)xMax);
+					x=(Date) findMe[0];
+					
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+            
+            if(yType.equals("java.util.Date"))
+            {
+        		try {
+					midy = getMiddleDate((String)yMin,(String)yMax);
+					y=(Date) findMe[1];
+					
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+            
+            if(zType.equals("java.util.Date"))
+            {
+        		try {
+					midz = getMiddleDate((String)zMin,(String)zMax);
+					z=(Date) findMe[2];
+					
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+            
+            
+            //------------------------------------------------------------------------
+            
+            if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+            {
+            	for(int i=0; i<this.rowPoint.size(); i++)
+            	{
+            		if( compare(this.rowPoint.get(i).getX(), x)==0
+            				&& compare(this.rowPoint.get(i).getY(), y)==0
+            				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+            				return true; 
+            	}
+            }
+            else 
+            {
+            	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
+                if(compare(x,midx)<1)
+                	{
+                	if(compare(y,midy)<1)
+                	{
+                		{
+                		if(compare(z,midz)<1) //low low low
+                			this.children[0].search(findMe);
+                		else //low low high
+                			this.children[1].search(findMe);
+                		}
+                
+                
+                	}
+                	else 
+                	{
+                		{
+                    		if(compare(z,midz)<1) //low high low 
+                    			this.children[2].search(findMe);
+                    		else //low high high 
+                    			this.children[3].search(findMe);
+                    		}
+                	}
+                	}
+                else // x aslun high 
+                {
+                	if(compare(y,midy)<1)
+                	{
+                		{
+                		if(compare(z,midz)<1) //high low low
+                			this.children[4].search(findMe);
+                		else //high low high
+                			this.children[5].search(findMe);
+                		}
+                
+                
+                	}
+                	else 
+                	{
+                		{
+                    		if(compare(z,midz)<1) //high high low 
+                    			this.children[6].search(findMe);
+                    		else //high high high 
+                    			this.children[7].search(findMe);
+                    		}
+                	}
+                }
+                		
+                
+        	}
+            
+            
+        	// m3nosh 3yal w m3ndosh kalba lesa 
+        	return false;
+        }
         public boolean search(Point findMe )
         {
         	Object x= findMe.getX();
@@ -776,6 +956,194 @@ public class Node implements Serializable{
             
         	// m3nosh 3yal w m3ndosh kalba lesa 
         	return false;
+        }
+        
+        public Node get(Object[] findMyNode,  boolean found)
+        {
+        	
+        	//if point == null ??
+        	
+        	
+        	
+        	if(search(findMyNode )&&  found ==false ) // lw mwgoda aslun 
+        	{
+        		
+        		Object x= null;
+        		Object y= null;
+            	Object z = null;
+            	
+          		Object midx = null;
+        		Object midy = null;;
+        		Object midz = null;
+        		
+        		// ana bgeb el values bs 
+        		if(xType.equals("java.lang.Integer"))
+            	{
+            		midx = (int) this.xMax+ (int) this.xMin/2;
+            		x=(int) findMyNode[0];
+            	}
+                
+            	if(yType.equals("java.lang.Integer"))
+            	{
+            	midy = (int) this.yMax+ (int) this.yMin/2;
+                y=(int) findMyNode[1];
+            	}
+            	if(zType.equals("java.lang.Integer")) 
+                {
+                midz =(int) this.zMax+ (int) this.zMin/2;
+                z=(int) findMyNode[2];
+                }
+                
+            	
+            	//double
+            	if(xType.equals("java.lang.Double"))
+                {
+                	midx = (double)this.xMax+(double) this.xMin/2;
+                	x=(double)findMyNode[0];
+                }
+                
+                if(yType.equals("java.lang.Double"))
+                {
+                	midy = (double)this.yMax+ (double) this.yMin/2;
+                	y=(int) findMyNode[1];
+                }
+                
+                
+                if(zType.equals("java.lang.Double"))
+                {
+                	midz =(double) this.zMax+ (double) this.zMin/2;
+                	z=(double) findMyNode[2];
+                }
+                
+                //string 
+                if(xType.equals("java.lang.String"))
+                {
+            		midx = printMiddleString((String)xMin,(String)xMax);
+            		x=(String) findMyNode[0];
+                }
+                if(yType.equals("java.lang.String"))
+                {
+            		midy = printMiddleString((String)yMin,(String)yMax);
+            		y=(String) findMyNode[1];
+                }
+                if(zType.equals("java.lang.String"))
+                {
+            		midz = printMiddleString((String)zMin,(String)zMax);
+            		z=(String) findMyNode[2];
+                }
+             
+                //date 
+                if(xType.equals("java.util.Date"))
+                {
+            		try {
+    					midx = getMiddleDate((String)xMin,(String)xMax);
+    					x=(Date) findMyNode[0];
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+                
+                if(yType.equals("java.util.Date"))
+                {
+            		try {
+    					midy = getMiddleDate((String)yMin,(String)yMax);
+    					y=(Date) findMyNode[1];
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+                
+                if(zType.equals("java.util.Date"))
+                {
+            		try {
+    					midz = getMiddleDate((String)zMin,(String)zMax);
+    					z=(Date) findMyNode[2];
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+        		
+                
+                
+                //------------------------------------------------------------------------
+                
+                if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+                {
+                	for(int i=0; i<this.rowPoint.size(); i++)
+                	{
+                		if( compare(this.rowPoint.get(i).getX(), x)==0
+                				&& compare(this.rowPoint.get(i).getY(), y)==0
+                				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+                		{
+                				found=true;
+                				return this; 
+                		}
+                	}
+                }
+                else 
+                {
+                	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
+                    if(compare(x,midx)<1)
+                    	{
+                    	if(compare(y,midy)<1)
+                    	{
+                    		{
+                    		if(compare(z,midz)<1) //low low low
+                    			this.children[0].get(findMyNode, found);
+                    		else //low low high
+                    			this.children[1].get(findMyNode, found);
+                    		}
+                    
+                    
+                    	}
+                    	else 
+                    	{
+                    		{
+                        		if(compare(z,midz)<1) //low high low 
+                        			this.children[2].get(findMyNode, found);
+                        		else //low high high 
+                        			this.children[3].get(findMyNode, found);
+                        		}
+                    	}
+                    	}
+                    else // x aslun high 
+                    {
+                    	if(compare(y,midy)<1)
+                    	{
+                    		{
+                    		if(compare(z,midz)<1) //high low low
+                    			this.children[4].get(findMyNode, found);
+                    		else //high low high
+                    			this.children[5].get(findMyNode, found);
+                    		}
+                    
+                    
+                    	}
+                    	else 
+                    	{
+                    		{
+                        		if(compare(z,midz)<1) //high high low 
+                        			this.children[6].get(findMyNode, found);
+                        		else //high high high 
+                        			this.children[7].get(findMyNode, found);
+                        		}
+                    	}
+                    }
+                    		
+                    
+            	}
+  
+                
+        			}
+        	//lw hya msh mwgoda
+        	return null; 
+        			
         }
 
         
