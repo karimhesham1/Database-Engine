@@ -636,6 +636,7 @@ public class DBApp implements Serializable {
 	}
 
 	public void deleteFromTable(String strTableName,
+
 			Hashtable<String,Object> htblColNameValue)
 					throws DBAppException, IOException, ClassNotFoundException
 	{
@@ -890,6 +891,134 @@ public class DBApp implements Serializable {
 
 	}
 
+	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
+			String[] strarrOperators)
+			throws DBAppException, ClassNotFoundException, IOException
+	{
+		ArrayList<Row> result = new ArrayList<Row>();
+		boolean primary = false;
+		String pkColumn ="";
+		if (arrSQLTerms.length==0)
+		{
+			throw new DBAppException("arrSQLTerms must not empty");
+		}
+		//check eno el 4 fehom values
+		
+		String strTableName = arrSQLTerms[0]._strTableName;
+		loadTable(strTableName);
+		loadPages(loadedTable);
+		
+		for ( int i=0 ; i<arrSQLTerms.length ;i++ )
+		{
+			if (arrSQLTerms[i]._strTableName != strTableName)
+			{
+				throw new DBAppException("Different table names");
+			}
+			
+			
+			/////////////////////Validate Me/////////////////////
+			String colName = arrSQLTerms[i]._strColumnName;
+			boolean valid = false;
+			
+			
+
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			while (line != null) 
+			{
+				String[] content = line.split(",");
+			
+				if (content[0].equals(strTableName) && content[1].equals(colName)) 
+				{
+					valid = true;
+					if (content[3].equals("true"))
+					{
+						primary = true;
+						pkColumn = colName;
+					}
+
+				line = br.readLine();
+			}
+
+			if (!valid) {
+				br.close();
+				throw new DBAppException(
+						"inserted column names dont match the table's column names or already has an index");
+			}
+			///////////////Validated/////////////////////////////
+			
+//			if (colName == pkColumn )
+//			{
+//				
+//			}
+			for (Page p : loadedPages)
+			{
+				for (Row r : p.getRows())
+				{
+					
+					int operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
+					
+					String operator = arrSQLTerms[i]._strOperator;
+					
+					
+					switch (operator) {
+				    case ">":
+				        if (operationRes == 1)
+				        {
+				        	result.add(r);
+				        }
+				        break;
+				    case ">=":
+				    	if (operationRes==0 || operationRes == 1)
+				    	{
+				        	result.add(r);
+				        }
+				        break;
+				    case "<":
+				        if (operationRes == 1)
+				        {
+				        	result.add(r);
+				        }
+				        break;
+				    case "<=":
+				    	if (operationRes==0 || operationRes == -1)
+				    	{
+				        	result.add(r);
+				        }
+				        break;
+				    case "!=":
+				    	if (operationRes==1 || operationRes == -1)
+				    	{
+				        	result.add(r);
+				        }
+				        break;
+				    case "=":
+				    	if (operationRes==0)
+				    	{
+				        	result.add(r);
+				        }
+				        break;
+				    default:
+				    	throw new DBAppException("Unknown operator");
+
+
+				}
+				
+				}
+			}
+			
+			
+			
+		}
+		
+		}
+		return null;
+		
+		
+	}
+
+
+
 
 	//	 following method creates an octree
 	//	 depending on the count of column names passed.
@@ -1024,6 +1153,20 @@ public class DBApp implements Serializable {
 	//----------------LOADS AND SAVES/HELPER METHODS--------------------------------------
 
 
+	public static int compareOP(Object o1, Object o2) {
+        if (o1 instanceof Integer && o2 instanceof Integer) {
+            return Integer.compare((int) o1, (int) o2);
+        } else if (o1 instanceof Double && o2 instanceof Double) {
+            return Double.compare((double) o1, (double) o2);
+        } else if (o1 instanceof String && o2 instanceof String) {
+            return ((String) o1).compareTo((String) o2);
+        } else if (o1 instanceof Date && o2 instanceof Date) {
+            return ((Date) o1).compareTo((Date) o2);
+        } else {
+            throw new IllegalArgumentException("Objects must be of the same type");
+        }
+    }
+	
 	public void loadPages(Table table) throws ClassNotFoundException, IOException {
 		loadedPages = new Vector<Page>();
 		Vector<String> pages = table.getPages();
@@ -1355,6 +1498,7 @@ public class DBApp implements Serializable {
 	}
 
 	public int compare(Object x, String y) {
+
 		if (x instanceof String)
 			return ((String) x).compareTo(y);
 		if (x instanceof Double) {
