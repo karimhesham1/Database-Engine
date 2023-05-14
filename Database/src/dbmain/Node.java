@@ -63,12 +63,20 @@ public class Node implements Serializable{
 			this.zType = zType;
 		}
 
-		public void setRowPoint(Vector<Point> rowPoint) {
-			this.rowPoint = rowPoint;
-		}
+//		public void setRowPoint(Vector<Point> rowPoint) {
+//			this.rowPoint = rowPoint;
+//		}
 
 		public void setChildren(Node[] children) {
 			this.children = children;
+		}
+
+		public Vector<Vector<Point>> getRowPoint() {
+			return rowPoint;
+		}
+
+		public void setRowPoint(Vector<Vector<Point>> rowPoint) {
+			this.rowPoint = rowPoint;
 		}
 
 		public void setxMin(Object xMin) {
@@ -386,15 +394,15 @@ public class Node implements Serializable{
 //  
 //        	}
         	Vector<Point> tmp= new Vector<Point>(this.rowPoint.size());
-        	tmp = rowPoint; //new
+        	tmp = rowPoint.get(0); //new
         	int i=0;
         	while(!tmp.isEmpty())
         	{
         		
-        		int x = (int) this.rowPoint.get(i).getX();
-        		int y = (int) this.rowPoint.get(i).getY();
-        		int z = (int) this.rowPoint.get(i).getZ();
-        		Point p1 = this.rowPoint.get(i);
+        		int x = (int) this.rowPoint.get(i).get(0).getX();
+        		int y = (int) this.rowPoint.get(i).get(0).getY();
+        		int z = (int) this.rowPoint.get(i).get(0).getZ();
+        		Point p1 = this.rowPoint.get(i).get(0);
         		
         		
         		for(int j=0; j< this.children.length; j++)
@@ -426,9 +434,13 @@ public class Node implements Serializable{
         	
         	if (this.getChildren().length==0)
         	{
-        		if(this.getRows().size()<16) 
+        		if(this.getRowPoint().size()<16) 
         		{
-        			this.rowPoint.add(ref);
+        			Vector <Point> x= new Vector <Point>();
+        			x.add(ref);
+        			this.rowPoint.add( x );
+        			
+        			
         		}
         		else 
         		{
@@ -713,9 +725,9 @@ public class Node implements Serializable{
             {
             	for(int i=0; i<this.rowPoint.size(); i++)
             	{
-            		if( compare(this.rowPoint.get(i).getX(), x)==0
-            				&& compare(this.rowPoint.get(i).getY(), y)==0
-            				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+            		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0
+            				&& compare(this.rowPoint.get(i).get(0).getY(), y)==0
+            				&& compare(this.rowPoint.get(i).get(0).getZ(), z)==0 )
             				return true; 
             	}
             }
@@ -894,9 +906,9 @@ public class Node implements Serializable{
             {
             	for(int i=0; i<this.rowPoint.size(); i++)
             	{
-            		if( compare(this.rowPoint.get(i).getX(), x)==0
-            				&& compare(this.rowPoint.get(i).getY(), y)==0
-            				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+            		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0
+            				&& compare(this.rowPoint.get(i).get(0).getY(), y)==0
+            				&& compare(this.rowPoint.get(i).get(0).getZ(), z)==0 )
             				return true; 
             	}
             }
@@ -1077,9 +1089,9 @@ public class Node implements Serializable{
                 {
                 	for(int i=0; i<this.rowPoint.size(); i++)
                 	{
-                		if( compare(this.rowPoint.get(i).getX(), x)==0
-                				&& compare(this.rowPoint.get(i).getY(), y)==0
-                				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+                		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0
+                				&& compare(this.rowPoint.get(i).get(0).getY(), y)==0
+                				&& compare(this.rowPoint.get(i).get(0).getZ(), z)==0 )
                 		{
                 				found=true;
                 				return this; 
@@ -1266,9 +1278,9 @@ public class Node implements Serializable{
                 {
                 	for(int i=0; i<this.rowPoint.size(); i++)
                 	{
-                		if( compare(this.rowPoint.get(i).getX(), x)==0
-                				&& compare(this.rowPoint.get(i).getY(), y)==0
-                				&& compare(this.rowPoint.get(i).getZ(), z)==0 )
+                		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0
+                				&& compare(this.rowPoint.get(i).get(0).getY(), y)==0
+                				&& compare(this.rowPoint.get(i).get(0).getZ(), z)==0 )
                 		{
                 				found=true;
                 				return this; 
@@ -1339,10 +1351,10 @@ public class Node implements Serializable{
         public Node[] getChildren() {
         	return children;
         }
-        public Vector<Point> getRows(){
-        	return rowPoint;
-        }
-    
+//        public Vector<Point> getRows(){
+//        	return rowPoint;
+//        }
+//    
 
         
         public static int compare(Object o1, Object o2) {
