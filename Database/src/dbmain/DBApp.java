@@ -985,7 +985,8 @@ public class DBApp implements Serializable {
 					
 					String operator = arrSQLTerms[i]._strOperator;
 					
-					
+					if(i==0)
+					{
 					switch (operator) {
 				    case ">":
 				        if (operationRes == 1)
@@ -1025,18 +1026,192 @@ public class DBApp implements Serializable {
 				        break;
 				    default:
 				    	throw new DBAppException("Unknown operator");
-
-
 				}
-				
+
+			}
+					else
+					{
+					 String bigOp = strarrOperators[i];
+					 switch(bigOp)
+					 {
+					 case "AND":
+					 
+					
+						switch (operator) {
+					    case ">":
+					        if (operationRes == 1)
+					        {
+					        	result.add(r);
+					        }
+					        break;
+					    case ">=":
+					    	if (operationRes==0 || operationRes == 1)
+					    	{
+					        	result.add(r);
+					        }
+					        break;
+					    case "<":
+					        if (operationRes == 1)
+					        {
+					        	result.add(r);
+					        }
+					        break;
+					    case "<=":
+					    	if (operationRes==0 || operationRes == -1)
+					    	{
+					        	result.add(r);
+					        }
+					        break;
+					    case "!=":
+					    	if (operationRes==1 || operationRes == -1)
+					    	{
+					        	result.add(r);
+					        }
+					        break;
+					    case "=":
+					    	if (operationRes==0)
+					    	{
+					        	result.add(r);
+					        }
+					        break;
+					    default:
+					    	throw new DBAppException("Unknown operator");
+					}
+						break;
+						
+					 case "OR" :
+							switch (operator) {
+						    case ">":
+						        if (operationRes == 1)
+						        {
+						        	result.add(r);
+						        }
+						        break;
+						    case ">=":
+						    	if (operationRes==0 || operationRes == 1)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    case "<":
+						        if (operationRes == 1)
+						        {
+						        	result.add(r);
+						        }
+						        break;
+						    case "<=":
+						    	if (operationRes==0 || operationRes == -1)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    case "!=":
+						    	if (operationRes==1 || operationRes == -1)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    case "=":
+						    	if (operationRes==0)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    default:
+						    	throw new DBAppException("Unknown operator");
+						}
+							break;
+							
+							
+							
+					 case "XOR" :
+							switch (operator) {
+						    case ">":
+						        if (operationRes == 1)
+						        {
+						        	result.add(r);
+						        }
+						        break;
+						    case ">=":
+						    	if (operationRes==0 || operationRes == 1)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    case "<":
+						        if (operationRes == 1)
+						        {
+						        	result.add(r);
+						        }
+						        break;
+						    case "<=":
+						    	if (operationRes==0 || operationRes == -1)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    case "!=":
+						    	if (operationRes==1 || operationRes == -1)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    case "=":
+						    	if (operationRes==0)
+						    	{
+						        	result.add(r);
+						        }
+						        break;
+						    default:
+						    	throw new DBAppException("Unknown operator");
+						}
+							break;
+							
+							
+							default: 
+								throw new DBAppException("Unknown operator");
+								
+								
+						 
+						 
+						
+						
+						
+						
+					 }
+					 
+					}
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+					}
 				}
 			}
 			
 			
 			
+			
+			
+			
 		}
 		
-		}
+		
 		return null;
 		
 		
@@ -1211,6 +1386,14 @@ public class DBApp implements Serializable {
             throw new IllegalArgumentException("Objects must be of the same type");
         }
     }
+	
+	 public  ArrayList<Row> getRows(Table table ,  SQLTerm[] conditions)
+	 {
+		 ArrayList<Row> tempRes = new ArrayList<Row>();
+		 
+		return null;
+		 
+	 }
 	
 	public void loadPages(Table table) throws ClassNotFoundException, IOException {
 		loadedPages = new Vector<Page>();
