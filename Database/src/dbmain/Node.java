@@ -496,48 +496,99 @@ public class Node implements Serializable{
 //        		Point p1 = this.rowPoint.get(i);
 //  
 //        	}
-        	
-        	
-        	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>(this.rowPoint.size());
+        	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>();
         	tmps=rowPoint;
-        	Vector<Point> tmp= new Vector<Point>();
-        	tmp = rowPoint.get(0); //new
+        	
+        	
+        	
+        	 for (Vector<Point> vector : rowPoint)
+        	 {
+        		 tmps.add(new Vector<>(vector));
+             }
+        	
+        	
+        	
         	int i=0;
-        	int ii=0;
-        	while(!tmps.isEmpty()) 
-        	{
-        	while(!tmp.isEmpty())
-        	{
+        	while (!tmps.isEmpty())
+        	{	
+        	Object x= this.rowPoint.get(i).get(0).getX();
+        	Object y=  this.rowPoint.get(i).get(0).getY();
+        	Object z=  this.rowPoint.get(i).get(0).getZ();
+        	
+        	//leh keda
+        	Point p1 = this.rowPoint.get(i).get(0);
+        	
+        	for(int j=0; j< this.children.length; j++)
+    		{	
+        		int compareXMIN= compare(this.children[j].xMin, x);
+        		int compareXMax= compare(this.children[j].xMax, x);
         		
-        		int x = (int) this.rowPoint.get(i).get(0).getX();
-        		int y = (int) this.rowPoint.get(i).get(0).getY();
-        		int z = (int) this.rowPoint.get(i).get(0).getZ();
-        		Point p1 = this.rowPoint.get(i).get(0);
+        		int compareYMIN= compare(this.children[j].yMin, y);
+        		int compareYMax= compare(this.children[j].yMax, y);
         		
         		
-        		for(int j=0; j< this.children.length; j++)
-        		{	
-        			if( (int)this.children[j].xMin>x && (int)this.children[j].xMax<x
-        				&&	(int)this.children[j].yMin>y && (int)this.children[j].yMax<y	
-        				&&	(int)this.children[j].zMin>z && (int)this.children[j].zMax<z	
-        					)
-        			{
-        				insert(p1);
-        				tmp.remove(i);
-        				i--; //new
-        				break;
-        			}
+        		int compareZMIN= compare(this.children[j].zMin, z);
+        		int compareZMax= compare(this.children[j].zMax, z);
+        		if( compareXMIN !=1 && compareXMax ==1 &&
+        				compareYMIN!=1 && compareYMax==1 &&
+        				compareZMIN!=1 && compareZMax==1 
+        				)
+        		{
+        			children[j].insert( this.rowPoint.get(i));
+        			tmps.remove(i);
+        			i++;
+        			break;
         		}
         		
         		
-        		i++;
         		
-        	} 
-        	tmps.remove(ii);
-        	ii++;
+    		}
+        	this.rowPoint =new  Vector<Vector<Point>>();
+        	
         	}
         	
         	
+        	
+//        	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>(this.rowPoint.size());
+//        	tmps=rowPoint;
+//        	Vector<Point> tmp= new Vector<Point>();
+//        	tmp = rowPoint.get(0); //new
+//        	int i=0;
+//        	int ii=0;
+//        	while(!tmps.isEmpty()) 
+//        	{
+//        	while(!tmp.isEmpty())
+//        	{
+//        		
+//        		int x = (int) this.rowPoint.get(i).get(0).getX();
+//        		int y = (int) this.rowPoint.get(i).get(0).getY();
+//        		int z = (int) this.rowPoint.get(i).get(0).getZ();
+//        		Point p1 = this.rowPoint.get(i).get(0);
+//        		
+//        		
+//        		for(int j=0; j< this.children.length; j++)
+//        		{	
+//        			if( (int)this.children[j].xMin>x && (int)this.children[j].xMax<x
+//        				&&	(int)this.children[j].yMin>y && (int)this.children[j].yMax<y	
+//        				&&	(int)this.children[j].zMin>z && (int)this.children[j].zMax<z	
+//        					)
+//        			{
+//        				insert(p1);
+//        				tmp.remove(i);
+//        				i--; //new
+//        				break;
+//        			}
+//        		}
+//        		
+//        		
+//        		i++;
+//        		
+//        	} 
+//        	tmps.remove(ii);
+//        	ii++;
+//        	}
+//        	
+//        	
         }
         public void insert(Point ref) 
         {
@@ -719,6 +770,28 @@ public class Node implements Serializable{
                 
         	}
         }
+        
+        public void  insert(Vector<Point> a)
+        {
+        	this.rowPoint.add(a);
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         public boolean search(Object[] findMe )
         {
