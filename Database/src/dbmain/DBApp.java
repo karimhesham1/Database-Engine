@@ -1032,51 +1032,59 @@ public class DBApp implements Serializable {
 					else
 					{
 					 String bigOp = strarrOperators[i];
+					 for(int d=0; d<result.size(); d++)
+					 {
+					 operationRes = compareOP(arrSQLTerms[i]._objValue,result.get(d));
 					 switch(bigOp)
 					 {
 					 case "AND":
-					 
-					
+						 
+					boolean flag=false; 
 						switch (operator) {
 					    case ">":
 					        if (operationRes == 1)
 					        {
-					        	result.add(r);
+					        	flag=true;
 					        }
 					        break;
 					    case ">=":
 					    	if (operationRes==0 || operationRes == 1)
 					    	{
-					        	result.add(r);
+					    		flag=true;
 					        }
 					        break;
 					    case "<":
 					        if (operationRes == 1)
 					        {
-					        	result.add(r);
+					        	flag=true;
 					        }
 					        break;
 					    case "<=":
 					    	if (operationRes==0 || operationRes == -1)
 					    	{
-					        	result.add(r);
+					    		flag=true;
 					        }
 					        break;
 					    case "!=":
 					    	if (operationRes==1 || operationRes == -1)
 					    	{
-					        	result.add(r);
+					    		flag=true;
 					        }
 					        break;
 					    case "=":
 					    	if (operationRes==0)
 					    	{
-					        	result.add(r);
+					    		flag=true;
 					        }
 					        break;
 					    default:
 					    	throw new DBAppException("Unknown operator");
 					}
+						if(!flag)
+						{
+							result.remove(r);
+						}
+					
 						break;
 						
 					 case "OR" :
@@ -1084,37 +1092,43 @@ public class DBApp implements Serializable {
 						    case ">":
 						        if (operationRes == 1)
 						        {
-						        	result.add(r);
+						        	if(!(result.contains(r)))
+						        		result.add(r);
 						        }
 						        break;
 						    case ">=":
 						    	if (operationRes==0 || operationRes == 1)
 						    	{
-						        	result.add(r);
+						    		if(!(result.contains(r)))
+						    			result.add(r);
 						        }
 						        break;
 						    case "<":
 						        if (operationRes == 1)
 						        {
-						        	result.add(r);
+						        	if(!(result.contains(r)))
+						    			result.add(r);
 						        }
 						        break;
 						    case "<=":
 						    	if (operationRes==0 || operationRes == -1)
 						    	{
-						        	result.add(r);
+						    		if(!(result.contains(r)))
+						    			result.add(r);
 						        }
 						        break;
 						    case "!=":
 						    	if (operationRes==1 || operationRes == -1)
 						    	{
-						        	result.add(r);
+						    		if(!(result.contains(r)))
+						    			result.add(r);
 						        }
 						        break;
 						    case "=":
 						    	if (operationRes==0)
 						    	{
-						        	result.add(r);
+						    		if(!(result.contains(r)))
+						    			result.add(r);
 						        }
 						        break;
 						    default:
@@ -1179,7 +1193,7 @@ public class DBApp implements Serializable {
 						
 						
 					 }
-					 
+					 }
 					}
 						
 						
