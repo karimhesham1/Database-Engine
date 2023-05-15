@@ -929,12 +929,18 @@ public class DBApp implements Serializable {
 		}
 		//check eno el 4 fehom values
 		
+		
 		String strTableName = arrSQLTerms[0]._strTableName;
 		loadTable(strTableName);
 		loadPages(loadedTable);
 		
 		for ( int i=0 ; i<arrSQLTerms.length ;i++ )
 		{
+			if (arrSQLTerms[i]._strTableName==null || arrSQLTerms[i]._strColumnName==null || arrSQLTerms[i]._strOperator==null || arrSQLTerms[i]._objValue==null )
+			{
+				throw new DBAppException("missing conditon");
+			}
+			
 			if (arrSQLTerms[i]._strTableName != strTableName)
 			{
 				throw new DBAppException("Different table names");
