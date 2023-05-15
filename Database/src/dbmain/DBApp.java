@@ -1032,14 +1032,15 @@ public class DBApp implements Serializable {
 					else
 					{
 					 String bigOp = strarrOperators[i];
-					 for(int d=0; d<result.size(); d++)
-					 {
-					 operationRes = compareOP(arrSQLTerms[i]._objValue,result.get(d));
+					 
 					 switch(bigOp)
 					 {
 					 case "AND":
 						 
 					boolean flag=false; 
+					for(int d=0; d<result.size(); d++)
+					 {
+						operationRes = compareOP(arrSQLTerms[i]._objValue,result.get(d));
 						switch (operator) {
 					    case ">":
 					        if (operationRes == 1)
@@ -1085,9 +1086,12 @@ public class DBApp implements Serializable {
 							result.remove(r);
 						}
 					
-						break;
 						
+					 }
+					break;
+					
 					 case "OR" :
+						  operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
 							switch (operator) {
 						    case ">":
 						        if (operationRes == 1)
@@ -1139,60 +1143,64 @@ public class DBApp implements Serializable {
 							
 							
 					 case "XOR" :
+						 boolean xorFlag = false;
+						 
 							switch (operator) {
 						    case ">":
 						        if (operationRes == 1)
 						        {
-						        	result.add(r);
+						        	xorFlag=true;
 						        }
 						        break;
 						    case ">=":
 						    	if (operationRes==0 || operationRes == 1)
 						    	{
-						        	result.add(r);
+						    		xorFlag=true;
 						        }
 						        break;
 						    case "<":
 						        if (operationRes == 1)
 						        {
-						        	result.add(r);
+						        	xorFlag=true;
 						        }
 						        break;
 						    case "<=":
 						    	if (operationRes==0 || operationRes == -1)
 						    	{
-						        	result.add(r);
+						    		xorFlag=true;
 						        }
 						        break;
 						    case "!=":
 						    	if (operationRes==1 || operationRes == -1)
 						    	{
-						        	result.add(r);
+						    		xorFlag=true;
 						        }
 						        break;
 						    case "=":
 						    	if (operationRes==0)
 						    	{
-						        	result.add(r);
+						    		xorFlag=true;
 						        }
 						        break;
 						    default:
 						    	throw new DBAppException("Unknown operator");
 						}
+							
+							if (xorFlag)
+							{
+								if((result.contains(r)))
+									result.remove(r);
+								else
+									result.add(r);		
+							}
+							
 							break;
 							
 							
 							default: 
 								throw new DBAppException("Unknown operator");
-								
-								
-						 
-						 
-						
-						
-						
-						
-					 }
+
+					 
 					 }
 					}
 						
@@ -1225,8 +1233,9 @@ public class DBApp implements Serializable {
 			
 		}
 		
+		Iterator<Row> iterator =result.iterator();
 		
-		return null;
+		return iterator;
 		
 		
 	}
@@ -1401,13 +1410,7 @@ public class DBApp implements Serializable {
         }
     }
 	
-	 public  ArrayList<Row> getRows(Table table ,  SQLTerm[] conditions)
-	 {
-		 ArrayList<Row> tempRes = new ArrayList<Row>();
-		 
-		return null;
-		 
-	 }
+	
 	
 	public void loadPages(Table table) throws ClassNotFoundException, IOException {
 		loadedPages = new Vector<Page>();
