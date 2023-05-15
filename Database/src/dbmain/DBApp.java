@@ -569,6 +569,7 @@ public class DBApp implements Serializable {
 					}
 
 				}
+				line = br.readLine();
 
 			}
 			br.close();
@@ -916,10 +917,137 @@ public class DBApp implements Serializable {
 
 	}
 
+	public boolean hasIndexSelect(String strTableName, SQLTerm[] arrSQLTerms, String[] strarrOperators) throws IOException, ClassNotFoundException
+	{
+		for(int i=0 ; i<strarrOperators.length ; i++)
+		{
+			if(!strarrOperators[i].equals("AND"))
+				return false;
+		}
+		
+		if(arrSQLTerms.length!=3) //assume en mafesh 2 conditions on same column
+			return false;
+
+		
+		
+		String indexName = "";
+		int i=0;
+
+		for(int j=0;j<arrSQLTerms.length; j++) 
+		{
+
+
+			String insertedColName = arrSQLTerms[j]._strColumnName;
+			//Object insertedvalue = htblColNameValue.get(insertedColName);
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			boolean firstloop =true;
+			while (line != null) 
+			{
+
+				if (firstloop)
+					line = br.readLine();
+
+				firstloop = false;
+
+				String[] content = line.split(",");
+
+				if(content[0].equals(strTableName))
+				{
+
+					if (content[1].equals(insertedColName)&& !content[4].equals("Null"))
+					{
+						i++;
+						indexName = content[4];
+					}
+
+				}
+				 line = br.readLine();
+
+			}
+			br.close();
+		}
+		if(i==3) {
+			loadIndex(strTableName, indexName);
+			return true;
+		}
+
+
+
+		return false;
+	}
+	
+	public Iterator selectUsingIndex(SQLTerm[] arrSQLTerms,
+			String[] strarrOperators)
+	{
+		return null;
+//		int operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
+//		
+//		String operator = arrSQLTerms[i]._strOperator;
+//		
+//		if(i==0)
+//		{
+//		switch (operator) {
+//	    case ">":
+//	        if (operationRes == 1)
+//	        {
+//	        	result.add(r);
+//	        }
+//	        break;
+//	    case ">=":
+//	    	if (operationRes==0 || operationRes == 1)
+//	    	{
+//	        	result.add(r);
+//	        }
+//	        break;
+//	    case "<":
+//	        if (operationRes == 1)
+//	        {
+//	        	result.add(r);
+//	        }
+//	        break;
+//	    case "<=":
+//	    	if (operationRes==0 || operationRes == -1)
+//	    	{
+//	        	result.add(r);
+//	        }
+//	        break;
+//	    case "!=":
+//	    	if (operationRes==1 || operationRes == -1)
+//	    	{
+//	        	result.add(r);
+//	        }
+//	        break;
+//	    case "=":
+//	    	if (operationRes==0)
+//	    	{
+//	        	result.add(r);
+//	        }
+//	        break;
+//	    default:
+//	    	throw new DBAppException("Unknown operator");
+//	}
+//
+//}
+//		
+//		
+//		
+//		return null;
+	}
+	
 	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
 			String[] strarrOperators)
 			throws DBAppException, ClassNotFoundException, IOException
 	{
+		
+		if(hasIndexSelect(arrSQLTerms[0]._strTableName, arrSQLTerms, strarrOperators))
+		{
+			return selectUsingIndex(arrSQLTerms, strarrOperators);
+			//return;
+		}
+		
+		
+		
 		ArrayList<Row> result = new ArrayList<Row>();
 		boolean primary = false;
 		String pkColumn ="";
