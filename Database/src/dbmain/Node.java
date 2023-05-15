@@ -209,11 +209,11 @@ public class Node implements Serializable{
         	Object NextZ = null;
         	if(xType.equals("java.lang.Integer")||xType.equals("java.lang.Double")) { 
         		if(xType.equals("java.lang.Integer")) {
-        	 xMid= ((int)this.xMax- (int)this.xMin)/2 ;  //el double hena hayegy error ya nouuuuuuuuuuuuuuuuuuuuurrrrrrrrrrrrr
+        	 xMid= ((int)this.xMax- (int)this.xMin)/2 ; 
         	 NextX= (int)xMid+1;}
         		if(xType.equals("java.lang.Double")) {
-        			 xMid= ((Double)this.xMax- (Double)this.xMin)/2 ;
-                	 NextX= (Double)xMid+1;
+        			 xMid= (Double.parseDouble((String) this.xMax )- Double.parseDouble((String) this.xMin ))/2 ;
+                	 NextX= (double) xMid +1;
         		}
         	for(int i=0; i< 4; i++)
         	{
@@ -266,7 +266,7 @@ public class Node implements Serializable{
            	 NextY= (int)yMid+1;}
            		if(yType.equals("java.lang.Double")) {
            			 yMid= (Double.parseDouble( (String) this.yMax) - Double.parseDouble( (String)this.yMin)) /2 ;
-                   	 NextY= (Double)yMid+1;
+                   	 NextY= (double) yMid+1;
            		}
            		}
         	else if(yType.equals("java.lang.String")) {
@@ -319,8 +319,8 @@ public class Node implements Serializable{
            	 NextZ= (int)zMid+1;
            	 }
            		if(zType.equals("java.lang.Double")) {
-           			 zMid= ((Double)this.zMax- (Double)this.zMin)/2 ;
-                   	 NextZ= (Double)zMid+1;
+           			 zMid= (Double.parseDouble((String) this.zMax )- Double.parseDouble((String) this.zMin ))/2 ;
+                   	 NextZ= (double) zMid +1;
            		}
         	}
         	else if(zType.equals("java.lang.String")) {
@@ -382,19 +382,20 @@ public class Node implements Serializable{
         	
         	this.distributeRef();
         }
-		public static String getMiddleDate(String startDate, String endDate) throws ParseException {
-	        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	        Date start = dateFormat.parse(startDate);
-	        Date end = dateFormat.parse(endDate);
-	        Calendar calendar = Calendar.getInstance();
-	        calendar.setTime(start);
-	        long startTimeInMillis = calendar.getTimeInMillis();
-	        calendar.setTime(end);
-	        long endTimeInMillis = calendar.getTimeInMillis();
-	        long middleTimeInMillis = (startTimeInMillis + endTimeInMillis) / 2;
-	        Date middleDate = new Date(middleTimeInMillis);
-	        return dateFormat.format(middleDate);
-	    }
+		public static Date getMiddleDate(String startDate, String endDate) throws ParseException {
+		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		    Date start = dateFormat.parse(startDate);
+		    Date end = dateFormat.parse(endDate);
+		    Calendar calendar = Calendar.getInstance();
+		    calendar.setTime(start);
+		    long startTimeInMillis = calendar.getTimeInMillis();
+		    calendar.setTime(end);
+		    long endTimeInMillis = calendar.getTimeInMillis();
+		    long middleTimeInMillis = (startTimeInMillis + endTimeInMillis) / 2;
+		    Date middleDate = new Date(middleTimeInMillis);
+		    return middleDate;
+		}
+
 		public static String getMiddleDatePlusOne(String startDate, String endDate) throws ParseException {
 		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		    Date start = dateFormat.parse(startDate);
@@ -590,13 +591,14 @@ public class Node implements Serializable{
 //        	
 //        	
         }
+        
         public void insert(Point ref) 
         {
         	
         	
         
         	
-        	if (this.getChildren().length==0)
+        	if (this.getChildren()==null) //new kanet .length ==0
         	{
         		if(this.getRowPoint().size()<16) 
         		{
@@ -646,20 +648,20 @@ public class Node implements Serializable{
             	//double
             	if(xType.equals("java.lang.Double"))
                 {
-                	midx = (double)this.xMax+(double) this.xMin/2;
+                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
                 	x=(double)ref.getX();
                 }
                 
                 if(yType.equals("java.lang.Double"))
                 {
-                	midy = (double)this.yMax+ (double) this.yMin/2;
-                	y=(int) ref.getY(); 
+                	midy = Double.parseDouble((String) this.yMax) + Double.parseDouble((String) this.yMin) /2;
+                	y=(double) ref.getY(); 
                 }
                 
                 
                 if(zType.equals("java.lang.Double"))
                 {
-                	midz =(double) this.zMax+ (double) this.zMin/2;
+                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String)  this.zMin) /2;
                 	z=(double) ref.getZ();
                 }
                 
@@ -833,20 +835,20 @@ public class Node implements Serializable{
         	//double
         	if(xType.equals("java.lang.Double"))
             {
-            	midx = (double)this.xMax+(double) this.xMin/2;
+            	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String)this.xMin  ) /2;
             	x=(double)findMe[0];
             }
             
             if(yType.equals("java.lang.Double"))
             {
-            	midy = (double)this.yMax+ (double) this.yMin/2;
+            	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
             	y=(int) findMe[1];
             }
             
             
             if(zType.equals("java.lang.Double"))
             {
-            	midz =(double) this.zMax+ (double) this.zMin/2;
+            	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin  )/2;
             	z=(double) findMe[2];
             }
             
@@ -1014,20 +1016,20 @@ public class Node implements Serializable{
         	//double
         	if(xType.equals("java.lang.Double"))
             {
-            	midx = (double)this.xMax+(double) this.xMin/2;
+            	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
             	x=(double)findMe.getX();
             }
             
             if(yType.equals("java.lang.Double"))
             {
-            	midy = (double)this.yMax+ (double) this.yMin/2;
+            	midy = Double.parseDouble((String)this.yMax  )+ Double.parseDouble((String) this.yMin ) /2;
             	y=(int) findMe.getY(); 
             }
             
             
             if(zType.equals("java.lang.Double"))
             {
-            	midz =(double) this.zMax+ (double) this.zMin/2;
+            	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
             	z=(double) findMe.getZ();
             }
             
@@ -1196,20 +1198,20 @@ public class Node implements Serializable{
             	//double
             	if(xType.equals("java.lang.Double"))
                 {
-                	midx = (double)this.xMax+(double) this.xMin/2;
+                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
                 	x=(double)findMyNode[0];
                 }
                 
                 if(yType.equals("java.lang.Double"))
                 {
-                	midy = (double)this.yMax+ (double) this.yMin/2;
+                	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
                 	y=(int) findMyNode[1];
                 }
                 
                 
                 if(zType.equals("java.lang.Double"))
                 {
-                	midz =(double) this.zMax+ (double) this.zMin/2;
+                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
                 	z=(double) findMyNode[2];
                 }
                 
@@ -1385,20 +1387,20 @@ public class Node implements Serializable{
             	//double
             	if(xType.equals("java.lang.Double"))
                 {
-                	midx = (double)this.xMax+(double) this.xMin/2;
+                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
                 	x=(double)findMyNode.getX();
                 }
                 
                 if(yType.equals("java.lang.Double"))
                 {
-                	midy = (double)this.yMax+ (double) this.yMin/2;
+                	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
                 	y=(int) findMyNode.getY(); 
                 }
                 
                 
                 if(zType.equals("java.lang.Double"))
                 {
-                	midz =(double) this.zMax+ (double) this.zMin/2;
+                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
                 	z=(double) findMyNode.getZ();
                 }
                 

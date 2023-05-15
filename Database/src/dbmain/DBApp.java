@@ -1503,7 +1503,7 @@ public class DBApp implements Serializable {
 		out.writeObject(octTree);
 		out.close();
 		
-		//octTree.printOctTree(octTree.getRoot());
+		octTree.printOctTree(octTree.getRoot(), "");
 
 	}
 

@@ -56,30 +56,31 @@ public class OctTree implements Serializable {
         
     }
 	
-	public void printOctTree(Node node) {
+	public void printOctTree(Node node, String indent) {
 	    if (node == null) {
 	        return;
 	    }
-	    System.out.println("Node: xMin=" + node.getxMin() + ", xMax=" + node.getxMax() +
-	            ", yMin=" + node.getyMin() + ", yMax=" + node.getyMax() +
-	            ", zMin=" + node.getzMin() + ", zMax=" + node.getzMax() +
-	            ", xType=" + node.getxType() + ", yType=" + node.getyType() +
-	            ", zType=" + node.getzType());
 
+	    // Print node information
+	    System.out.println(indent + "+- Node: " + " xMin:" + node.getxMin() + " xMax:" + node.getxMax() +"   "+ " yMin:" + node.getyMax() + " yMax:"  +"   "+ " zMin:"+ node.getzMin() + " zMax:" + node.getzMax());
 	    if (node.getRowPoint() != null) {
 	        for (Vector<Point> vector : node.getRowPoint()) {
 	            for (Point point : vector) {
-	                System.out.println("Point: (" + point.getX() + ", " + point.getY() + ", " + point.getZ() + ")");
+	                System.out.println(indent + "   |- Point: (" + point.getX() + ", " + point.getY() + ", " + point.getZ() + ")");
 	            }
 	        }
 	    }
 
+	    // Print child nodes recursively
 	    if (node.getChildren() != null) {
-	        for (Node child : node.getChildren()) {
-	            printOctTree(child);
+	        for (int i = 0; i < node.getChildren().length; i++) {
+	            Node child = node.getChildren()[i];
+	            System.out.println(indent + "   |- Child " + i + ":");
+	            printOctTree(child, indent + "      ");
 	        }
 	    }
 	}
+
 
     
 //    public OctTree(Node parent)//nezabat el list bta3et el node ely da5lalna enhom ykono distributed 3la children + ely da5el gded

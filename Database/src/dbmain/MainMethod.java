@@ -79,6 +79,26 @@ public class MainMethod {
 		htblColNameValue.put("dob", new Date(1990 - 1900, 1 - 1, 1));
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 9 ));
+		htblColNameValue.put("name", new String("alo" ) );
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+		htblColNameValue.put("dob", new Date(1990 - 1900, 1 - 1, 1));
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 10 ));
+		htblColNameValue.put("name", new String("MANGA" ) );
+		htblColNameValue.put("gpa", new Double( 2.7 ) );
+		htblColNameValue.put("dob", new Date(2007 - 1900, 1 - 1, 1));
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 13 ));
+		htblColNameValue.put("name", new String("susFash5" ) );
+		htblColNameValue.put("gpa", new Double( 3.2 ) );
+		htblColNameValue.put("dob", new Date(2002 - 1900, 1 - 1, 1));
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
 	
 		htblColNameValue.clear( );
 		//htblColNameValue.put("id", new Integer( 67 ));
