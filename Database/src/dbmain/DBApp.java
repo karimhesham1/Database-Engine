@@ -633,7 +633,7 @@ public class DBApp implements Serializable {
 			
 			
 			loadTable(table);
-			loadPages(deletePoints); //new loadPages method which loads only the pages we need
+			loadPagesNeeded(deletePoints); //new loadPages method which loads only the pages we need
 			String pkColName = getPrimaryKeyColName(strTableName); //new method, gets col name of pk
 			
 			for(int i=0 ; i<loadedPages.size() ; i++)
@@ -1331,7 +1331,10 @@ public class DBApp implements Serializable {
 			// write the new metadata string to the metadata file
 			try (FileWriter fw = new FileWriter("metadata.csv")) {
 				fw.write(newMetadata.toString());
+				fw.close();
+				
 			} catch (IOException e) {
+				br.close();
 				throw new DBAppException(e.getMessage());
 			}
 
@@ -1339,6 +1342,7 @@ public class DBApp implements Serializable {
 		}
 
 		// create the octree
+		//mango
 		OctTree octTree = new OctTree(strTableName, strarrColName);
 		loadTable(strTableName);
 		loadPages(loadedTable);
@@ -1364,6 +1368,8 @@ public class DBApp implements Serializable {
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
 		out.writeObject(octTree);
 		out.close();
+		
+		//octTree.printOctTree(octTree.getRoot());
 
 	}
 
@@ -1426,7 +1432,7 @@ public class DBApp implements Serializable {
 		}
 	}
 	
-	public void loadPages(Vector<Point> points) throws IOException, ClassNotFoundException
+	public void loadPagesNeeded(Vector<Point> points) throws IOException, ClassNotFoundException
 	{
 		loadedPages = new Vector<Page>();
 		Vector<String> names = new Vector<String>();

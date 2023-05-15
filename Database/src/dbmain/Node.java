@@ -1,5 +1,8 @@
 package dbmain;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -8,7 +11,27 @@ import java.util.Vector;
 import java.text.SimpleDateFormat;
 
 public class Node implements Serializable{
-        /**
+        public Object getxMin() {
+		return xMin;
+	}
+	public Object getxMax() {
+		return xMax;
+	}
+	public Object getyMin() {
+		return yMin;
+	}
+	public Object getyMax() {
+		return yMax;
+	}
+	public Object getzMin() {
+		return zMin;
+	}
+	public Object getzMax() {
+		return zMax;
+	}
+
+
+		/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -45,6 +68,60 @@ public class Node implements Serializable{
 				}
         }
         	this.get(Rem, false).getRowPoint().remove(index);
+        }
+        
+        public void setTypes(String tableName,String[] columns) throws IOException {
+        	for(int i=0;i<columns.length;i++) {
+    			boolean flag = false;
+    			String insertedColName = columns[i];
+    			
+    			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+    			String line = br.readLine();
+    			boolean firstloop =true;
+    			while (line != null) 
+    			{
+
+    				if (firstloop)
+    					line = br.readLine();
+
+    				firstloop = false;
+
+    				String[] content = line.split(",");
+
+    				//					if(!(columnNames.hasMoreElements()) )
+    				//						break;
+
+    				if(content[0].equals(tableName))
+    				{
+    					
+    				if (content[1].equals(insertedColName))
+    					{
+
+    						switch(i) {
+    						case 0:
+    							this.setxType(content[2]);
+    							this.setxMin(content[6]);
+    							this.setxMax(content[7]);
+    						     break;
+    						case 1:
+    							this.setyType(content[2]);
+    							this.setyMin(content[6]);
+    							this.setyMax(content[7]);
+    						    break;
+    						case 2:
+    							this.setzType(content[2]);
+    							this.setzMin(content[6]);
+    							this.setzMax(content[7]);
+    						    break;
+    						default:break;
+    						
+    						}
+    					}
+    				}
+    			}
+    			br.close(); //msh aref law dy hate3mel moshkela
+        	}
+        	
         }
         
         public String getxType() {
@@ -113,8 +190,10 @@ public class Node implements Serializable{
 
 		public void newParent()
         {
+			int y=0;
         	this.children = new Node[8];
         	for(int i=0;i<this.children.length;i++) {
+        		children[i]=new Node();
         		children[i].xType = this.xType;
         		children[i].yType = this.yType;
         		children[i].zType = this.zType;
@@ -186,7 +265,7 @@ public class Node implements Serializable{
            	 yMid= ((int)this.yMax- (int)this.yMin)/2 ;
            	 NextY= (int)yMid+1;}
            		if(yType.equals("java.lang.Double")) {
-           			 yMid= ((Double)this.yMax- (Double)this.yMin)/2 ;
+           			 yMid= (Double.parseDouble( (String) this.yMax) - Double.parseDouble( (String)this.yMin)) /2 ;
                    	 NextY= (Double)yMid+1;
            		}
            		}
@@ -421,7 +500,7 @@ public class Node implements Serializable{
         	
         	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>(this.rowPoint.size());
         	tmps=rowPoint;
-        	Vector<Point> tmp= new Vector<Point>(this.rowPoint.get(0).size());
+        	Vector<Point> tmp= new Vector<Point>();
         	tmp = rowPoint.get(0); //new
         	int i=0;
         	int ii=0;

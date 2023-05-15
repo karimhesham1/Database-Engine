@@ -33,7 +33,7 @@ public class MainMethod {
 		htblColNameMax.put("dob", "2025-01-01");
 		
 		//create the table, done, working
-		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
 		
 		//inserting some records in the database
 		Hashtable<String, Object> htblColNameValue = new Hashtable();
@@ -77,8 +77,28 @@ public class MainMethod {
 		htblColNameValue.put("name", new String("Moh" ) );
 		htblColNameValue.put("gpa", new Double( 0.4 ) );
 		htblColNameValue.put("dob", new Date(1990 - 1900, 1 - 1, 1));
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
 
+	
+		htblColNameValue.clear( );
+		//htblColNameValue.put("id", new Integer( 67 ));
+		//htblColNameValue.put("name", new String( "manga" ));
+		htblColNameValue.put("gpa", new Double( 0.4 ) );
+		//dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		//dbApp.deleteFromTable(strTableName, htblColNameValue);
+		String id = "201";
+		//dbApp.updateTable(strTableName, id, htblColNameValue);
+		
+		//print the table
+		//dbApp.printTable(strTableName);
+		String[] cols = {"name", "gpa", "dob"};
+		dbApp.createIndex(strTableName, cols);
+		dbApp.printTable(strTableName);
+		
+		//System.out.println(htblColNameType);
+		
+		String manga = "manga";
 		
 //		for(int i=0;i<17;i++) {
 //			if(i<6)
@@ -99,26 +119,7 @@ public class MainMethod {
 //			}
 //		}
 	
-		
-		htblColNameValue.clear( );
-		//htblColNameValue.put("id", new Integer( 67 ));
-		//htblColNameValue.put("name", new String( "manga" ));
-		htblColNameValue.put("gpa", new Double( 0.4 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-		//dbApp.deleteFromTable(strTableName, htblColNameValue);
-		String id = "201";
-		//dbApp.updateTable(strTableName, id, htblColNameValue);
-		
-		//print the table
-		dbApp.printTable(strTableName);
-		String[] cols = {"name", "gpa", "dob"};
-		dbApp.createIndex(strTableName, cols);
-		dbApp.printTable(strTableName);
-		//System.out.println(htblColNameType);
-		
-		String manga = "manga";
-		
+	
 
 	}
 	

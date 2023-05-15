@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Vector;
 
 public class OctTree implements Serializable {
     /**
@@ -33,16 +34,17 @@ public class OctTree implements Serializable {
 		return zName;
 	}
 
-	public OctTree(String tableName,String[] columns) {
+	public OctTree(String tableName,String[] columns) throws DBAppException {
         this.root = new Node();
-        this.root.newParent();
-        this.tableName = tableName;
         try {
 			this.setTypes(tableName,columns);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new DBAppException();
 		}
+        this.root.newParent();
+        this.tableName = tableName;
+       
         this.xName=columns[0];
         this.yName=columns[1];
         this.zName=columns[2];
@@ -53,6 +55,32 @@ public class OctTree implements Serializable {
      
         
     }
+	
+	public void printOctTree(Node node) {
+	    if (node == null) {
+	        return;
+	    }
+	    System.out.println("Node: xMin=" + node.getxMin() + ", xMax=" + node.getxMax() +
+	            ", yMin=" + node.getyMin() + ", yMax=" + node.getyMax() +
+	            ", zMin=" + node.getzMin() + ", zMax=" + node.getzMax() +
+	            ", xType=" + node.getxType() + ", yType=" + node.getyType() +
+	            ", zType=" + node.getzType());
+
+	    if (node.getRowPoint() != null) {
+	        for (Vector<Point> vector : node.getRowPoint()) {
+	            for (Point point : vector) {
+	                System.out.println("Point: (" + point.getX() + ", " + point.getY() + ", " + point.getZ() + ")");
+	            }
+	        }
+	    }
+
+	    if (node.getChildren() != null) {
+	        for (Node child : node.getChildren()) {
+	            printOctTree(child);
+	        }
+	    }
+	}
+
     
 //    public OctTree(Node parent)//nezabat el list bta3et el node ely da5lalna enhom ykono distributed 3la children + ely da5el gded
 //    {
@@ -75,7 +103,7 @@ public class OctTree implements Serializable {
 					line = br.readLine();
 
 				firstloop = false;
-
+				
 				String[] content = line.split(",");
 
 				//					if(!(columnNames.hasMoreElements()) )
@@ -111,6 +139,7 @@ public class OctTree implements Serializable {
 						}
 					}
 				}
+				line = br.readLine();
 			}
 			br.close(); //msh aref law dy hate3mel moshkela
     	}
