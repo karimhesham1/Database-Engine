@@ -407,18 +407,19 @@ public class DBApp implements Serializable {
 			}
 
 			
-//			ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
-////			if(indexCols != null) {
-////				loadIndex(strTableName, indexCols.get(3));
-////				Object x = indexCols.get(0);
-////				Object y = indexCols.get(1);
-////				Object z = indexCols.get(2);
-////				//Object pk = r.getValue(pkname);
-////				Object ref = loadedPages.get(s1);
-////				loadedOctree.insert(x, y, z, ref, pk);
-////				saveIndex();
-////			}
-//			
+			//ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
+			reCreateIndex(strTableName);
+//			if(indexCols != null) {
+//				loadIndex(strTableName, indexCols.get(3));
+//				Object x = indexCols.get(0);
+//				Object y = indexCols.get(1);
+//				Object z = indexCols.get(2);
+//				//Object pk = r.getValue(pkname);
+//				Object ref = loadedPages.get(s1);
+//				loadedOctree.insert(x, y, z, ref, pk);
+//				saveIndex();
+//			}
+			
 //			String[] indexColNames = new String[3];
 //			indexColNames[0] = indexCols.get(0);
 //			indexColNames[1] = indexCols.get(1);
@@ -562,6 +563,7 @@ public class DBApp implements Serializable {
 			if (!found)
 				throw new DBAppException("Pk is not found");
 
+			reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 
@@ -576,8 +578,141 @@ public class DBApp implements Serializable {
 	// to identify which rows/tuples to delete.
 	// htblColNameValue enteries are ANDED together
 
+public Hashtable<String,String[]> tableHasIndex(String table) throws IOException {
+	
+	String[] names = null;
+	
+	
+	
+	Hashtable<String,String[]> ret = new Hashtable<String, String[]>( );
+	
+	
+	for(int k=0;k<5;k++) {
+		int j=0;
+		int i=0;
+		boolean first=true;
+		boolean firstloop =true;
+		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+		String[] indices = null;
+		String line = br.readLine();
+	while (line != null) 
+	{
 
-	public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColNameValue) throws IOException, ClassNotFoundException {
+		if (firstloop)
+			line = br.readLine();
+
+		firstloop = false;
+
+		String[] content = line.split(",");
+
+		//					if(!(columnNames.hasMoreElements()) )
+		//						break;
+
+		if(content[0].equals(table))
+		{
+
+
+
+			if (!content[4].equals("Null") && (unique(names,content[1])||(i<3 && i>0)))
+			{
+				if(first) {
+				names[j]=content[4];
+				indices[i] = content[1];
+				i++;
+				j++;
+				
+				first=false;
+				}
+				else {
+					if(content[4].equals(names[j])) {
+						indices[i] = content[1];
+						i++;
+					}
+				}
+				
+			}
+
+		}
+		line = br.readLine();
+		if(i==3) {
+			first=true;
+			int r = j-1;
+			ret.put(names[r], indices);
+			indices = null;
+			i=0;
+		}
+	}
+	br.close();
+
+
+	}
+	return ret;
+}
+
+
+public boolean unique(String[] a,String b) {
+	for(int i=0;i<a.length;i++) {
+		if(a[i].equals(b))
+			return false;
+	}
+	return true;
+}
+public void reCreateIndex(String strTableName) throws FileNotFoundException, ClassNotFoundException, IOException, DBAppException {
+	if(!tableHasIndex(strTableName).isEmpty()) {
+		Hashtable<String,String[]> use = new Hashtable<String,String[]>();
+		use = tableHasIndex(strTableName);
+		Enumeration<String> IndexName = use.keys();
+		
+		
+		while(IndexName.hasMoreElements()){
+			String Index = IndexName.nextElement();
+			String[] cols = use.get(Index);
+			String inName = getIndexName(Index,cols[0]);
+			loadIndex(strTableName,inName);
+			createIndex(strTableName,cols);
+		}
+		
+	}
+}
+public String getIndexName(String table,String col1) throws IOException {
+	boolean firstloop =true;
+	BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+	String[] indices = null;
+	String line = br.readLine();
+while (line != null) 
+{
+
+	if (firstloop)
+		line = br.readLine();
+
+	firstloop = false;
+
+	String[] content = line.split(",");
+
+	//					if(!(columnNames.hasMoreElements()) )
+	//						break;
+
+	if(content[0].equals(table))
+	{
+
+
+
+		if (content[1].equals(col1))
+		{
+			return content[4];
+			
+		}
+
+	}
+	line = br.readLine();
+	
+}
+br.close();
+return null;
+
+
+}
+public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColNameValue) throws IOException, ClassNotFoundException {
 		Enumeration<String> columnNames = htblColNameValue.keys();
 
 		String indexName = "";
@@ -631,7 +766,7 @@ public class DBApp implements Serializable {
 		return false;
 	}
 	public void deleteUsingIndex(String strTableName,
-			Hashtable<String,Object> htblColNameValue) throws ClassNotFoundException, IOException {
+			Hashtable<String,Object> htblColNameValue) throws ClassNotFoundException, IOException, DBAppException {
 		/////////////////////////HERRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 		Enumeration<String> columnNames = htblColNameValue.keys();
 		String columnName;
@@ -699,7 +834,7 @@ public class DBApp implements Serializable {
 				}
 			}
 		
-			loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+			reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 			saveIndex();
@@ -863,6 +998,7 @@ public class DBApp implements Serializable {
 
 				}
 			}
+			reCreateIndex(strTableName);
 
 			savePages();
 			saveTable();
@@ -955,12 +1091,14 @@ public class DBApp implements Serializable {
 
 			}
 
+			reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 
 			if (firstDeletion) {
 				firstDeletion = false;
 				this.deleteFromTable(strTableName, htblColNameValue);
+				reCreateIndex(strTableName);
 
 			}
 
