@@ -49,7 +49,6 @@ public class DBApp implements Serializable {
 
 	}
 
-
 	// following method creates one table only
 	// strClusteringKeyColumn is the name of the column that will be the primary
 	// key and the clustering column as well. The data type of that column will
@@ -256,7 +255,7 @@ public class DBApp implements Serializable {
 			if (primaryexists) {
 				insertNullValues(htblColNameValue, strTableName);
 				loadPages(loadedTable);
-				//					Binary Search			
+				// Binary Search
 
 				// if the record we are inserting is the first record, table has no pages aslan
 				// (new) error fixing
@@ -305,7 +304,7 @@ public class DBApp implements Serializable {
 							break;
 						}
 						if (low >= high && pkValueLow.compareTo(insertedPkValue) > 0) // law el inserted as8ar mn ely
-							// ana wa2ef 3aleh
+						// ana wa2ef 3aleh
 						{
 							insertPageIndex1 = i;
 							insertRowIndex1 = low;
@@ -378,10 +377,10 @@ public class DBApp implements Serializable {
 				while (s1 < loadedPages.size() - 1) // loop 3ala kol el pages ely ba3d ely hamel feha insert, shifting
 				{
 					if (loadedPages.get(s1).getNumUsedRows() >= loadedPages.get(s1).getMaxRows()) // >: nozbot el
-						// shifting =: awel
-						// mara bned5ol
-						// nshof law feha
-						// makan wla la
+					// shifting =: awel
+					// mara bned5ol
+					// nshof law feha
+					// makan wla la
 					{
 						Row shiftedRow = loadedPages.get(s1).getRow(loadedPages.get(s1).getMaxRows() - 1);
 						loadedPages.get(s1).deleteRow(shiftedRow);
@@ -461,17 +460,15 @@ public class DBApp implements Serializable {
 
 				savePages();
 				saveTable();
-				
-//				// serialize to disk
-//				File indexFile = new File(indexName + strTableName + ".class");
-//				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
-//				out.writeObject(loadedOctree);
-//				out.close();
-				
-				//loadedOctree.printOctTree(loadedOctree.getRoot(), "");
-			//}
-			
-			
+
+				// serialize to disk
+				File indexFile = new File(indexName + strTableName + ".class");
+				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
+				out.writeObject(loadedOctree);
+				out.close();
+
+				loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+			}
 
 		} catch (Exception e) {
 			System.out.println(
@@ -575,11 +572,13 @@ public String[] hasIndex(String strTableName) throws IOException
 			int highRow = loadedPages.get(midPage).getNumUsedRows() - 1;
 			int midRow = (lowRow + highRow) / 2;
 			while (!found && lowPage <= highPage && lowRow <= highRow) {
-				Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow).getValue(pkName);
+				Comparable<Object> pkValue = (Comparable<Object>) loadedPages.get(midPage).getRow(midRow)
+						.getValue(pkName);
 				int compare = compare(pkValue, strClusteringKeyValue);
 
 				if (compare > 0) {
-					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow).getValue(pkName);
+					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(lowRow)
+							.getValue(pkName);
 					int compare2 = compare(pkValue2, strClusteringKeyValue);
 					if (compare2 > 0) {
 						highPage = midPage - 1;
@@ -591,7 +590,8 @@ public String[] hasIndex(String strTableName) throws IOException
 						midRow = (lowRow + highRow) / 2;
 					}
 				} else if (compare < 0) {
-					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow).getValue(pkName);
+					Comparable<Object> pkValue2 = (Comparable<Object>) loadedPages.get(midPage).getRow(highRow)
+							.getValue(pkName);
 					int compare2 = compare(pkValue2, strClusteringKeyValue);
 					if (compare2 < 0) {
 						lowPage = midPage + 1;
@@ -636,156 +636,21 @@ public String[] hasIndex(String strTableName) throws IOException
 	// to identify which rows/tuples to delete.
 	// htblColNameValue enteries are ANDED together
 
-public Hashtable<String,String[]> tableHasIndex(String table) throws IOException {
-	
-	String[] names = null;
-	
-	
-	
-	Hashtable<String,String[]> ret = new Hashtable<String, String[]>( );
-	
-	
-	for(int k=0;k<5;k++) {
-		int j=0;
-		int i=0;
-		boolean first=true;
-		boolean firstloop =true;
-		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-		String[] indices = null;
-		String line = br.readLine();
-	while (line != null) 
-	{
-
-		if (firstloop)
-			line = br.readLine();
-
-		firstloop = false;
-
-		String[] content = line.split(",");
-
-		//					if(!(columnNames.hasMoreElements()) )
-		//						break;
-
-		if(content[0].equals(table))
-		{
-
-
-
-			if (!content[4].equals("Null") && (unique(names,content[1])||(i<3 && i>0)))
-			{
-				if(first) {
-				names[j]=content[4];
-				indices[i] = content[1];
-				i++;
-				j++;
-				
-				first=false;
-				}
-				else {
-					if(content[4].equals(names[j])) {
-						indices[i] = content[1];
-						i++;
-					}
-				}
-				
-			}
-
-		}
-		line = br.readLine();
-		if(i==3) {
-			first=true;
-			int r = j-1;
-			ret.put(names[r], indices);
-			indices = null;
-			i=0;
-		}
-	}
-	br.close();
-
-
-	}
-	return ret;
-}
-
-
-public boolean unique(String[] a,String b) {
-	for(int i=0;i<a.length;i++) {
-		if(a[i].equals(b))
-			return false;
-	}
-	return true;
-}
-public void reCreateIndex(String strTableName) throws FileNotFoundException, ClassNotFoundException, IOException, DBAppException {
-	if(!tableHasIndex(strTableName).isEmpty()) {
-		Hashtable<String,String[]> use = new Hashtable<String,String[]>();
-		use = tableHasIndex(strTableName);
-		Enumeration<String> IndexName = use.keys();
-		
-		
-		while(IndexName.hasMoreElements()){
-			String Index = IndexName.nextElement();
-			String[] cols = use.get(Index);
-			String inName = getIndexName(Index,cols[0]);
-			loadIndex(strTableName,inName);
-			createIndex(strTableName,cols);
-		}
-		
-	}
-}
-public String getIndexName(String table,String col1) throws IOException {
-	boolean firstloop =true;
-	BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-	String[] indices = null;
-	String line = br.readLine();
-while (line != null) 
-{
-
-	if (firstloop)
-		line = br.readLine();
-
-	firstloop = false;
-
-	String[] content = line.split(",");
-
-	//					if(!(columnNames.hasMoreElements()) )
-	//						break;
-
-	if(content[0].equals(table))
-	{
-
-
-
-		if (content[1].equals(col1))
-		{
-			return content[4];
-			
-		}
-
-	}
-	line = br.readLine();
-	
-}
-br.close();
-return null;
-
-
-}
-public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColNameValue) throws IOException, ClassNotFoundException {
+	public boolean hasIndex(String strTableName, Hashtable<String, Object> htblColNameValue)
+			throws IOException, ClassNotFoundException {
 		Enumeration<String> columnNames = htblColNameValue.keys();
 
 		String indexName = "";
-		int i=0;
+		int i = 0;
 
-		while(columnNames.hasMoreElements()) {
-
+		while (columnNames.hasMoreElements()) {
 
 			String insertedColName = columnNames.nextElement();
-			//Object insertedvalue = htblColNameValue.get(insertedColName);
+			// Object insertedvalue = htblColNameValue.get(insertedColName);
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 			String line = br.readLine();
-			boolean firstloop =true;
-			while (line != null) 
-			{
+			boolean firstloop = true;
+			while (line != null) {
 
 				if (firstloop)
 					line = br.readLine();
@@ -794,16 +659,12 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 
 				String[] content = line.split(",");
 
-				//					if(!(columnNames.hasMoreElements()) )
-				//						break;
+				// if(!(columnNames.hasMoreElements()) )
+				// break;
 
-				if(content[0].equals(strTableName))
-				{
+				if (content[0].equals(strTableName)) {
 
-
-
-					if (content[1].equals(insertedColName)&& !content[4].equals("Null"))
-					{
+					if (content[1].equals(insertedColName) && !content[4].equals("Null")) {
 						i++;
 						indexName = content[4];
 					}
@@ -814,18 +675,17 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 			}
 			br.close();
 		}
-		if(i==3) {
+		if (i == 3) {
 			loadIndex(strTableName, indexName);
 			return true;
 		}
 
-
-
 		return false;
 	}
-	public void deleteUsingIndex(String strTableName,
-			Hashtable<String,Object> htblColNameValue) throws ClassNotFoundException, IOException, DBAppException {
-		/////////////////////////HERRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+
+	public void deleteUsingIndex(String strTableName, Hashtable<String, Object> htblColNameValue)
+			throws ClassNotFoundException, IOException {
+		///////////////////////// HERRRREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 		Enumeration<String> columnNames = htblColNameValue.keys();
 		String columnName;
 		Object columnValue;
@@ -833,60 +693,59 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 		columnNames = htblColNameValue.keys();
 		Node UseNode;
 		Vector<Point> deletePoints = null;
-		
+
 		while (columnNames.hasMoreElements()) {
 			columnName = columnNames.nextElement();
 			columnValue = htblColNameValue.get(columnName);
 
-			if(columnName.equals(loadedOctree.getxName())) {
-				columnsSorted[0]=columnValue;
+			if (columnName.equals(loadedOctree.getxName())) {
+				columnsSorted[0] = columnValue;
 			}
-			if(columnName.equals(loadedOctree.getyName())) {
-				columnsSorted[1]=columnValue;
+			if (columnName.equals(loadedOctree.getyName())) {
+				columnsSorted[1] = columnValue;
 			}
-			if(columnName.equals(loadedOctree.getzName())) {
-				columnsSorted[2]=columnValue;
+			if (columnName.equals(loadedOctree.getzName())) {
+				columnsSorted[2] = columnValue;
 			}
 		}
-		if(loadedOctree.getRoot().search(columnsSorted)) {
-			UseNode= loadedOctree.getRoot().get(columnsSorted, false);
-			for(int j=0;j<UseNode.getRows().size();j++) {
-				if(UseNode.getRows().get(j).get(0).getX().equals(columnsSorted[0])
-						&&UseNode.getRows().get(j).get(0).getY().equals(columnsSorted[1])
-						&&UseNode.getRows().get(j).get(0).getZ().equals(columnsSorted[2])) {
-					deletePoints= UseNode.getRows().get(j);
-					
+		if (loadedOctree.getRoot().search(columnsSorted)) {
+			UseNode = loadedOctree.getRoot().get(columnsSorted, false);
+			for (int j = 0; j < UseNode.getRows().size(); j++) {
+				if (UseNode.getRows().get(j).get(0).getX().equals(columnsSorted[0])
+						&& UseNode.getRows().get(j).get(0).getY().equals(columnsSorted[1])
+						&& UseNode.getRows().get(j).get(0).getZ().equals(columnsSorted[2])) {
+					deletePoints = UseNode.getRows().get(j);
 
 				}
 			}
 			String table = loadedOctree.getName();
-			
-			///hena khod el page number mn el refrence beta3 kol point fel vector w rooh shelhom mn el pages dol
+
+			/// hena khod el page number mn el refrence beta3 kol point fel vector w rooh
+			/// shelhom mn el pages dol
 			loadedOctree.getRoot().del(deletePoints);
-			
+
 			//////////////////////////////////////////////////////////////
-			//Now You have the points you want to delete in the array deletePoints, 
-			//now you need to remove them from the node and use their references to delete them from the table itself
-			
+			// Now You have the points you want to delete in the array deletePoints,
+			// now you need to remove them from the node and use their references to delete
+			////////////////////////////////////////////////////////////// them from the
+			////////////////////////////////////////////////////////////// table itself
+
 			Vector<Object> pksToDelete = new Vector<Object>();
-			for(Point p : deletePoints)
-				pksToDelete.add(p.getPk()); //adds all the pks to this vector
-			
-			
+			for (Point p : deletePoints)
+				pksToDelete.add(p.getPk()); // adds all the pks to this vector
+
 			loadTable(table);
-			loadPagesNeeded(deletePoints); //new loadPages method which loads only the pages we need
-			String pkColName = getPrimaryKeyColName(strTableName); //new method, gets col name of pk
-			
-			for(int i=0 ; i<loadedPages.size() ; i++)
-			{
+			loadPagesNeeded(deletePoints); // new loadPages method which loads only the pages we need
+			String pkColName = getPrimaryKeyColName(strTableName); // new method, gets col name of pk
+
+			for (int i = 0; i < loadedPages.size(); i++) {
 				Page currPage = loadedPages.get(i);
-				for(int j=0 ; j<currPage.getRows().size() ; j++)
-				{
+				for (int j = 0; j < currPage.getRows().size(); j++) {
 					Row currRow = currPage.getRow(j);
 					Object pk = currRow.getValue(pkColName);
-					if(pksToDelete.contains(pk))
-					{
-						currPage.deleteRow(currRow); //deletes the row if this row's pk value is found in the pkstodelete vector
+					if (pksToDelete.contains(pk)) {
+						currPage.deleteRow(currRow); // deletes the row if this row's pk value is found in the
+														// pkstodelete vector
 						j--;
 					}
 				}
@@ -909,29 +768,26 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 
 	public void deleteFromTable(String strTableName,
 
-			Hashtable<String,Object> htblColNameValue)
-					throws DBAppException, IOException, ClassNotFoundException
-	{
+			Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
 
 		// find el pages ele feha el 7aga
-		
+		loadTable(strTableName);
+		loadPages(loadedTable);
 
 		boolean valid = validateHashtable(strTableName, htblColNameValue);
 		if (!valid)
 			throw new DBAppException("htbl not valid");
-		if(hasIndex(strTableName,htblColNameValue)) {
-			deleteUsingIndex(strTableName,htblColNameValue);
+		if (hasIndex(strTableName, htblColNameValue)) {
+			deleteUsingIndex(strTableName, htblColNameValue);
 			return;
 		}
-		loadTable(strTableName);
-		loadPages(loadedTable);
 		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue);
 		boolean firstloop = true;
 		Vector<Row> tmpRows = new Vector<Row>();
 
-		//		Enumeration<String> columnNames = htblColNameValue.keys();
-		//			String columnName = columnNames.nextElement();
-		//			Object columnValue = htblColNameValue.get(columnName);
+		// Enumeration<String> columnNames = htblColNameValue.keys();
+		// String columnName = columnNames.nextElement();
+		// Object columnValue = htblColNameValue.get(columnName);
 
 		if (loadedPages.size() == 0) {
 			throw new DBAppException("The table is empty");
@@ -953,15 +809,15 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 			String columnName = getPrimaryKey(strTableName, htblColNameValue);
 			Object columnValue = htblColNameValue.get(columnName);
 
-			//				if(!loadedTable.getPages().contains(columnValue))
-			//					throw new DBAppException();
-			//				
-			//				
-			//				for(int i=0;i<loadedTable.getPages().size(); i++)
-			//				{
-			//					Page p= loadedTable.getPages().get(i);
-			//					
-			//				}
+			// if(!loadedTable.getPages().contains(columnValue))
+			// throw new DBAppException();
+			//
+			//
+			// for(int i=0;i<loadedTable.getPages().size(); i++)
+			// {
+			// Page p= loadedTable.getPages().get(i);
+			//
+			// }
 
 			// law el value ely badawar 3aleha aslan msh 3andy?? daniela
 			while (!found && lowPage <= highPage && lowRow <= highRow) {
@@ -1038,7 +894,7 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 							{
 								Row shift = loadedPages.get(midPage + 1).getRow(0);
 
-								//									this.insertIntoTable(loadedTable.getTableName(), shift);
+								// this.insertIntoTable(loadedTable.getTableName(), shift);
 								loadedPages.get(midPage).addRow(shift, (loadedPages.get(midPage).getNumUsedRows()));
 
 								loadedPages.get(midPage + 1).deleteRowAtIndex(0);
@@ -1094,7 +950,7 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 					for (int i = 0; i < tmpRows.size(); i++) {
 						Row r = tmpRows.get(i);
 						if (!(r.getValue(columnName).equals(columnValue)))// law el second column doesnt satisfy the
-							// condition, remove the row from tmp rows
+						// condition, remove the row from tmp rows
 						{
 							tmpRows.remove(r);
 							i--;
@@ -1133,7 +989,7 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 					{
 						Row shift = loadedPages.get(i + 1).getRow(0);
 
-						//						this.insertIntoTable(loadedTable.getTableName(), shift);
+						// this.insertIntoTable(loadedTable.getTableName(), shift);
 						loadedPages.get(i).addRow(shift, (loadedPages.get(i).getNumUsedRows()));
 
 						loadedPages.get(i + 1).deleteRowAtIndex(0);
@@ -1168,33 +1024,27 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 
 	}
 
-	public boolean hasIndexSelect(String strTableName, SQLTerm[] arrSQLTerms, String[] strarrOperators) throws IOException, ClassNotFoundException
-	{
-		for(int i=0 ; i<strarrOperators.length ; i++)
-		{
-			if(!strarrOperators[i].equals("AND"))
+	public boolean hasIndexSelect(String strTableName, SQLTerm[] arrSQLTerms, String[] strarrOperators)
+			throws IOException, ClassNotFoundException {
+		for (int i = 0; i < strarrOperators.length; i++) {
+			if (!strarrOperators[i].equals("AND"))
 				return false;
 		}
-		
-		if(arrSQLTerms.length!=3) //assume en mafesh 2 conditions on same column
+
+		if (arrSQLTerms.length != 3) // assume en mafesh 2 conditions on same column
 			return false;
 
-		
-		
 		String indexName = "";
-		int i=0;
+		int i = 0;
 
-		for(int j=0;j<arrSQLTerms.length; j++) 
-		{
-
+		for (int j = 0; j < arrSQLTerms.length; j++) {
 
 			String insertedColName = arrSQLTerms[j]._strColumnName;
-			//Object insertedvalue = htblColNameValue.get(insertedColName);
+			// Object insertedvalue = htblColNameValue.get(insertedColName);
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 			String line = br.readLine();
-			boolean firstloop =true;
-			while (line != null) 
-			{
+			boolean firstloop = true;
+			while (line != null) {
 
 				if (firstloop)
 					line = br.readLine();
@@ -1203,211 +1053,188 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 
 				String[] content = line.split(",");
 
-				if(content[0].equals(strTableName))
-				{
+				if (content[0].equals(strTableName)) {
 
-					if (content[1].equals(insertedColName)&& !content[4].equals("Null"))
-					{
+					if (content[1].equals(insertedColName) && !content[4].equals("Null")) {
 						i++;
 						indexName = content[4];
 					}
 
 				}
-				 line = br.readLine();
+				line = br.readLine();
 
 			}
 			br.close();
 		}
-		if(i==3) {
+		if (i == 3) {
 			loadIndex(strTableName, indexName);
 			return true;
 		}
 
-
-
 		return false;
 	}
-	
-	public Iterator selectUsingIndex(SQLTerm[] arrSQLTerms,
-			String[] strarrOperators) throws ClassNotFoundException, IOException
-	{
-		
-		
-	
+
+	public Iterator selectUsingIndex(SQLTerm[] arrSQLTerms, String[] strarrOperators)
+			throws ClassNotFoundException, IOException {
+
 		Object[] columnsSorted = new Object[3];
-		String [] opSorted = new String[3];
-		
-		
-		Vector<Vector<Point>> selectedPoints = new Vector<Vector<Point>>() ;
-		
-		
-		for(int i=0; i<3; i++)
-		{
-			String columnName =arrSQLTerms[i]._strColumnName;
-			Object columnValue= arrSQLTerms[i]._objValue;
-			String op =arrSQLTerms[i]._strOperator;
-			
-			if(columnName.equals(loadedOctree.getxName())) 
-			{
-				columnsSorted[0]=columnValue;
-				opSorted[0]=op;
+		String[] opSorted = new String[3];
+
+		Vector<Vector<Point>> selectedPoints = new Vector<Vector<Point>>();
+
+		for (int i = 0; i < 3; i++) {
+			String columnName = arrSQLTerms[i]._strColumnName;
+			Object columnValue = arrSQLTerms[i]._objValue;
+			String op = arrSQLTerms[i]._strOperator;
+
+			if (columnName.equals(loadedOctree.getxName())) {
+				columnsSorted[0] = columnValue;
+				opSorted[0] = op;
 			}
-			if(columnName.equals(loadedOctree.getyName())) 
-			{
-				columnsSorted[1]=columnValue;
-				opSorted[1]=op;
+			if (columnName.equals(loadedOctree.getyName())) {
+				columnsSorted[1] = columnValue;
+				opSorted[1] = op;
 			}
-			if(columnName.equals(loadedOctree.getzName())) 
-			{
-				columnsSorted[2]=columnValue;
-				opSorted[2]=op;
+			if (columnName.equals(loadedOctree.getzName())) {
+				columnsSorted[2] = columnValue;
+				opSorted[2] = op;
 			}
-			
-			
+
 		}
 		
-		
-
-			
-		
-			
-					
-selectedPoints.addAll( loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0]) );
-selectedPoints.addAll( loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1]) );
-selectedPoints.addAll( loadedOctree.getRoot().getZ(columnsSorted[2], opSorted[2]) );
-
-
-String table = loadedOctree.getName();
-Vector<Point> goodSelectedPoints= new Vector<Point> ();
-Vector<Row> result= new Vector<Row>(); 
-
-
-for(Vector<Point> v: selectedPoints)
-{
-	for(Point p: v)
-	{
-		goodSelectedPoints.add(p);
-	}
-}
-	
-
-Vector<Object> pksToDelete = new Vector<Object>();
-for(Point p : goodSelectedPoints)
-	pksToDelete.add(p.getPk()); //adds all the pks to this vector
-
-
-loadTable(table);
-loadPagesNeeded(goodSelectedPoints); //new loadPages method which loads only the pages we need
-String pkColName = getPrimaryKeyColName(table); //new method, gets col name of pk
-
-for(int i=0 ; i<loadedPages.size() ; i++)
-{
-	Page currPage = loadedPages.get(i);
-	for(int j=0 ; j<currPage.getRows().size() ; j++)
-	{
-		Row currRow = currPage.getRow(j);
-		Object pk = currRow.getValue(pkColName);
-		if(pksToDelete.contains(pk))
-		{
-			result.add(currRow);
-			
+		for(Vector<Point> v : loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0])) {
+			selectedPoints.add(v);
 		}
+		
+		Vector<Vector<Point>> temp = new Vector<Vector<Point>>();
+		for(Vector<Point> v : loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1])) {
+			temp.add(v);
+		}
+		
+		for(Vector<Point> vCurr : selectedPoints) {
+			if(!temp.contains(vCurr)) { 
+				selectedPoints.remove(vCurr);
+			}
+		}
+		
+		temp.clear();
+		
+		for(Vector<Point> v : loadedOctree.getRoot().getZ(columnsSorted[2], opSorted[2])) {
+			temp.add(v);
+		}
+		
+		for(Vector<Point> vCurr : selectedPoints) {
+			if(!temp.contains(vCurr)) { 
+				selectedPoints.remove(vCurr);
+			}
+		}
+		
+		temp.clear();
+
+//		selectedPoints.addAll(loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0]));
+//		selectedPoints.addAll(loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1]));
+//		selectedPoints.addAll(loadedOctree.getRoot().getZ(columnsSorted[2], opSorted[2]));
+
+		String table = loadedOctree.getName();
+		Vector<Point> goodSelectedPoints = new Vector<Point>();
+		Vector<Row> result = new Vector<Row>();
+
+//		for (Vector<Point> v : selectedPoints) {
+//			for (Point p : v) {
+//				goodSelectedPoints.add(p);
+//			}
+//		}
+		
+		for(int i = 0; i < selectedPoints.size(); i++) {
+			for(int j = 0; j < selectedPoints.get(i).size(); j++) {
+				if(selectedPoints.get(i).get(j) instanceof Point) {
+					Point p = new Point(((Point)selectedPoints.get(i).get(j)).getX(), 
+										((Point)selectedPoints.get(i).get(j)).getY(), 
+										((Point)selectedPoints.get(i).get(j)).getZ(), 
+										((Point)selectedPoints.get(i).get(j)).getRef(), 
+										((Point)selectedPoints.get(i).get(j)).getPk());
+					goodSelectedPoints.add(p);
+				}
+			}
+		}
+
+		Vector<Object> pksToDelete = new Vector<Object>();
+		for (Point p : goodSelectedPoints)
+			pksToDelete.add(p.getPk()); // adds all the pks to this vector
+
+		loadTable(table);
+		loadPagesNeeded(goodSelectedPoints); // new loadPages method which loads only the pages we need
+		String pkColName = getPrimaryKeyColName(table); // new method, gets col name of pk
+
+		for (int i = 0; i < loadedPages.size(); i++) {
+			Page currPage = loadedPages.get(i);
+			for (int j = 0; j < currPage.getRows().size(); j++) {
+				Row currRow = currPage.getRow(j);
+				Object pk = currRow.getValue(pkColName);
+				if (pksToDelete.contains(pk)) {
+					result.add(currRow);
+
+				}
+			}
+		}
+
+		savePages();
+		saveTable();
+
+		Iterator<Row> iterator = result.iterator();
+
+		return iterator;
+
 	}
-}
 
+	public Iterator selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators)
+			throws DBAppException, ClassNotFoundException, IOException {
 
-savePages();
-saveTable();
-
-
-
-Iterator<Row> iterator =result.iterator();
-
-return iterator;
-		
-		
-		
-	
-			
-
-
-
-
-
-
-
-
-
-		
-		
-
-	}
-		
-		
-	
-	
-	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
-			String[] strarrOperators)
-			throws DBAppException, ClassNotFoundException, IOException
-	{
-		
-		if(hasIndexSelect(arrSQLTerms[0]._strTableName, arrSQLTerms, strarrOperators))
-		{
+		if (hasIndexSelect(arrSQLTerms[0]._strTableName, arrSQLTerms, strarrOperators)) {
 			return selectUsingIndex(arrSQLTerms, strarrOperators);
-			//return;
+			// return;
 		}
-		
-		
-		
+
 		ArrayList<Row> result = new ArrayList<Row>();
 		boolean primary = false;
-		String pkColumn ="";
-		if (arrSQLTerms.length==0)
-		{
+		String pkColumn = "";
+		if (arrSQLTerms.length == 0) {
 			throw new DBAppException("arrSQLTerms must not empty");
 		}
-		//check eno el 4 fehom values
-		
-		
+		// check eno el 4 fehom values
+
 		String strTableName = arrSQLTerms[0]._strTableName;
 		loadTable(strTableName);
 		loadPages(loadedTable);
-		
-		for ( int i=0 ; i<arrSQLTerms.length ;i++ )
-		{
-			if (arrSQLTerms[i]._strTableName==null || arrSQLTerms[i]._strColumnName==null || arrSQLTerms[i]._strOperator==null || arrSQLTerms[i]._objValue==null )
-			{
+
+		for (int i = 0; i < arrSQLTerms.length; i++) {
+			if (arrSQLTerms[i]._strTableName == null || arrSQLTerms[i]._strColumnName == null
+					|| arrSQLTerms[i]._strOperator == null || arrSQLTerms[i]._objValue == null) {
 				throw new DBAppException("missing conditon");
 			}
-			
-			if (arrSQLTerms[i]._strTableName != strTableName)
-			{
+
+			if (arrSQLTerms[i]._strTableName != strTableName) {
 				throw new DBAppException("Different table names");
 			}
-			
-			
-			/////////////////////Validate Me/////////////////////
+
+			///////////////////// Validate Me/////////////////////
 			String colName = arrSQLTerms[i]._strColumnName;
 			boolean valid = false;
-			
-			
 
 			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
 			String line = br.readLine();
-			while (line != null) 
-			{
+			while ((line = br.readLine()) != null) {
 				String[] content = line.split(",");
-			
-				if (content[0].equals(strTableName) && content[1].equals(colName)) 
-				{
+
+				if (content[0].equals(strTableName) && content[1].equals(colName)) {
 					valid = true;
-					if (content[3].equals("true"))
-					{
+					if (content[3].equals("true")) {
 						primary = true;
 						pkColumn = colName;
 					}
 
-				line = br.readLine();
+					//line = br.readLine();
+				}
 			}
 
 			if (!valid) {
@@ -1415,274 +1242,212 @@ return iterator;
 				throw new DBAppException(
 						"inserted column names dont match the table's column names or already has an index");
 			}
-			///////////////Validated/////////////////////////////
-			
+			/////////////// Validated/////////////////////////////
+
 //			if (colName == pkColumn )
 //			{
 //				
 //			}
-			for (Page p : loadedPages)
-			{
-				for (Row r : p.getRows())
-				{
-					
-					int operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
-					
-					String operator = arrSQLTerms[i]._strOperator;
-					
-					if(i==0)
-					{
-					switch (operator) {
-				    case ">":
-				        if (operationRes == 1)
-				        {
-				        	result.add(r);
-				        }
-				        break;
-				    case ">=":
-				    	if (operationRes==0 || operationRes == 1)
-				    	{
-				        	result.add(r);
-				        }
-				        break;
-				    case "<":
-				        if (operationRes == 1)
-				        {
-				        	result.add(r);
-				        }
-				        break;
-				    case "<=":
-				    	if (operationRes==0 || operationRes == -1)
-				    	{
-				        	result.add(r);
-				        }
-				        break;
-				    case "!=":
-				    	if (operationRes==1 || operationRes == -1)
-				    	{
-				        	result.add(r);
-				        }
-				        break;
-				    case "=":
-				    	if (operationRes==0)
-				    	{
-				        	result.add(r);
-				        }
-				        break;
-				    default:
-				    	throw new DBAppException("Unknown operator");
-				}
+			for (Page p : loadedPages) {
+				for (Row r : p.getRows()) {
 
-			}
-					else
-					{
-					 String bigOp = strarrOperators[i];
-					 
-					 switch(bigOp)
-					 {
-					 case "AND":
-						 
-					boolean flag=false; 
-					for(int d=0; d<result.size(); d++)
-					 {
-						operationRes = compareOP(arrSQLTerms[i]._objValue,result.get(d));
+					int operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
+
+					String operator = arrSQLTerms[i]._strOperator;
+
+					if (i == 0) {
 						switch (operator) {
-					    case ">":
-					        if (operationRes == 1)
-					        {
-					        	flag=true;
-					        }
-					        break;
-					    case ">=":
-					    	if (operationRes==0 || operationRes == 1)
-					    	{
-					    		flag=true;
-					        }
-					        break;
-					    case "<":
-					        if (operationRes == 1)
-					        {
-					        	flag=true;
-					        }
-					        break;
-					    case "<=":
-					    	if (operationRes==0 || operationRes == -1)
-					    	{
-					    		flag=true;
-					        }
-					        break;
-					    case "!=":
-					    	if (operationRes==1 || operationRes == -1)
-					    	{
-					    		flag=true;
-					        }
-					        break;
-					    case "=":
-					    	if (operationRes==0)
-					    	{
-					    		flag=true;
-					        }
-					        break;
-					    default:
-					    	throw new DBAppException("Unknown operator");
-					}
-						if(!flag)
-						{
-							result.remove(r);
-						}
-					
-						
-					 }
-					break;
-					
-					 case "OR" :
-						  operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
-							switch (operator) {
-						    case ">":
-						        if (operationRes == 1)
-						        {
-						        	if(!(result.contains(r)))
-						        		result.add(r);
-						        }
-						        break;
-						    case ">=":
-						    	if (operationRes==0 || operationRes == 1)
-						    	{
-						    		if(!(result.contains(r)))
-						    			result.add(r);
-						        }
-						        break;
-						    case "<":
-						        if (operationRes == 1)
-						        {
-						        	if(!(result.contains(r)))
-						    			result.add(r);
-						        }
-						        break;
-						    case "<=":
-						    	if (operationRes==0 || operationRes == -1)
-						    	{
-						    		if(!(result.contains(r)))
-						    			result.add(r);
-						        }
-						        break;
-						    case "!=":
-						    	if (operationRes==1 || operationRes == -1)
-						    	{
-						    		if(!(result.contains(r)))
-						    			result.add(r);
-						        }
-						        break;
-						    case "=":
-						    	if (operationRes==0)
-						    	{
-						    		if(!(result.contains(r)))
-						    			result.add(r);
-						        }
-						        break;
-						    default:
-						    	throw new DBAppException("Unknown operator");
-						}
+						case ">":
+							if (operationRes == 1) {
+								result.add(r);
+							}
 							break;
-							
-							
-							
-					 case "XOR" :
-						 boolean xorFlag = false;
-						 
-							switch (operator) {
-						    case ">":
-						        if (operationRes == 1)
-						        {
-						        	xorFlag=true;
-						        }
-						        break;
-						    case ">=":
-						    	if (operationRes==0 || operationRes == 1)
-						    	{
-						    		xorFlag=true;
-						        }
-						        break;
-						    case "<":
-						        if (operationRes == 1)
-						        {
-						        	xorFlag=true;
-						        }
-						        break;
-						    case "<=":
-						    	if (operationRes==0 || operationRes == -1)
-						    	{
-						    		xorFlag=true;
-						        }
-						        break;
-						    case "!=":
-						    	if (operationRes==1 || operationRes == -1)
-						    	{
-						    		xorFlag=true;
-						        }
-						        break;
-						    case "=":
-						    	if (operationRes==0)
-						    	{
-						    		xorFlag=true;
-						        }
-						        break;
-						    default:
-						    	throw new DBAppException("Unknown operator");
+						case ">=":
+							if (operationRes == 0 || operationRes == 1) {
+								result.add(r);
+							}
+							break;
+						case "<":
+							if (operationRes == 1) {
+								result.add(r);
+							}
+							break;
+						case "<=":
+							if (operationRes == 0 || operationRes == -1) {
+								result.add(r);
+							}
+							break;
+						case "!=":
+							if (operationRes == 1 || operationRes == -1) {
+								result.add(r);
+							}
+							break;
+						case "=":
+							if (operationRes == 0) {
+								result.add(r);
+							}
+							break;
+						default:
+							throw new DBAppException("Unknown operator");
 						}
-							
-							if (xorFlag)
-							{
-								if((result.contains(r)))
+
+					} else {
+						String bigOp = strarrOperators[i - 1];
+
+						switch (bigOp) {
+						case "AND":
+
+							boolean flag = false;
+							for (int d = 0; d < result.size(); d++) {
+								operationRes = compareOP(arrSQLTerms[i]._objValue, result.get(d).getValue(arrSQLTerms[i]._strColumnName));
+								switch (operator) {
+								case ">":
+									if (operationRes == 1) {
+										flag = true;
+									}
+									break;
+								case ">=":
+									if (operationRes == 0 || operationRes == 1) {
+										flag = true;
+									}
+									break;
+								case "<":
+									if (operationRes == 1) {
+										flag = true;
+									}
+									break;
+								case "<=":
+									if (operationRes == 0 || operationRes == -1) {
+										flag = true;
+									}
+									break;
+								case "!=":
+									if (operationRes == 1 || operationRes == -1) {
+										flag = true;
+									}
+									break;
+								case "=":
+									if (operationRes == 0) {
+										flag = true;
+									}
+									break;
+								default:
+									throw new DBAppException("Unknown operator");
+								}
+								if (!flag) {
+									result.remove(r);
+								}
+
+							}
+							break;
+
+						case "OR":
+							operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
+							switch (operator) {
+							case ">":
+								if (operationRes == 1) {
+									if (!(result.contains(r)))
+										result.add(r);
+								}
+								break;
+							case ">=":
+								if (operationRes == 0 || operationRes == 1) {
+									if (!(result.contains(r)))
+										result.add(r);
+								}
+								break;
+							case "<":
+								if (operationRes == 1) {
+									if (!(result.contains(r)))
+										result.add(r);
+								}
+								break;
+							case "<=":
+								if (operationRes == 0 || operationRes == -1) {
+									if (!(result.contains(r)))
+										result.add(r);
+								}
+								break;
+							case "!=":
+								if (operationRes == 1 || operationRes == -1) {
+									if (!(result.contains(r)))
+										result.add(r);
+								}
+								break;
+							case "=":
+								if (operationRes == 0) {
+									if (!(result.contains(r)))
+										result.add(r);
+								}
+								break;
+							default:
+								throw new DBAppException("Unknown operator");
+							}
+							break;
+
+						case "XOR":
+							boolean xorFlag = false;
+
+							switch (operator) {
+							case ">":
+								if (operationRes == 1) {
+									xorFlag = true;
+								}
+								break;
+							case ">=":
+								if (operationRes == 0 || operationRes == 1) {
+									xorFlag = true;
+								}
+								break;
+							case "<":
+								if (operationRes == 1) {
+									xorFlag = true;
+								}
+								break;
+							case "<=":
+								if (operationRes == 0 || operationRes == -1) {
+									xorFlag = true;
+								}
+								break;
+							case "!=":
+								if (operationRes == 1 || operationRes == -1) {
+									xorFlag = true;
+								}
+								break;
+							case "=":
+								if (operationRes == 0) {
+									xorFlag = true;
+								}
+								break;
+							default:
+								throw new DBAppException("Unknown operator");
+							}
+
+							if (xorFlag) {
+								if ((result.contains(r)))
 									result.remove(r);
 								else
-									result.add(r);		
+									result.add(r);
 							}
-							
-							break;
-							
-							
-							default: 
-								throw new DBAppException("Unknown operator");
 
-					 
-					 }
+							break;
+
+						default:
+							throw new DBAppException("Unknown operator");
+
+						}
 					}
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-					}
+
 				}
+
 			}
-			
-			
-			
-			
-			
-			
+
 		}
-		
-		Iterator<Row> iterator =result.iterator();
-		
+
+		Iterator<Row> iterator = result.iterator();
+
 		return iterator;
-		
-		
+
 	}
 
 
@@ -1720,7 +1485,7 @@ return iterator;
 
 		if (strarrColName.length != 3)
 			throw new DBAppException();
-		//===============================================================================
+		// ===============================================================================
 
 		// validate en el 3 column names dol mawgoden lel table dah
 
@@ -1751,11 +1516,10 @@ return iterator;
 			br.close();
 		}
 
-		//==================================================================
+		// ==================================================================
 
 		// edit the csv content
 
-		
 		String indexName = "";
 		for (int j = 0; j < 3; j++) {
 			String insertedColName = strarrColName[j];
@@ -1773,11 +1537,9 @@ return iterator;
 					}
 
 					// edit specific columns in the line
-					content[4] = indexName ; //shelna el "Index"
+					content[4] = indexName + "Index";
 					content[5] = "Octree";
-					
-					
-					
+
 				}
 
 				// append the edited line to the new metadata string
@@ -1797,7 +1559,7 @@ return iterator;
 			try (FileWriter fw = new FileWriter("metadata.csv")) {
 				fw.write(newMetadata.toString());
 				fw.close();
-				
+
 			} catch (IOException e) {
 				br.close();
 				throw new DBAppException(e.getMessage());
@@ -1810,7 +1572,7 @@ return iterator;
 		
 
 		// create the octree
-		//mango
+		// mango
 		OctTree octTree = new OctTree(strTableName, strarrColName);
 		loadTable(strTableName);
 		loadPages(loadedTable);
@@ -1836,56 +1598,53 @@ return iterator;
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
 		out.writeObject(octTree);
 		out.close();
-		
+
 		octTree.printOctTree(octTree.getRoot(), "");
 
 	}
 
-	//	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
-	//	String[] strarrOperators)
-	//	throws DBAppException
-	//	{
-	//		
-	//	}
+	// public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
+	// String[] strarrOperators)
+	// throws DBAppException
+	// {
+	//
+	// }
 
-
-
-	//----------------LOADS AND SAVES/HELPER METHODS--------------------------------------
+	// ----------------LOADS AND SAVES/HELPER
+	// METHODS--------------------------------------
 
 	public String getPrimaryKeyColName(String strTableName) throws IOException {
-	
-			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-			String line = br.readLine();
-			line = br.readLine();
-			while (line != null) {
-				String[] content = line.split(",");
-				if (content[0].equals(strTableName) && content[3].equals("true")) {
-					br.close();
-					return content[1];
-				}
-				line = br.readLine();
-			}
-			br.close();
 
-		
+		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+		String line = br.readLine();
+		line = br.readLine();
+		while (line != null) {
+			String[] content = line.split(",");
+			if (content[0].equals(strTableName) && content[3].equals("true")) {
+				br.close();
+				return content[1];
+			}
+			line = br.readLine();
+		}
+		br.close();
+
 		return "";
 	}
+
 	public static int compareOP(Object o1, Object o2) {
-        if (o1 instanceof Integer && o2 instanceof Integer) {
-            return Integer.compare((int) o1, (int) o2);
-        } else if (o1 instanceof Double && o2 instanceof Double) {
-            return Double.compare((double) o1, (double) o2);
-        } else if (o1 instanceof String && o2 instanceof String) {
-            return ((String) o1).compareTo((String) o2);
-        } else if (o1 instanceof Date && o2 instanceof Date) {
-            return ((Date) o1).compareTo((Date) o2);
-        } else {
-            throw new IllegalArgumentException("Objects must be of the same type");
-        }
-    }
-	
-	
-	
+		if (o1 instanceof Integer && o2 instanceof Integer) {
+			return Integer.compare((int) o1, (int) o2);
+		} else if (o1 instanceof Double && o2 instanceof Double) {
+			return Double.compare((double) o1, (double) o2);
+		} else if (o1 instanceof String && o2 instanceof String) {
+			return ((String) o1).compareTo((String) o2);
+		} else if (o1 instanceof Date && o2 instanceof Date) {
+			return ((Date) o1).compareTo((Date) o2);
+		} else {
+			throw new IllegalArgumentException("Objects must be of the same type");
+		}
+	}
+
 	public void loadPages(Table table) throws ClassNotFoundException, IOException {
 		loadedPages = new Vector<Page>();
 		Vector<String> pages = table.getPages();
@@ -1899,21 +1658,18 @@ return iterator;
 
 		}
 	}
-	
-	public void loadPagesNeeded(Vector<Point> points) throws IOException, ClassNotFoundException
-	{
+
+	public void loadPagesNeeded(Vector<Point> points) throws IOException, ClassNotFoundException {
 		loadedPages = new Vector<Page>();
 		Vector<String> names = new Vector<String>();
-		names.add((String) points.get(0).getRef()); //adds awel page name
-		
-		for(int i=1; i<points.size() ; i++)
-		{
-			if( !names.contains(points.get(i).getRef())  ) //law el page name dah msh already added
+		names.add((String) points.get(0).getRef()); // adds awel page name
+
+		for (int i = 1; i < points.size(); i++) {
+			if (!names.contains(points.get(i).getRef())) // law el page name dah msh already added
 				names.add((String) points.get(i).getRef());
 		}
-		
-		for(String s : names)
-		{
+
+		for (String s : names) {
 			// load the page file from disk
 			File pageFile = new File(s + ".class");
 			ObjectInputStream in = new ObjectInputStream(new FileInputStream(pageFile));
@@ -1953,9 +1709,8 @@ return iterator;
 		loadedTable = null;
 	}
 
-	public void loadIndex(String tableName, String indexName) throws FileNotFoundException, IOException, ClassNotFoundException
-	{
-
+	public void loadIndex(String tableName, String indexName)
+			throws FileNotFoundException, IOException, ClassNotFoundException {
 
 		File indexFile = new File(indexName + tableName + ".class");
 		ObjectInputStream in = new ObjectInputStream(new FileInputStream(indexFile));
@@ -1965,8 +1720,7 @@ return iterator;
 		in.close();
 	}
 
-	public void saveIndex() throws IOException
-	{
+	public void saveIndex() throws IOException {
 		File indexFile = new File(loadedIndexName + loadedTable.getTableName() + ".class");
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
 		out.writeObject(loadedOctree);
@@ -2127,13 +1881,13 @@ return iterator;
 
 		Hashtable<String, Object> tmphtbl = new Hashtable<String, Object>();
 		Enumeration<String> columnNamestmp = htblColNameValue.keys();
-		//		String columnName = columnNamestmp.nextElement();
-		//		Object columnValue = htblColNameValue.get(columnName);
+		// String columnName = columnNamestmp.nextElement();
+		// Object columnValue = htblColNameValue.get(columnName);
 		while (columnNamestmp.hasMoreElements()) {
 			String columnName = columnNamestmp.nextElement();
 			Object columnValue = htblColNameValue.get(columnName);
 			tmphtbl.put(columnName, columnValue);
-			//			columnNamestmp.nextElement();
+			// columnNamestmp.nextElement();
 		}
 
 		Enumeration<String> columnNames = tmphtbl.keys();
@@ -2154,7 +1908,7 @@ return iterator;
 				String[] content = line.split(",");
 
 				if (content[0].equals(strTableName) && insertedColName.equals(content[1]))// law el line ely ana masko
-					// mawgod fel htbl
+				// mawgod fel htbl
 				{
 
 					if (content[2].equals(insertedvalue.getClass().getName())) {
@@ -2165,15 +1919,15 @@ return iterator;
 							if ((int) insertedvalue >= min && (int) insertedvalue <= max) {
 								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
 								break;
-								//									if (content [3] == "TRUE")
-								//									{
-								//										//new
-								//										pk = content[1];
-								//										insertedPkValue = htblColNameValue.get(pk);
-								//										if(!insertedPkValue.equals(null)) {
-								//											primaryexists = true;
-								//										}
-								//									}
+								// if (content [3] == "TRUE")
+								// {
+								// //new
+								// pk = content[1];
+								// insertedPkValue = htblColNameValue.get(pk);
+								// if(!insertedPkValue.equals(null)) {
+								// primaryexists = true;
+								// }
+								// }
 							}
 						}
 
@@ -2185,15 +1939,15 @@ return iterator;
 							if ((double) insertedvalue >= min && (double) insertedvalue <= max) {
 								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
 								break;
-								//									if (content [3] == "TRUE")
-								//									{
-								//										//new
-								//										pk = content[1];
-								//										insertedPkValue = htblColNameValue.get(pk);
-								//										if(!insertedPkValue.equals(null)) {
-								//											primaryexists = true;
-								//										}
-								//									}
+								// if (content [3] == "TRUE")
+								// {
+								// //new
+								// pk = content[1];
+								// insertedPkValue = htblColNameValue.get(pk);
+								// if(!insertedPkValue.equals(null)) {
+								// primaryexists = true;
+								// }
+								// }
 							}
 
 						}
@@ -2207,15 +1961,15 @@ return iterator;
 							if (comparemin >= 0 && comparemax <= 0) {
 								tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
 								break;
-								//									if (content [3] == "TRUE")
-								//									{
-								//										//new
-								//										pk = content[1];
-								//										insertedPkValue = htblColNameValue.get(pk);
-								//										if(!insertedPkValue.equals(null)) {
-								//											primaryexists = true;
-								//										}
-								//									}
+								// if (content [3] == "TRUE")
+								// {
+								// //new
+								// pk = content[1];
+								// insertedPkValue = htblColNameValue.get(pk);
+								// if(!insertedPkValue.equals(null)) {
+								// primaryexists = true;
+								// }
+								// }
 							}
 						} else {
 							tmphtbl.remove(insertedColName);// remove el entry mn htbl law valid
@@ -2264,23 +2018,20 @@ return iterator;
 	}
 
 	public void printTable(String tablename) throws ClassNotFoundException, IOException {
-        loadTable(tablename);
-        loadPages(loadedTable);
-        for (int j = 0; j < loadedPages.size(); j++) {
-            Page p = loadedPages.get(j);
-            System.out.println("Start of page");
-            for (int i = 0; i < p.getNumUsedRows(); i++) {
-                p.getRow(i).printRow();
-                System.out.println(" ");
-            }
-        }
-        savePages();
-        saveTable();
+		loadTable(tablename);
+		loadPages(loadedTable);
+		for (int j = 0; j < loadedPages.size(); j++) {
+			Page p = loadedPages.get(j);
+			System.out.println("Start of page");
+			for (int i = 0; i < p.getNumUsedRows(); i++) {
+				p.getRow(i).printRow();
+				System.out.println(" ");
+			}
+		}
+		savePages();
+		saveTable();
 
-
-    }
-
-
+	}
 
 	public ArrayList<String> indexCols(String strTableName, Hashtable<String, Object> htblColNameValue)
 			throws IOException, ClassNotFoundException {
@@ -2305,7 +2056,7 @@ return iterator;
 						indexName = content[4];
 					}
 				}
-				line = br.readLine();
+				// line = br.readLine();
 			}
 			br.close();
 		}
@@ -2317,9 +2068,4 @@ return iterator;
 		return null;
 	}
 
-
-
-
-
 }
-
