@@ -1281,17 +1281,17 @@ public Vector<Vector<Point>> getY(Object y, String op)
       {
     	   if(compare(y,midy)>0)
     	   {
-    		   out.addAll(this.children[4].getY(y,op));
-    		   out.addAll(this.children[5].getY(y,op));
-    		   out.addAll(this.children[6].getY(y,op));
-    		   out.addAll(this.children[7].getY(y,op));
+    		   out.add((Vector)this.children[4].getY(y,op));
+    		   out.add((Vector)this.children[5].getY(y,op));
+    		   out.add((Vector)this.children[6].getY(y,op));
+    		   out.add((Vector)this.children[7].getY(y,op));
     	   }
     	   else
     	   {
-    		   out.addAll(this.children[0].getY(y,op));
-    		   out.addAll(this.children[1].getY(y,op));
-    		   out.addAll(this.children[2].getY(y,op));
-    		   out.addAll(this.children[3].getY(y,op));
+    		   out.add((Vector)this.children[0].getY(y,op));
+    		   out.add((Vector)this.children[1].getY(y,op));
+    		   out.add((Vector)this.children[2].getY(y,op));
+    		   out.add((Vector)this.children[3].getY(y,op));
     	   }
       }
 
