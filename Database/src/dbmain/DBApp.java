@@ -407,26 +407,26 @@ public class DBApp implements Serializable {
 			}
 
 
-//			String[] res = hasIndex(strTableName);
-//
-//            if(res.length == 3)
-//            {
-//                loadIndex(strTableName, currIndexName);
-//                loadedOctree = new OctTree(strTableName, res);
-//                for (Page p : loadedPages) {
-//                    for (Row r : p.getRows()) {
-//                        Object x = r.getValue(res[0]);
-//                        Object y = r.getValue(res[1]);
-//                        Object z = r.getValue(res[2]);
-//                        Object pkv = r.getValue(pk);
-//                        Object ref = p.getPageName();
-//                        loadedOctree.insert(x, y, z, ref, pk);
-//                    }
-//                }
-//                loadedOctree.printOctTree(loadedOctree.getRoot(), "");
-//
-//                saveIndex();
-//            }
+			String[] res = hasIndex(strTableName);
+
+            if(res.length == 3 && res[0]!=null)
+            {
+                loadIndex(strTableName, currIndexName);
+                loadedOctree = new OctTree(strTableName, res);
+                for (Page p : loadedPages) {
+                    for (Row r : p.getRows()) {
+                        Object x = r.getValue(res[0]);
+                        Object y = r.getValue(res[1]);
+                        Object z = r.getValue(res[2]);
+                        Object pkv = r.getValue(pk);
+                        Object ref = p.getPageName();
+                        loadedOctree.insert(x, y, z, ref, pk);
+                    }
+                }
+                loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+
+                saveIndex();
+            }
 			
 				savePages();
 				saveTable();
@@ -443,6 +443,7 @@ public class DBApp implements Serializable {
 		} catch (Exception e) {
 			System.out.println(
 					"An error occurred while inserting row into table " + strTableName + ": " + e.getMessage());
+			e.printStackTrace();
 			throw new DBAppException();
 		}
 
@@ -470,7 +471,8 @@ public class DBApp implements Serializable {
 
 	            if(content[0].equals(strTableName))
 	            {
-
+//alo
+	            	
 	                if (!content[4].equals("Null"))
 	                {
 	                    res[i]=(content[1]);
@@ -722,9 +724,10 @@ public class DBApp implements Serializable {
 			}
 		
 			//reCreateIndex(strTableName);
+			saveIndex();
 			savePages();
 			saveTable();
-			saveIndex();
+		
 			
 			
 			
@@ -737,8 +740,7 @@ public class DBApp implements Serializable {
 			Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException, ClassNotFoundException {
 
 		// find el pages ele feha el 7aga
-		loadTable(strTableName);
-		loadPages(loadedTable);
+	
 
 		boolean valid = validateHashtable(strTableName, htblColNameValue);
 		if (!valid)
@@ -747,6 +749,8 @@ public class DBApp implements Serializable {
 			deleteUsingIndex(strTableName, htblColNameValue);
 			return;
 		}
+		loadTable(strTableName);
+		loadPages(loadedTable);
 		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue);
 		boolean firstloop = true;
 		Vector<Row> tmpRows = new Vector<Row>();
@@ -1495,7 +1499,7 @@ public class DBApp implements Serializable {
 					}
 
 					// edit specific columns in the line
-					content[4] = indexName + "Index";
+					content[4] = indexName;
 					content[5] = "Octree";
 
 				}
