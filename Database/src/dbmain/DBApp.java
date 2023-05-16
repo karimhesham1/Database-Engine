@@ -2011,7 +2011,39 @@ return iterator;
 
 
 
+	public ArrayList<String> indexCols(String strTableName, Hashtable<String, Object> htblColNameValue)
+			throws IOException, ClassNotFoundException {
+		Enumeration<String> columnNames = htblColNameValue.keys();
 
+		String indexName = "";
+		ArrayList<String> indexCols = new ArrayList<String>();
+
+		while (columnNames.hasMoreElements()) {
+
+			String insertedColName = columnNames.nextElement();
+			// Object insertedvalue = htblColNameValue.get(insertedColName);
+			BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+			String line = br.readLine();
+			while ((line = br.readLine()) != null) {
+				String[] content = line.split(",");
+				// if(!(columnNames.hasMoreElements()) )
+				// break;
+				if (content[0].equals(strTableName)) {
+					if (content[1].equals(insertedColName) && !content[4].equals("Null")) {
+						indexCols.add(content[1]);
+						indexName = content[4];
+					}
+				}
+				line = br.readLine();
+			}
+			br.close();
+		}
+		if (indexCols.size() == 3) {
+			loadIndex(strTableName, indexName);
+			return indexCols;
+		}
+		return null;
+	}
 
 
 
