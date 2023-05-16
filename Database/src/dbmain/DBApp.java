@@ -406,8 +406,11 @@ public class DBApp implements Serializable {
 				loadedPages.get(s1).addRow(newRow, insertRowIndex1);
 			}
 
+			
 			savePages();
 			saveTable();
+			
+			
 
 		} catch (Exception e) {
 			System.out.println(
@@ -1093,78 +1096,7 @@ return iterator;
 	}
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		int operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
-//		
-//		String operator = arrSQLTerms[i]._strOperator;
-//		
-//		if(i==0)
-//		{
-//		switch (operator) {
-//	    case ">":
-//	        if (operationRes == 1)
-//	        {
-//	        	result.add(r);
-//	        }
-//	        break;
-//	    case ">=":
-//	    	if (operationRes==0 || operationRes == 1)
-//	    	{
-//	        	result.add(r);
-//	        }
-//	        break;
-//	    case "<":
-//	        if (operationRes == 1)
-//	        {
-//	        	result.add(r);
-//	        }
-//	        break;
-//	    case "<=":
-//	    	if (operationRes==0 || operationRes == -1)
-//	    	{
-//	        	result.add(r);
-//	        }
-//	        break;
-//	    case "!=":
-//	    	if (operationRes==1 || operationRes == -1)
-//	    	{
-//	        	result.add(r);
-//	        }
-//	        break;
-//	    case "=":
-//	    	if (operationRes==0)
-//	    	{
-//	        	result.add(r);
-//	        }
-//	        break;
-//	    default:
-//	    	throw new DBAppException("Unknown operator");
-//	}
-//
-//}
-//		
-//		
-//		
-//		return null;
+	
 	
 	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
 			String[] strarrOperators)
