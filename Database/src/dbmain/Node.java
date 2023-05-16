@@ -306,11 +306,11 @@ public class Node implements Serializable{
         	int i=0;
         	while (!rowPoint.isEmpty())
         	{	
-        	Object x= this.rowPoint.get(i).get(0).getX();
-        	Object y=  this.rowPoint.get(i).get(0).getY();
-        	Object z=  this.rowPoint.get(i).get(0).getZ();
+        	Object x= null;
+        	Object y=  null;
+        	Object z=  null;
         	
-        	Object xMin,xMax,yMin,yMax,zMin,zMax;
+        	Object xMinn = null,xMaxx = null,yMinn = null,yMaxx = null,zMinn=null,zMaxx=null;
      
         	
         	
@@ -326,93 +326,90 @@ public class Node implements Serializable{
             	
             	if(xType.equals("java.lang.Integer"))
             	{
-            		
+            		xMinn= (int)this.children[j].xMin;
+            		xMaxx= (int)this.children[j].xMax;
+            		x= (int)this.rowPoint.get(i).get(0).getX();
             	}
                 
             	if(yType.equals("java.lang.Integer"))
             	{
-            	midy = (int) this.yMax+ (int) this.yMin/2;
-                y=(int) findMyNode[1];
+            		yMinn= (int)this.children[j].yMin;
+            		yMaxx= (int)this.children[j].yMax;
+            		y= (int)this.rowPoint.get(i).get(0).getY();
             	}
             	if(zType.equals("java.lang.Integer")) 
                 {
-                midz =(int) this.zMax+ (int) this.zMin/2;
-                z=(int) findMyNode[2];
+            		zMinn= (int)this.children[j].zMin;
+            		zMaxx= (int)this.children[j].zMax;
+            		z= (int)this.rowPoint.get(i).get(0).getZ();
                 }
                 
             	
             	//double
             	if(xType.equals("java.lang.Double"))
                 {
-                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
-                	x=(double)findMyNode[0];
+                	xMinn = Double.parseDouble((String) this.xMin ) ;
+                	xMaxx = Double.parseDouble((String) this.xMax ) ;
+                	x= Double.parseDouble((String) this.rowPoint.get(i).get(0).getX());
                 }
                 
                 if(yType.equals("java.lang.Double"))
                 {
-                	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
-                	y=(int) findMyNode[1];
+                	yMinn = Double.parseDouble((String) this.yMin ) ;
+                	yMaxx = Double.parseDouble((String) this.yMax ) ;
+                	y= Double.parseDouble((String) this.rowPoint.get(i).get(0).getY());
                 }
                 
                 
                 if(zType.equals("java.lang.Double"))
                 {
-                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
-                	z=(double) findMyNode[2];
+                	zMinn = Double.parseDouble((String) this.zMin ) ;
+                	zMaxx = Double.parseDouble((String) this.zMax ) ;
+                	z= Double.parseDouble((String) this.rowPoint.get(i).get(0).getZ());
                 }
                 
                 //string 
                 if(xType.equals("java.lang.String"))
                 {
-            		midx = printMiddleString((String)xMin,(String)xMax);
-            		x=(String) findMyNode[0];
+                	xMinn=(String) this.xMin;
+                	xMaxx=(String) this.xMax;
+                	x= (String) this.rowPoint.get(i).get(0).getX();
                 }
                 if(yType.equals("java.lang.String"))
                 {
-            		midy = printMiddleString((String)yMin,(String)yMax);
-            		y=(String) findMyNode[1];
+                	yMinn=(String) this.yMin;
+                	yMaxx=(String) this.yMax;
+                	y= (String) this.rowPoint.get(i).get(0).getY();
                 }
+               
                 if(zType.equals("java.lang.String"))
                 {
-            		midz = printMiddleString((String)zMin,(String)zMax);
-            		z=(String) findMyNode[2];
+                	zMinn=(String) this.zMin;
+                	zMaxx=(String) this.zMax;
+                	z= (String) this.rowPoint.get(i).get(0).getZ();
                 }
+                
              
                 //date 
                 if(xType.equals("java.util.Date"))
                 {
-            		try {
-    					midx = getMiddleDate((String)xMin,(String)xMax);
-    					x=(Date) findMyNode[0];
-    					
-    				} catch (ParseException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
+            		xMinn=(Date) this.xMin;
+					xMaxx=(Date) this.xMax;
+					x = (Date) this.rowPoint.get(i).get(0).getX();
                 }
                 
                 if(yType.equals("java.util.Date"))
                 {
-            		try {
-    					midy = getMiddleDate((String)yMin,(String)yMax);
-    					y=(Date) findMyNode[1];
-    					
-    				} catch (ParseException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
+            		yMinn=(Date) this.xMin;
+					yMaxx=(Date) this.xMax;
+					y = (Date) this.rowPoint.get(i).get(0).getX();
                 }
                 
                 if(zType.equals("java.util.Date"))
                 {
-            		try {
-    					midz = getMiddleDate((String)zMin,(String)zMax);
-    					z=(Date) findMyNode[2];
-    					
-    				} catch (ParseException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
+            		zMinn=(Date) this.xMin;
+					zMaxx=(Date) this.xMax;
+					z = (Date) this.rowPoint.get(i).get(0).getX();
                 }
             	
             	
@@ -420,15 +417,15 @@ public class Node implements Serializable{
             	//===================================================
         		
         		
-        		int compareXMIN= compare(this.children[j].xMin, x);
-        		int compareXMax= compare(this.children[j].xMax, x);
+        		int compareXMIN= compare(xMinn, x);
+        		int compareXMax= compare(xMaxx, x);
         		
-        		int compareYMIN= compare(this.children[j].yMin, y);
-        		int compareYMax= compare(this.children[j].yMax, y);
+        		int compareYMIN= compare(yMinn, y);
+        		int compareYMax= compare(yMaxx, y);
         		
         		
-        		int compareZMIN= compare(this.children[j].zMin, z);
-        		int compareZMax= compare(this.children[j].zMax, z);
+        		int compareZMIN= compare(zMinn, z);
+        		int compareZMax= compare(zMaxx, z);
         		if( compareXMIN !=1 && compareXMax ==1 &&
         				compareYMIN!=1 && compareYMax==1 &&
         				compareZMIN!=1 && compareZMax==1 
@@ -441,15 +438,15 @@ public class Node implements Serializable{
         		}
         		
         		
-        		
+    		}
     		}
         	this.rowPoint =new  Vector<Vector<Point>>();
         	
         	}
         	
 
-        }
-        
+
+
         public void insert(Point ref) throws IOException 
         {
        	
