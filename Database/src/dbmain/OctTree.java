@@ -97,7 +97,7 @@ public class OctTree implements Serializable {
 				String[] content = line.split(",");
 
 				//					if(!(columnNames.hasMoreElements()) )
-				//						break;
+				//						break;aa
 
 				if(content[0].equals(tableName))
 				{
@@ -110,19 +110,76 @@ public class OctTree implements Serializable {
 
 						switch(i) {
 						case 0:
-							root.setxType(content[2]);
-							root.setxMin(content[6]);
-						    root.setxMax(content[7]);
+							this.root.setxType(content[2]);
+							if(this.root.getxType().equals("java.lang.Double"))
+							{
+								this.root.setxMin(Double.parseDouble(content[6]));
+    							this.root.setxMax(Double.parseDouble(content[7]));
+							}
+							if(this.root.getxType().equals("java.lang.Integer"))
+							{
+								this.root.setxMin(Integer.parseInt(content[6]));
+    							this.root.setxMax(Integer.parseInt(content[7]));
+							}
+							if(this.root.getxType().equals("java.util.Date"))
+							{
+								this.root.setxMin( DBApp.parseStringToDate(content[6]));
+    							this.root.setxMax( DBApp.parseStringToDate(content[7]));
+							}
+							else if(this.root.getxType().equals("java.lang.String"))
+							{
+								this.root.setxMin(content[6]);
+    							this.root.setxMax(content[7]);
+							}
+							
 						     break;
 						case 1:
-							root.setyType(content[2]);
-							root.setyMin(content[6]);
-						    root.setyMax(content[7]);
+							this.root.setyType(content[2]);
+							if(this.root.getyType().equals("java.lang.Double"))
+							{
+								
+								this.root.setyMin(Double.parseDouble(content[6]));
+    							this.root.setyMax(Double.parseDouble(content[7]));
+    							//System.out.println(this.root.getyMin().getClass());
+							}
+							if(this.root.getyType().equals("java.lang.Integer"))
+							{
+								this.root.setyMin(Integer.parseInt(content[6]));
+    							this.root.setyMax(Integer.parseInt(content[7]));
+							}
+							if(this.root.getyType().equals("java.util.Date"))
+							{
+								this.root.setyMin( DBApp.parseStringToDate(content[6]));
+    							this.root.setyMax( DBApp.parseStringToDate(content[7]));
+							}
+							else if(this.root.getyType().equals("java.lang.String"))
+							{
+								this.root.setyMin(content[6]);
+    							this.root.setyMax(content[7]);
+							}
 						    break;
 						case 2:
-							root.setzType(content[2]);
-							root.setzMin(content[6]);
-						    root.setzMax(content[7]);
+							this.root.setzType(content[2]);
+							if(this.root.getzType().equals("java.lang.Double"))
+							{
+								this.root.setzMin(Double.parseDouble(content[6]));
+    							this.root.setzMax(Double.parseDouble(content[7]));
+							}
+							if(this.root.getzType().equals("java.lang.Integer"))
+							{
+								this.root.setzMin(Integer.parseInt(content[6]));
+    							this.root.setzMax(Integer.parseInt(content[7]));
+							}
+							if(this.root.getzType().equals("java.util.Date"))
+							{
+								this.root.setzMin( DBApp.parseStringToDate(content[6]));
+    							this.root.setzMax( DBApp.parseStringToDate(content[7]));
+							}
+							else if(this.root.getzType().equals("java.lang.String"))
+							{
+								this.root.setzMin(content[6]);
+    							this.root.setzMax(content[7]);
+							}
 						    break;
 						default:break;
 						
@@ -139,6 +196,7 @@ public class OctTree implements Serializable {
     public void insert(Object x, Object y, Object z, Object ref, Object pk) throws IOException 
     {
     	Point p1 = new Point(x,y,z,ref, pk);
+    	
     	root.insert(p1);
     	
     	

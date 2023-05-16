@@ -18,7 +18,7 @@ public class Node implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-		private static int MAX_ENTRIES = 0;
+		private int MAX_ENTRIES = 0;
         private Vector< Vector<Point> > rowPoint;
         private Node[] children;
         private Object xMin,xMax,yMin,yMax,zMin,zMax;
@@ -29,7 +29,7 @@ public class Node implements Serializable{
         	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("resources/DBApp.config");
         	props.load(inputStream);
 
-        	Node.MAX_ENTRIES = Integer.parseInt(props.getProperty("MaximumEntriesinOctreeNode"));
+        	this.MAX_ENTRIES = Integer.parseInt(props.getProperty("MaximumEntriesinOctreeNode"));
 
            rowPoint= new Vector< Vector<Point> >(MAX_ENTRIES);
            children = null;
@@ -89,18 +89,73 @@ public class Node implements Serializable{
     						switch(i) {
     						case 0:
     							this.setxType(content[2]);
-    							this.setxMin(content[6]);
-    							this.setxMax(content[7]);
+    							if(this.getxType().equals("java.lang.Double"))
+    							{
+    								this.setxMin(Double.parseDouble(content[6]));
+        							this.setxMax(Double.parseDouble(content[7]));
+    							}
+    							if(this.getxType().equals("java.lang.Integer"))
+    							{
+    								this.setxMin(Integer.parseInt(content[6]));
+        							this.setxMax(Integer.parseInt(content[7]));
+    							}
+    							if(this.getxType().equals("java.util.Date"))
+    							{
+    								this.setxMin( DBApp.parseStringToDate(content[6]));
+        							this.setxMax( DBApp.parseStringToDate(content[7]));
+    							}
+    							else if(this.getxType().equals("java.lang.String"))
+    							{
+    								this.setxMin(content[6]);
+        							this.setxMax(content[7]);
+    							}
+    							
     						     break;
     						case 1:
     							this.setyType(content[2]);
-    							this.setyMin(content[6]);
-    							this.setyMax(content[7]);
+    							if(this.getyType().equals("java.lang.Double"))
+    							{
+    								this.setyMin(Double.parseDouble(content[6]));
+        							this.setyMax(Double.parseDouble(content[7]));
+    							}
+    							if(this.getyType().equals("java.lang.Integer"))
+    							{
+    								this.setyMin(Integer.parseInt(content[6]));
+        							this.setyMax(Integer.parseInt(content[7]));
+    							}
+    							if(this.getyType().equals("java.util.Date"))
+    							{
+    								this.setyMin( DBApp.parseStringToDate(content[6]));
+        							this.setyMax( DBApp.parseStringToDate(content[7]));
+    							}
+    							else if(this.getyType().equals("java.lang.String"))
+    							{
+    								this.setyMin(content[6]);
+        							this.setyMax(content[7]);
+    							}
     						    break;
     						case 2:
     							this.setzType(content[2]);
-    							this.setzMin(content[6]);
-    							this.setzMax(content[7]);
+    							if(this.getzType().equals("java.lang.Double"))
+    							{
+    								this.setzMin(Double.parseDouble(content[6]));
+        							this.setzMax(Double.parseDouble(content[7]));
+    							}
+    							if(this.getzType().equals("java.lang.Integer"))
+    							{
+    								this.setzMin(Integer.parseInt(content[6]));
+        							this.setzMax(Integer.parseInt(content[7]));
+    							}
+    							if(this.getzType().equals("java.util.Date"))
+    							{
+    								this.setzMin( DBApp.parseStringToDate(content[6]));
+        							this.setzMax( DBApp.parseStringToDate(content[7]));
+    							}
+    							else if(this.getzType().equals("java.lang.String"))
+    							{
+    								this.setzMin(content[6]);
+        							this.setzMax(content[7]);
+    							}
     						    break;
     						default:break;
     						
@@ -123,6 +178,7 @@ public class Node implements Serializable{
         		children[i].xType = this.xType;
         		children[i].yType = this.yType;
         		children[i].zType = this.zType;
+        	
         		
         	}
         	//IF INT 
@@ -138,8 +194,8 @@ public class Node implements Serializable{
         	 xMid= ((int)this.xMax- (int)this.xMin)/2 ; 
         	 NextX= (int)xMid+1;}
         		if(xType.equals("java.lang.Double")) {
-        			 xMid= (Double.parseDouble((String) this.xMax )- Double.parseDouble((String) this.xMin ))/2 ;
-                	 NextX= (double) xMid +1;
+        			 xMid= ((Double) this.xMax - (Double) this.xMin )/2 ;
+                	 NextX= (double) xMid +0.001;
         		}
         	for(int i=0; i< 4; i++)
         	{
@@ -165,13 +221,13 @@ public class Node implements Serializable{
         	}
         	else if(xType.equals("java.util.Date")){
         		try {
-					xMid = getMiddleDate((String)xMin,(String)xMax);
+					xMid = getMiddleDate((Date)xMin,(Date)xMax);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         		try {
-					NextX = getMiddleDatePlusOne((String)xMin,(String)xMax);
+					NextX = getMiddleDatePlusOne((Date)xMin,(Date)xMax);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -191,8 +247,8 @@ public class Node implements Serializable{
            	 yMid= ((int)this.yMax- (int)this.yMin)/2 ;
            	 NextY= (int)yMid+1;}
            		if(yType.equals("java.lang.Double")) {
-           			 yMid= (Double.parseDouble( (String) this.yMax) - Double.parseDouble( (String)this.yMin)) /2 ;
-                   	 NextY= (double) yMid+1;
+           			 yMid=  ((Double)this.yMax -(Double) this.yMin) /2 ;
+                   	 NextY= (Double) yMid+0.001;
            		}
            		}
         	else if(yType.equals("java.lang.String")) {
@@ -201,13 +257,13 @@ public class Node implements Serializable{
         	}
         	else if(yType.equals("java.util.Date")){
         		try {
-					yMid = getMiddleDate((String)yMin,(String)yMax);
+					yMid = getMiddleDate((Date)yMin,(Date)yMax);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         		try {
-					NextY = getMiddleDatePlusOne((String)yMin,(String)yMax);
+					NextY = getMiddleDatePlusOne((Date)yMin,(Date)yMax);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -245,8 +301,8 @@ public class Node implements Serializable{
            	 NextZ= (int)zMid+1;
            	 }
            		if(zType.equals("java.lang.Double")) {
-           			 zMid= (Double.parseDouble((String) this.zMax )- Double.parseDouble((String) this.zMin ))/2 ;
-                   	 NextZ= (double) zMid +1;
+           			 zMid= ((Double) this.zMax - (Double) this.zMin )/2 ;
+                   	 NextZ= (double) zMid +0.001;
            		}
         	}
         	else if(zType.equals("java.lang.String")) {
@@ -255,13 +311,13 @@ public class Node implements Serializable{
         	}
         	else if(zType.equals("java.util.Date")){
         		try {
-					zMid = getMiddleDate((String)zMin,(String)zMax);
+					zMid = getMiddleDate((Date)zMin,(Date)zMax);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
         		try {
-					NextZ = getMiddleDatePlusOne((String)zMin,(String)zMax);
+					NextZ = getMiddleDatePlusOne((Date)zMin,(Date)zMax);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -296,154 +352,154 @@ public class Node implements Serializable{
          	}
         	
         	
-        	
+        	//System.out.println(this.yMin.getClass());
         	this.distributeRef();
         }
 	
-        public void distributeRef() {
+		public void distributeRef() {
 
-     	
-        	int i=0;
-        	while (!rowPoint.isEmpty())
-        	{	
-        	Object x= null;
-        	Object y=  null;
-        	Object z=  null;
-        	
-        	Object xMinn = null,xMaxx = null,yMinn = null,yMaxx = null,zMinn=null,zMaxx=null;
-     
-        	
-        	
-        	
-        	
-        	
-        	Point p1 = this.rowPoint.get(i).get(0);
-        	
-        	for(int j=0; j< this.children.length; j++)
-    		{
-        		
-        		//=========================================================================
-            	
-            	if(xType.equals("java.lang.Integer"))
-            	{
-            		xMinn= (int)this.children[j].xMin;
-            		xMaxx= (int)this.children[j].xMax;
-            		x= (int)this.rowPoint.get(i).get(0).getX();
-            	}
-                
-            	if(yType.equals("java.lang.Integer"))
-            	{
-            		yMinn= (int)this.children[j].yMin;
-            		yMaxx= (int)this.children[j].yMax;
-            		y= (int)this.rowPoint.get(i).get(0).getY();
-            	}
-            	if(zType.equals("java.lang.Integer")) 
-                {
-            		zMinn= (int)this.children[j].zMin;
-            		zMaxx= (int)this.children[j].zMax;
-            		z= (int)this.rowPoint.get(i).get(0).getZ();
-                }
-                
-            	
-            	//double
-            	if(xType.equals("java.lang.Double"))
-                {
-                	xMinn = Double.parseDouble((String) this.xMin ) ;
-                	xMaxx = Double.parseDouble((String) this.xMax ) ;
-                	x= Double.parseDouble((String) this.rowPoint.get(i).get(0).getX());
-                }
-                
-                if(yType.equals("java.lang.Double"))
-                {
-                	yMinn = Double.parseDouble((String) this.yMin ) ;
-                	yMaxx = Double.parseDouble((String) this.yMax ) ;
-                	y= Double.parseDouble((String) this.rowPoint.get(i).get(0).getY());
-                }
-                
-                
-                if(zType.equals("java.lang.Double"))
-                {
-                	zMinn = Double.parseDouble((String) this.zMin ) ;
-                	zMaxx = Double.parseDouble((String) this.zMax ) ;
-                	z= Double.parseDouble((String) this.rowPoint.get(i).get(0).getZ());
-                }
-                
-                //string 
-                if(xType.equals("java.lang.String"))
-                {
-                	xMinn=(String) this.xMin;
-                	xMaxx=(String) this.xMax;
-                	x= (String) this.rowPoint.get(i).get(0).getX();
-                }
-                if(yType.equals("java.lang.String"))
-                {
-                	yMinn=(String) this.yMin;
-                	yMaxx=(String) this.yMax;
-                	y= (String) this.rowPoint.get(i).get(0).getY();
-                }
-               
-                if(zType.equals("java.lang.String"))
-                {
-                	zMinn=(String) this.zMin;
-                	zMaxx=(String) this.zMax;
-                	z= (String) this.rowPoint.get(i).get(0).getZ();
-                }
-                
-             
-                //date 
-                if(xType.equals("java.util.Date"))
-                {
-            		xMinn=(Date) this.xMin;
-					xMaxx=(Date) this.xMax;
-					x = (Date) this.rowPoint.get(i).get(0).getX();
-                }
-                
-                if(yType.equals("java.util.Date"))
-                {
-            		yMinn=(Date) this.xMin;
-					yMaxx=(Date) this.xMax;
-					y = (Date) this.rowPoint.get(i).get(0).getX();
-                }
-                
-                if(zType.equals("java.util.Date"))
-                {
-            		zMinn=(Date) this.xMin;
-					zMaxx=(Date) this.xMax;
-					z = (Date) this.rowPoint.get(i).get(0).getX();
-                }
-            	
-            	
-            	
-            	//===================================================
-        		
-        		
-        		int compareXMIN= compare(xMinn, x);
-        		int compareXMax= compare(xMaxx, x);
-        		
-        		int compareYMIN= compare(yMinn, y);
-        		int compareYMax= compare(yMaxx, y);
-        		
-        		
-        		int compareZMIN= compare(zMinn, z);
-        		int compareZMax= compare(zMaxx, z);
-        		if( compareXMIN !=1 && compareXMax ==1 &&
-        				compareYMIN!=1 && compareYMax==1 &&
-        				compareZMIN!=1 && compareZMax==1 
-        				)
-        		{
-        			children[j].insert( this.rowPoint.get(i));
-        			rowPoint.remove(i);
-        			i++;
-        			break;
-        		}
-        		
-        		
-    		}
-    		}
-        	this.rowPoint =new  Vector<Vector<Point>>();
-        	
-        	}
-        	
+
+			int i=rowPoint.size()-1;
+			
+			while (!rowPoint.isEmpty()) //infinite
+			{	
+				Object x= null;
+				Object y=  null;
+				Object z=  null;
+
+				Object xMinn = null,xMaxx = null,yMinn = null,yMaxx = null,zMinn=null,zMaxx=null;
+
+
+				//Point p1 = this.rowPoint.get(i).get(0);
+
+				
+				for(int j=0; j< this.children.length; j++)
+				{
+
+					//=========================================================================
+
+					if(xType.equals("java.lang.Integer"))
+					{
+						xMinn= (int)this.children[j].xMin;
+						xMaxx= (int)this.children[j].xMax;
+						x= (int)this.rowPoint.get(i).get(0).getX();
+					}
+
+					if(yType.equals("java.lang.Integer"))
+					{
+						yMinn= (int)this.children[j].yMin;
+						yMaxx= (int)this.children[j].yMax;
+						y= (int)this.rowPoint.get(i).get(0).getY();
+					}
+					if(zType.equals("java.lang.Integer")) 
+					{
+						zMinn= (int)this.children[j].zMin;
+						zMaxx= (int)this.children[j].zMax;
+						z= (int)this.rowPoint.get(i).get(0).getZ();
+					}
+
+
+					//double
+					if(xType.equals("java.lang.Double"))
+					{
+						
+						xMinn = (double) this.children[j].xMin  ;
+						xMaxx = (double) this.children[j].xMax  ;
+						x= (double) this.rowPoint.get(i).get(0).getX();
+					}
+
+					if(yType.equals("java.lang.Double"))
+					{
+						//System.out.println(this.children[j].yMin.getClass()); 
+						yMinn = (double)this.children[j].yMin ;
+						yMaxx = (double) this.children[j].yMax;
+						y= (double) this.rowPoint.get(i).get(0).getY();
+					}
+
+
+					if(zType.equals("java.lang.Double"))
+					{
+						zMinn = (double) this.children[j].zMin  ;
+						zMaxx =  (double)this.children[j].zMax  ;
+						z= (double) this.rowPoint.get(i).get(0).getZ();
+					}
+
+					//string 
+					if(xType.equals("java.lang.String"))
+					{
+						xMinn=(String) this.children[j].xMin;
+						xMaxx=(String) this.children[j].xMax;
+						x= (String) this.rowPoint.get(i).get(0).getX();
+					}
+					if(yType.equals("java.lang.String"))
+					{
+						yMinn=(String) this.children[j].yMin;
+						yMaxx=(String) this.children[j].yMax;
+						y= (String) this.rowPoint.get(i).get(0).getY();
+					}
+
+					if(zType.equals("java.lang.String"))
+					{
+						zMinn=(String) this.children[j].zMin;
+						zMaxx=(String) this.children[j].zMax;
+						z= (String) this.rowPoint.get(i).get(0).getZ();
+					}
+
+
+					//date 
+					if(xType.equals("java.util.Date"))
+					{
+						xMinn= (Date)this.children[j].xMin;
+						xMaxx= (Date) this.children[j].xMax;
+						x = (Date) this.rowPoint.get(i).get(0).getX();
+					}
+
+					if(yType.equals("java.util.Date"))
+					{
+						yMinn=(Date)this.children[j].yMin;
+						yMaxx=(Date)this.children[j].yMax;
+						y = (Date) this.rowPoint.get(i).get(0).getY();
+					}
+
+					if(zType.equals("java.util.Date"))
+					{
+						zMinn= (Date)this.children[j].zMin;
+						zMaxx= (Date) this.children[j].zMax;
+						z = (Date) this.rowPoint.get(i).get(0).getZ();
+					}
+
+
+
+					//===================================================
+
+
+					int compareXMIN= compare(xMinn, x);
+					int compareXMax= compare(xMaxx, x);
+
+					int compareYMIN= compare(yMinn, y);
+					int compareYMax= compare(yMaxx, y);
+
+
+					int compareZMIN= compare(zMinn, z);
+					int compareZMax= compare(zMaxx, z);
+					if( compareXMIN <=0 && compareXMax >=0 &&
+							compareYMIN<=1 && compareYMax>=1 &&
+							compareZMIN<=1 && compareZMax>=1 
+							)
+					{
+						children[j].insert( this.rowPoint.get(i));
+						rowPoint.remove(i);
+						i--;
+						break;
+					}
+
+
+				}
+			}
+			this.rowPoint =new  Vector<Vector<Point>>();
+
+		}
+
 
 
 
@@ -452,7 +508,7 @@ public class Node implements Serializable{
        	
         	if (this.getChildren()==null) //new kanet .length ==0
         	{
-        		if(this.getRowPoint().size()<MAX_ENTRIES) 
+        		if(this.getRowPoint().size()<this.MAX_ENTRIES) 
         		{
         			Vector <Point> x= new Vector <Point>();
         			x.add(ref);
@@ -462,7 +518,9 @@ public class Node implements Serializable{
         		}
         		else 
         		{
+        			System.out.println(this.yMin.getClass());
         			this.newParent();
+        			System.out.println(this.yMin.getClass());
         			insert(ref);
         		//this.root.insert
         		}
@@ -500,20 +558,20 @@ public class Node implements Serializable{
             	//double
             	if(xType.equals("java.lang.Double"))
                 {
-                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
+                	midx = ((Double) this.xMax +(Double) this.xMin ) /2;
                 	x=(double)ref.getX();
                 }
                 
                 if(yType.equals("java.lang.Double"))
                 {
-                	midy = Double.parseDouble((String) this.yMax) + Double.parseDouble((String) this.yMin) /2;
+                	midy = ((Double) this.yMax +(Double) this.yMin ) /2;
                 	y=(double) ref.getY(); 
                 }
                 
                 
                 if(zType.equals("java.lang.Double"))
                 {
-                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String)  this.zMin) /2;
+                	midz =((Double) this.zMax +(Double) this.zMin ) /2;
                 	z=(double) ref.getZ();
                 }
                 
@@ -538,7 +596,7 @@ public class Node implements Serializable{
                 if(xType.equals("java.util.Date"))
                 {
             		try {
-    					midx = getMiddleDate((String)xMin,(String)xMax);
+    					midx = getMiddleDate((Date)xMin,(Date)xMax);
     					x=(Date) ref.getX();
     					
     				} catch (ParseException e) {
@@ -550,7 +608,7 @@ public class Node implements Serializable{
                 if(yType.equals("java.util.Date"))
                 {
             		try {
-    					midy = getMiddleDate((String)yMin,(String)yMax);
+    					midy = getMiddleDate((Date)yMin,(Date)yMax);
     					y=(Date) ref.getY();
     					
     				} catch (ParseException e) {
@@ -562,7 +620,7 @@ public class Node implements Serializable{
                 if(zType.equals("java.util.Date"))
                 {
             		try {
-    					midz = getMiddleDate((String)zMin,(String)zMax);
+    					midz = getMiddleDate((Date)zMin,(Date)zMax);
     					z=(Date) ref.getZ();
     					
     				} catch (ParseException e) {
@@ -672,20 +730,20 @@ public class Node implements Serializable{
         	//double
         	if(xType.equals("java.lang.Double"))
             {
-            	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String)this.xMin  ) /2;
+            	midx = ((Double) this.xMax +(Double) this.xMin ) /2;
             	x=(double)findMe[0];
             }
             
             if(yType.equals("java.lang.Double"))
             {
-            	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
-            	y=(int) findMe[1];
+            	midy = ((Double) this.yMax +(Double) this.yMin ) /2;
+            	y=(Double) findMe[1];
             }
             
             
             if(zType.equals("java.lang.Double"))
             {
-            	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin  )/2;
+            	midz =((Double) this.zMax +(Double) this.zMin ) /2;
             	z=(double) findMe[2];
             }
             
@@ -710,7 +768,7 @@ public class Node implements Serializable{
             if(xType.equals("java.util.Date"))
             {
         		try {
-					midx = getMiddleDate((String)xMin,(String)xMax);
+					midx = getMiddleDate((Date)xMin,(Date)xMax);
 					x=(Date) findMe[0];
 					
 				} catch (ParseException e) {
@@ -722,7 +780,7 @@ public class Node implements Serializable{
             if(yType.equals("java.util.Date"))
             {
         		try {
-					midy = getMiddleDate((String)yMin,(String)yMax);
+					midy = getMiddleDate((Date)yMin,(Date)yMax);
 					y=(Date) findMe[1];
 					
 				} catch (ParseException e) {
@@ -734,7 +792,7 @@ public class Node implements Serializable{
             if(zType.equals("java.util.Date"))
             {
         		try {
-					midz = getMiddleDate((String)zMin,(String)zMax);
+					midz = getMiddleDate((Date)zMin,(Date)zMax);
 					z=(Date) findMe[2];
 					
 				} catch (ParseException e) {
@@ -855,20 +913,20 @@ public class Node implements Serializable{
             	//double
             	if(xType.equals("java.lang.Double"))
                 {
-                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
+                	midx = ((Double) this.xMax +(Double) this.xMin ) /2;
                 	x=(double)findMyNode[0];
                 }
                 
                 if(yType.equals("java.lang.Double"))
                 {
-                	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
-                	y=(int) findMyNode[1];
+                	midy = ((Double) this.yMax +(Double) this.yMin ) /2;
+                	y=(Double) findMyNode[1];
                 }
                 
                 
                 if(zType.equals("java.lang.Double"))
                 {
-                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
+                	midz =((Double) this.zMax +(Double) this.zMin ) /2;
                 	z=(double) findMyNode[2];
                 }
                 
@@ -893,7 +951,7 @@ public class Node implements Serializable{
                 if(xType.equals("java.util.Date"))
                 {
             		try {
-    					midx = getMiddleDate((String)xMin,(String)xMax);
+    					midx = getMiddleDate((Date)xMin,(Date)xMax);
     					x=(Date) findMyNode[0];
     					
     				} catch (ParseException e) {
@@ -905,7 +963,7 @@ public class Node implements Serializable{
                 if(yType.equals("java.util.Date"))
                 {
             		try {
-    					midy = getMiddleDate((String)yMin,(String)yMax);
+    					midy = getMiddleDate((Date)yMin,(Date)yMax);
     					y=(Date) findMyNode[1];
     					
     				} catch (ParseException e) {
@@ -917,7 +975,7 @@ public class Node implements Serializable{
                 if(zType.equals("java.util.Date"))
                 {
             		try {
-    					midz = getMiddleDate((String)zMin,(String)zMax);
+    					midz = getMiddleDate((Date)zMin,(Date)zMax);
     					z=(Date) findMyNode[2];
     					
     				} catch (ParseException e) {
@@ -1011,7 +1069,10 @@ public class Node implements Serializable{
             } else if (o1 instanceof Double && o2 instanceof Double) {
                 return Double.compare((double) o1, (double) o2);
             } else if (o1 instanceof String && o2 instanceof String) {
-                return ((String) o1).compareTo((String) o2);
+            	String m = (String) o1;
+            	String n = (String) o2;
+            	return m.compareToIgnoreCase(n);
+                //return ((String) o1).compareTo((String) o2);
             } else if (o1 instanceof Date && o2 instanceof Date) {
                 return ((Date) o1).compareTo((Date) o2);
             } else {
@@ -1034,7 +1095,7 @@ public Vector<Vector<Point>> getX(Object x, String op)
 	
 	if(xType.equals("java.lang.Double"))
     {
-    	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
+    	midx = ((Double) this.xMax +(Double) this.xMin ) /2;
     	x=(double)x;
     }
 	
@@ -1048,7 +1109,7 @@ public Vector<Vector<Point>> getX(Object x, String op)
       if(xType.equals("java.util.Date"))
       {
   		try {
-				midx = getMiddleDate((String)xMin,(String)xMax);
+				midx = getMiddleDate((Date)xMin,(Date)xMax);
 				x=(Date) x;
 				
 			} catch (ParseException e) {
@@ -1143,7 +1204,7 @@ public Vector<Vector<Point>> getY(Object y, String op)
 	
 	if(yType.equals("java.lang.Double"))
     {
-    	midy = Double.parseDouble((String) this.yMax )+Double.parseDouble((String) this.yMin ) /2;
+    	midy = ((Double) this.yMax +(Double) this.yMin ) /2;
     	y=(double)y;
     }
 	
@@ -1157,7 +1218,7 @@ public Vector<Vector<Point>> getY(Object y, String op)
       if(yType.equals("java.util.Date"))
       {
   		try {
-				midy = getMiddleDate((String)yMin,(String)yMax);
+				midy = getMiddleDate((Date)yMin,(Date)yMax);
 				y=(Date) y;
 				
 			} catch (ParseException e) {
@@ -1253,7 +1314,7 @@ public Vector<Vector<Point>> getZ(Object z, String op)
 	
 	if(zType.equals("java.lang.Double"))
     {
-    	midz = Double.parseDouble((String) this.zMax )+Double.parseDouble((String) this.zMin ) /2;
+    	midz = ((Double) this.zMax+(Double) this.zMin ) /2;
     	z=(double)z;
     }
 	
@@ -1267,7 +1328,7 @@ public Vector<Vector<Point>> getZ(Object z, String op)
       if(yType.equals("java.util.Date"))
       {
   		try {
-				midz = getMiddleDate((String)zMin,(String)zMax);
+				midz = getMiddleDate((Date)zMin,(Date)zMax);
 				z=(Date) z;
 				
 			} catch (ParseException e) {
@@ -1352,28 +1413,28 @@ public Vector<Vector<Point>> getZ(Object z, String op)
 // ========================HELPERS =====================
 
 
-public static Date getMiddleDate(String startDate, String endDate) throws ParseException {
+public static Date getMiddleDate(Date startDate, Date endDate) throws ParseException {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    Date start = dateFormat.parse(startDate);
-    Date end = dateFormat.parse(endDate);
+//    Date start = dateFormat.parse(startDate);
+//    Date end = dateFormat.parse(endDate);
     Calendar calendar = Calendar.getInstance();
-    calendar.setTime(start);
+    calendar.setTime(startDate);
     long startTimeInMillis = calendar.getTimeInMillis();
-    calendar.setTime(end);
+    calendar.setTime(endDate);
     long endTimeInMillis = calendar.getTimeInMillis();
     long middleTimeInMillis = (startTimeInMillis + endTimeInMillis) / 2;
     Date middleDate = new Date(middleTimeInMillis);
     return middleDate;
 }
 
-public static String getMiddleDatePlusOne(String startDate, String endDate) throws ParseException {
+public static Date getMiddleDatePlusOne(Date startDate, Date endDate) throws ParseException {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    Date start = dateFormat.parse(startDate);
-    Date end = dateFormat.parse(endDate);
+//    Date start = dateFormat.parse(startDate);
+//    Date end = dateFormat.parse(endDate);
     Calendar calendar = Calendar.getInstance();
-    calendar.setTime(start);
+    calendar.setTime(startDate);
     long startTimeInMillis = calendar.getTimeInMillis();
-    calendar.setTime(end);
+    calendar.setTime(endDate);
     long endTimeInMillis = calendar.getTimeInMillis();
     long middleTimeInMillis = (startTimeInMillis + endTimeInMillis) / 2;
     Date middleDate = new Date(middleTimeInMillis);
@@ -1383,7 +1444,7 @@ public static String getMiddleDatePlusOne(String startDate, String endDate) thro
     calendar.add(Calendar.DAY_OF_MONTH, 1);
     Date nextDay = calendar.getTime();
 
-    return dateFormat.format(nextDay);
+    return nextDay;
 }
 public static String getNextString(String s) {
     // Convert the string into a number in base 26
@@ -1545,396 +1606,6 @@ public void setzType(String zType) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//============ zbala ============================
-
-
-
-
-public boolean search(Point findMe )
-{
-	Object x= findMe.getX();
-	Object y= findMe.getY();
-	Object z = findMe.getZ();
-	
-	//lw el point bara el range aslun 
-	//check lw equal mksla afkr now now hfkr fel bus 
-	
-	if(compare(x,this.xMin)<0||compare(y,this.yMin)<0||compare(z,this.zMin)<0
-			||  compare(x,this.xMax)>0|| compare(y,this.yMax)>0|| compare(z,this.zMax)>0)
-		return false;
-	
-	
-	
-		Object midx = null;
-	Object midy = null;;
-	Object midz = null;
-	//int
-	if(xType.equals("java.lang.Integer"))
-	{
-		midx = (int) this.xMax+ (int) this.xMin/2;
-		x=(int) findMe.getX();
-	}
-    
-	if(yType.equals("java.lang.Integer"))
-	{
-	midy = (int) this.yMax+ (int) this.yMin/2;
-    y=(int) findMe.getY();
-	}
-	if(zType.equals("java.lang.Integer")) 
-    {
-    midz =(int) this.zMax+ (int) this.zMin/2;
-    z=(int) findMe.getZ();
-    }
-    
-	
-	//double
-	if(xType.equals("java.lang.Double"))
-    {
-    	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
-    	x=(double)findMe.getX();
-    }
-    
-    if(yType.equals("java.lang.Double"))
-    {
-    	midy = Double.parseDouble((String)this.yMax  )+ Double.parseDouble((String) this.yMin ) /2;
-    	y=(int) findMe.getY(); 
-    }
-    
-    
-    if(zType.equals("java.lang.Double"))
-    {
-    	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
-    	z=(double) findMe.getZ();
-    }
-    
-    //string 
-    if(xType.equals("java.lang.String"))
-    {
-		midx = printMiddleString((String)xMin,(String)xMax);
-		x=(String) findMe.getX(); 
-    }
-    if(yType.equals("java.lang.String"))
-    {
-		midy = printMiddleString((String)yMin,(String)yMax);
-		y=(String) findMe.getY(); 
-    }
-    if(zType.equals("java.lang.String"))
-    {
-		midz = printMiddleString((String)zMin,(String)zMax);
-		z=(String) findMe.getZ(); 
-    }
- 
-    //date 
-    if(xType.equals("java.util.Date"))
-    {
-		try {
-			midx = getMiddleDate((String)xMin,(String)xMax);
-			x=(Date) findMe.getX();
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-    
-    if(yType.equals("java.util.Date"))
-    {
-		try {
-			midy = getMiddleDate((String)yMin,(String)yMax);
-			y=(Date) findMe.getY();
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-    
-    if(zType.equals("java.util.Date"))
-    {
-		try {
-			midz = getMiddleDate((String)zMin,(String)zMax);
-			z=(Date) findMe.getZ();
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-    
-    
-    //------------------------------------------------------------------------
-    
-    if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
-    {
-    	for(int i=0; i<this.rowPoint.size(); i++)
-    	{
-    		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0
-    				&& compare(this.rowPoint.get(i).get(0).getY(), y)==0
-    				&& compare(this.rowPoint.get(i).get(0).getZ(), z)==0 )
-    				return true; 
-    	}
-    }
-    else 
-    {
-    	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
-        if(compare(x,midx)<1)
-        	{
-        	if(compare(y,midy)<1)
-        	{
-        		{
-        		if(compare(z,midz)<1) //low low low
-        			this.children[0].search(findMe);
-        		else //low low high
-        			this.children[1].search(findMe);
-        		}
-        
-        
-        	}
-        	else 
-        	{
-        		{
-            		if(compare(z,midz)<1) //low high low 
-            			this.children[2].search(findMe);
-            		else //low high high 
-            			this.children[3].search(findMe);
-            		}
-        	}
-        	}
-        else // x aslun high 
-        {
-        	if(compare(y,midy)<1)
-        	{
-        		{
-        		if(compare(z,midz)<1) //high low low
-        			this.children[4].search(findMe);
-        		else //high low high
-        			this.children[5].search(findMe);
-        		}
-        
-        
-        	}
-        	else 
-        	{
-        		{
-            		if(compare(z,midz)<1) //high high low 
-            			this.children[6].search(findMe);
-            		else //high high high 
-            			this.children[7].search(findMe);
-            		}
-        	}
-        }
-        		
-        
-	}
-    
-    
-	// m3nosh 3yal w m3ndosh kalba lesa 
-	return false;
-}
-
-
-public Node get(Point findMyNode,  boolean found)
-{
-	
-	//if point == null ??
-	
-	
-	
-	if(search(findMyNode )&&  found ==false ) // lw mwgoda aslun 
-	{
-		
-		Object x= null;
-		Object y= null;
-    	Object z = null;
-    	
-  		Object midx = null;
-		Object midy = null;;
-		Object midz = null;
-		
-		// ana bgeb el values bs 
-		if(xType.equals("java.lang.Integer"))
-    	{
-    		midx = (int) this.xMax+ (int) this.xMin/2;
-    		x=(int) findMyNode.getX();
-    	}
-        
-    	if(yType.equals("java.lang.Integer"))
-    	{
-    	midy = (int) this.yMax+ (int) this.yMin/2;
-        y=(int) findMyNode.getY();
-    	}
-    	if(zType.equals("java.lang.Integer")) 
-        {
-        midz =(int) this.zMax+ (int) this.zMin/2;
-        z=(int) findMyNode.getZ();
-        }
-        
-    	
-    	//double
-    	if(xType.equals("java.lang.Double"))
-        {
-        	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
-        	x=(double)findMyNode.getX();
-        }
-        
-        if(yType.equals("java.lang.Double"))
-        {
-        	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
-        	y=(int) findMyNode.getY(); 
-        }
-        
-        
-        if(zType.equals("java.lang.Double"))
-        {
-        	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
-        	z=(double) findMyNode.getZ();
-        }
-        
-        //string 
-        if(xType.equals("java.lang.String"))
-        {
-    		midx = printMiddleString((String)xMin,(String)xMax);
-    		x=(String) findMyNode.getX(); 
-        }
-        if(yType.equals("java.lang.String"))
-        {
-    		midy = printMiddleString((String)yMin,(String)yMax);
-    		y=(String) findMyNode.getY(); 
-        }
-        if(zType.equals("java.lang.String"))
-        {
-    		midz = printMiddleString((String)zMin,(String)zMax);
-    		z=(String) findMyNode.getZ(); 
-        }
-     
-        //date 
-        if(xType.equals("java.util.Date"))
-        {
-    		try {
-				midx = getMiddleDate((String)xMin,(String)xMax);
-				x=(Date) findMyNode.getX();
-				
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-        
-        if(yType.equals("java.util.Date"))
-        {
-    		try {
-				midy = getMiddleDate((String)yMin,(String)yMax);
-				y=(Date) findMyNode.getY();
-				
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-        
-        if(zType.equals("java.util.Date"))
-        {
-    		try {
-				midz = getMiddleDate((String)zMin,(String)zMax);
-				z=(Date) findMyNode.getZ();
-				
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-		
-        
-        
-        //------------------------------------------------------------------------
-        
-        if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
-        {
-        	for(int i=0; i<this.rowPoint.size(); i++)
-        	{
-        		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0
-        				&& compare(this.rowPoint.get(i).get(0).getY(), y)==0
-        				&& compare(this.rowPoint.get(i).get(0).getZ(), z)==0 )
-        		{
-        				found=true;
-        				return this; 
-        		}
-        	}
-        }
-        else 
-        {
-        	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
-            if(compare(x,midx)<1)
-            	{
-            	if(compare(y,midy)<1)
-            	{
-            		{
-            		if(compare(z,midz)<1) //low low low
-            			this.children[0].get(findMyNode, found);
-            		else //low low high
-            			this.children[1].get(findMyNode, found);
-            		}
-            
-            
-            	}
-            	else 
-            	{
-            		{
-                		if(compare(z,midz)<1) //low high low 
-                			this.children[2].get(findMyNode, found);
-                		else //low high high 
-                			this.children[3].get(findMyNode, found);
-                		}
-            	}
-            	}
-            else // x aslun high 
-            {
-            	if(compare(y,midy)<1)
-            	{
-            		{
-            		if(compare(z,midz)<1) //high low low
-            			this.children[4].get(findMyNode, found);
-            		else //high low high
-            			this.children[5].get(findMyNode, found);
-            		}
-            
-            
-            	}
-            	else 
-            	{
-            		{
-                		if(compare(z,midz)<1) //high high low 
-                			this.children[6].get(findMyNode, found);
-                		else //high high high 
-                			this.children[7].get(findMyNode, found);
-                		}
-            	}
-            }
-            		
-            
-    	}
-
-        
-			}
-	//lw hya msh mwgoda
-	return null; 
-			
-}
 
 
 
