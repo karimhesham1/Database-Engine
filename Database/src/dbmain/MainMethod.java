@@ -37,40 +37,7 @@ public class MainMethod {
 		
 		//inserting some records in the database
 		Hashtable<String, Object> htblColNameValue = new Hashtable();
-		htblColNameValue.put("id", new Integer( 1 ));
-		htblColNameValue.put("name", new String("Ahmed Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.95 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 5 ));
-		htblColNameValue.put("name", new String("Ahmed Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.95 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 3 ));
-		htblColNameValue.put("name", new String("Dalia Noor" ) );
-		htblColNameValue.put("gpa", new Double( 1.25 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 6 ));
-		htblColNameValue.put("name", new String("John Noor" ) );
-		htblColNameValue.put("gpa", new Double( 1.5 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 4 ));
-		htblColNameValue.put("name", new String("Zaky Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.88 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
-
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 2 ));
-		htblColNameValue.put("name", new String("Nour" ) );
-		htblColNameValue.put("gpa", new Double( 1.25 ) );
-		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 8 ));
@@ -113,7 +80,7 @@ public class MainMethod {
 		htblColNameValue.put("gpa", new Double( 0.4 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-//		for(int i=60;i<75;i++) {
+//		for(int i=60;i<80;i++) {
 //		if(i<68)
 //		{
 //			htblColNameValue.clear( );
@@ -136,7 +103,7 @@ public class MainMethod {
 		
 		
 		htblColNameValue.clear( );
-		//htblColNameValue.put("id", new Integer( 13 ));
+		htblColNameValue.put("id", new Integer( 13 ));
 		htblColNameValue.put("name", new String("susFash5" ) );
 		htblColNameValue.put("gpa", new Double( 3.2 ) );
 		htblColNameValue.put("dob", new Date(2002 - 1900, 1 - 1, 1));

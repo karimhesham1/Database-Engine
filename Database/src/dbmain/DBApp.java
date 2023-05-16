@@ -834,10 +834,14 @@ public boolean hasIndex(String strTableName,Hashtable<String,Object> htblColName
 				}
 			}
 		
-			reCreateIndex(strTableName);
+			
+			loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+			
+			//reCreateIndex(strTableName);
+			saveIndex();
 			savePages();
 			saveTable();
-			saveIndex();
+			
 			
 			
 			
@@ -1625,6 +1629,28 @@ return iterator;
 
 
 
+	
+	public String getPkColName(String strTableName) throws IOException
+	{
+		String pkname = "";
+		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+		String line = br.readLine();
+		while (line != null) {
+			String[] content = line.split(",");
+			if (content[0].equals(strTableName) && content[3].equals("true"))
+			{
+				pkname = content[1];
+			}
+
+			line = br.readLine();
+		}
+
+		
+
+		br.close();
+		return pkname;
+	}
+	
 
 	//	 following method creates an octree
 	//	 depending on the count of column names passed.
@@ -1632,7 +1658,7 @@ return iterator;
 	//	 If only one or two column names is passed, throw an Exception.
 	public void createIndex(String strTableName, String[] strarrColName)
 			throws DBAppException, IOException, ClassNotFoundException {
-		String pkname = "";
+		String pkname = getPkColName(strTableName);
 
 		if (strarrColName.length != 3)
 			throw new DBAppException();
@@ -1648,8 +1674,6 @@ return iterator;
 			String line = br.readLine();
 			while (line != null) {
 				String[] content = line.split(",");
-				if (content[0].equals(strTableName) && content[3].equals("true"))
-					pkname = content[1];
 				if (content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("Null")
 						&& content[5].equals("Null")) {
 
@@ -1723,6 +1747,9 @@ return iterator;
 
 			br.close();
 		}
+		
+		
+		
 
 		// create the octree
 		//mango
