@@ -407,6 +407,18 @@ public class DBApp implements Serializable {
 			}
 
 			
+			ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
+			if(indexCols != null) {
+				loadIndex(strTableName, indexCols.get(3));
+				Object x = indexCols.get(0);
+				Object y = indexCols.get(1);
+				Object z = indexCols.get(2);
+				//Object pk = r.getValue(pkname);
+				Object ref = loadedPages.get(s1);
+				loadedOctree.insert(x, y, z, ref, pk);
+				saveIndex();
+			}
+			
 			savePages();
 			saveTable();
 			
@@ -2040,6 +2052,7 @@ return iterator;
 		}
 		if (indexCols.size() == 3) {
 			loadIndex(strTableName, indexName);
+			indexCols.add(indexName);
 			return indexCols;
 		}
 		return null;
