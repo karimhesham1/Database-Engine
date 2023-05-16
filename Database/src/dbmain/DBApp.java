@@ -978,9 +978,141 @@ public class DBApp implements Serializable {
 	}
 	
 	public Iterator selectUsingIndex(SQLTerm[] arrSQLTerms,
-			String[] strarrOperators)
+			String[] strarrOperators) throws ClassNotFoundException, IOException
 	{
-		return null;
+		
+		
+	
+		Object[] columnsSorted = new Object[3];
+		String [] opSorted = new String[3];
+		
+		
+		Vector<Vector<Point>> selectedPoints = new Vector<Vector<Point>>() ;
+		
+		
+		for(int i=0; i<3; i++)
+		{
+			String columnName =arrSQLTerms[i]._strColumnName;
+			Object columnValue= arrSQLTerms[i]._objValue;
+			String op =arrSQLTerms[i]._strOperator;
+			
+			if(columnName.equals(loadedOctree.getxName())) 
+			{
+				columnsSorted[0]=columnValue;
+				opSorted[0]=op;
+			}
+			if(columnName.equals(loadedOctree.getyName())) 
+			{
+				columnsSorted[1]=columnValue;
+				opSorted[1]=op;
+			}
+			if(columnName.equals(loadedOctree.getzName())) 
+			{
+				columnsSorted[2]=columnValue;
+				opSorted[2]=op;
+			}
+			
+			
+		}
+		
+		
+
+			
+		
+			
+					
+selectedPoints.addAll( loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0]) );
+selectedPoints.addAll( loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1]) );
+selectedPoints.addAll( loadedOctree.getRoot().getZ(columnsSorted[2], opSorted[2]) );
+
+
+String table = loadedOctree.getName();
+Vector<Point> goodSelectedPoints= new Vector<Point> ();
+Vector<Row> result= new Vector<Row>(); 
+
+
+for(Vector<Point> v: selectedPoints)
+{
+	for(Point p: v)
+	{
+		goodSelectedPoints.add(p);
+	}
+}
+	
+
+Vector<Object> pksToDelete = new Vector<Object>();
+for(Point p : goodSelectedPoints)
+	pksToDelete.add(p.getPk()); //adds all the pks to this vector
+
+
+loadTable(table);
+loadPagesNeeded(goodSelectedPoints); //new loadPages method which loads only the pages we need
+String pkColName = getPrimaryKeyColName(table); //new method, gets col name of pk
+
+for(int i=0 ; i<loadedPages.size() ; i++)
+{
+	Page currPage = loadedPages.get(i);
+	for(int j=0 ; j<currPage.getRows().size() ; j++)
+	{
+		Row currRow = currPage.getRow(j);
+		Object pk = currRow.getValue(pkColName);
+		if(pksToDelete.contains(pk))
+		{
+			result.add(currRow);
+			
+		}
+	}
+}
+
+
+savePages();
+saveTable();
+
+
+
+Iterator<Row> iterator =result.iterator();
+
+return iterator;
+		
+		
+		
+	
+			
+
+
+
+
+
+
+
+
+
+		
+		
+
+	}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 //		int operationRes = compareOP(arrSQLTerms[i]._objValue, r.getValue(colName));
 //		
 //		String operator = arrSQLTerms[i]._strOperator;
@@ -1033,7 +1165,6 @@ public class DBApp implements Serializable {
 //		
 //		
 //		return null;
-	}
 	
 	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
 			String[] strarrOperators)
