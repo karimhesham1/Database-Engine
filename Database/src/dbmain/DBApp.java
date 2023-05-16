@@ -33,6 +33,7 @@ public class DBApp implements Serializable {
 	private OctTree loadedOctree;
 	private String loadedIndexName;
 	private boolean firstDeletion = true;
+	private String currIndexName="";
 
 	// Test
 	// This is a part of a pull request
@@ -405,54 +406,39 @@ public class DBApp implements Serializable {
 				loadedPages.get(s1).addRow(newRow, insertRowIndex1);
 			}
 
-			
-			//ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
-			reCreateIndex(strTableName);
-//			if(indexCols != null) {
-//				loadIndex(strTableName, indexCols.get(3));
-//				Object x = indexCols.get(0);
-//				Object y = indexCols.get(1);
-//				Object z = indexCols.get(2);
-//				//Object pk = r.getValue(pkname);
-//				Object ref = loadedPages.get(s1);
-//				loadedOctree.insert(x, y, z, ref, pk);
-//				saveIndex();
-//			}
-			
-//			String[] indexColNames = new String[3];
-//			indexColNames[0] = indexCols.get(0);
-//			indexColNames[1] = indexCols.get(1);
-//			indexColNames[2] = indexCols.get(2);
-//			
-//			if(hasIndex(strTableName, htblColNameValue)) {
-//				loadIndex(strTableName, indexCols.get(3));
-//				loadedOctree = new OctTree(strTableName, indexColNames);
-//				loadTable(strTableName);
-//				loadPages(loadedTable);
-//				String indexName = "";
-//				indexName = indexColNames[0] + indexColNames[1] + indexColNames[2] + strTableName + ".class";
+
+//			String[] res = hasIndex(strTableName);
 //
-//				for (Page p : loadedPages) {
-//					for (Row r : p.getRows()) {
-//						Object x = r.getValue(indexColNames[0]);
-//						Object y = r.getValue(indexColNames[1]);
-//						Object z = r.getValue(indexColNames[2]);
-//						//Object pk = r.getValue(pkname);
-//						Object ref = p.getPageName();
-//						loadedOctree.insert(x, y, z, ref, pk);
-//					}
-//				}
+//            if(res.length == 3)
+//            {
+//                loadIndex(strTableName, currIndexName);
+//                loadedOctree = new OctTree(strTableName, res);
+//                for (Page p : loadedPages) {
+//                    for (Row r : p.getRows()) {
+//                        Object x = r.getValue(res[0]);
+//                        Object y = r.getValue(res[1]);
+//                        Object z = r.getValue(res[2]);
+//                        Object pkv = r.getValue(pk);
+//                        Object ref = p.getPageName();
+//                        loadedOctree.insert(x, y, z, ref, pk);
+//                    }
+//                }
+//                loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+//
+//                saveIndex();
+//            }
+			
 				savePages();
 				saveTable();
 
 				// serialize to disk
-				File indexFile = new File(indexName + strTableName + ".class");
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
-				out.writeObject(loadedOctree);
-				out.close();
-
-				loadedOctree.printOctTree(loadedOctree.getRoot(), "");
-			}
+//				File indexFile = new File(indexName + strTableName + ".class");
+//				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
+//				out.writeObject(loadedOctree);
+//				out.close();
+//
+//				loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+//			
 
 		} catch (Exception e) {
 			System.out.println(
@@ -463,7 +449,49 @@ public class DBApp implements Serializable {
 	}
 
 
+	public String[] hasIndex(String strTableName) throws IOException
+	{
 
+
+	    String[] res = new String[3];
+	    int i=0;
+	    BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
+	        String line = br.readLine();
+	        boolean firstloop =true;
+	        while (line != null) 
+	        {
+
+	            if (firstloop)
+	                line = br.readLine();
+
+	            firstloop = false;
+
+	            String[] content = line.split(",");
+
+	            if(content[0].equals(strTableName))
+	            {
+
+	                if (!content[4].equals("Null"))
+	                {
+	                    res[i]=(content[1]);
+	                    currIndexName = content[4];
+	                    i++;
+
+	                }
+
+	            }
+	            line = br.readLine();
+
+	        }
+	        br.close();
+
+
+	        //loadIndex(strTableName, indexName);
+	        return res;
+
+
+
+	}
 
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
@@ -563,7 +591,7 @@ public class DBApp implements Serializable {
 			if (!found)
 				throw new DBAppException("Pk is not found");
 
-			reCreateIndex(strTableName);
+			//reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 
@@ -693,7 +721,7 @@ public class DBApp implements Serializable {
 				}
 			}
 		
-			reCreateIndex(strTableName);
+			//reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 			saveIndex();
@@ -854,7 +882,7 @@ public class DBApp implements Serializable {
 
 				}
 			}
-			reCreateIndex(strTableName);
+			//reCreateIndex(strTableName);
 
 			savePages();
 			saveTable();
@@ -947,14 +975,14 @@ public class DBApp implements Serializable {
 
 			}
 
-			reCreateIndex(strTableName);
+			//reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 
 			if (firstDeletion) {
 				firstDeletion = false;
 				this.deleteFromTable(strTableName, htblColNameValue);
-				reCreateIndex(strTableName);
+				//reCreateIndex(strTableName);
 
 			}
 
@@ -1040,34 +1068,46 @@ public class DBApp implements Serializable {
 
 		}
 		
-		for(Vector<Point> v : loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0])) {
-			selectedPoints.add(v);
-		}
-		
 		Vector<Vector<Point>> temp = new Vector<Vector<Point>>();
-		for(Vector<Point> v : loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1])) {
-			temp.add(v);
-		}
-		
-		for(Vector<Point> vCurr : selectedPoints) {
-			if(!temp.contains(vCurr)) { 
-				selectedPoints.remove(vCurr);
-			}
-		}
-		
-		temp.clear();
-		
-		for(Vector<Point> v : loadedOctree.getRoot().getZ(columnsSorted[2], opSorted[2])) {
-			temp.add(v);
-		}
-		
-		for(Vector<Point> vCurr : selectedPoints) {
-			if(!temp.contains(vCurr)) { 
-				selectedPoints.remove(vCurr);
-			}
-		}
-		
-		temp.clear();
+        for(Vector<Point> v : loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1])) {
+            temp.add(v);
+        }
+        boolean flag = false ;
+        selectedPoints= loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0]);
+
+        for(int f=0; f<selectedPoints.size(); f++)
+        {
+            for(int d=0; d<temp.size(); d++)
+            {
+                if(selectedPoints.get(f).get(0).getX()== temp.get(d).get(0).getX())
+                    flag = true;
+            }
+            if(!flag )
+            {
+                selectedPoints.remove(f);
+                f--;
+            }
+        }
+
+
+        temp = new Vector<Vector<Point>>();
+        for(Vector<Point> v : loadedOctree.getRoot().getZ(columnsSorted[2], opSorted[2])) {
+            temp.add(v);
+        }
+        flag = false ;
+        for(int f=0; f<selectedPoints.size(); f++)
+        {
+            for(int d=0; d<temp.size(); d++)
+            {
+                if(selectedPoints.get(f).get(0).getX()== temp.get(d).get(0).getX())
+                    flag = true;
+            }
+            if(!flag )
+            {
+                selectedPoints.remove(f);
+                f--;
+            }
+        }
 
 //		selectedPoints.addAll(loadedOctree.getRoot().getX(columnsSorted[0], opSorted[0]));
 //		selectedPoints.addAll(loadedOctree.getRoot().getY(columnsSorted[1], opSorted[1]));

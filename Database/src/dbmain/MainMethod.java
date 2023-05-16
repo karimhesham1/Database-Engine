@@ -33,7 +33,7 @@ public class MainMethod {
 		htblColNameMax.put("dob", "2025-01-01");
 		
 		//create the table, done, working
-		//dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
+		dbApp.createTable( strTableName, "id", htblColNameType, htblColNameMin, htblColNameMax );
 		
 		//inserting some records in the database
 		Hashtable<String, Object> htblColNameValue = new Hashtable();
@@ -113,26 +113,26 @@ public class MainMethod {
 		htblColNameValue.put("gpa", new Double( 0.4 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-//		for(int i=60;i<75;i++) {
-//		if(i<68)
-//		{
-//			htblColNameValue.clear( );
-//			htblColNameValue.put("id", new Integer( i ));
-//			htblColNameValue.put("name", new String( "kimo" ));
-//			htblColNameValue.put("gpa", new Double( 0.4 ) );
-//			htblColNameValue.put("dob", new Date(2005 - 1900, 1 - 1, 1));
-//			dbApp.insertIntoTable( strTableName , htblColNameValue );
-//		}
-//		else
-//		{
-//		htblColNameValue.clear( );
-//		htblColNameValue.put("id", new Integer( i ));
-//		htblColNameValue.put("name", new String( "manga" ));
-//		htblColNameValue.put("gpa", new Double( 3.7 ) );
-//		htblColNameValue.put("dob", new Date(2010 - 1900, 1 - 1, 1));
-//		dbApp.insertIntoTable( strTableName , htblColNameValue );
-//		}
-//	}
+		for(int i=60;i<75;i++) {
+		if(i<68)
+		{
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( i ));
+			htblColNameValue.put("name", new String( "kimo" ));
+			htblColNameValue.put("gpa", new Double( 0.4 ) );
+			htblColNameValue.put("dob", new Date(2005 - 1900, 1 - 1, 1));
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
+		}
+		else
+		{
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( i ));
+		htblColNameValue.put("name", new String( "manga" ));
+		htblColNameValue.put("gpa", new Double( 3.7 ) );
+		htblColNameValue.put("dob", new Date(2010 - 1900, 1 - 1, 1));
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		}
+	}
 		
 		
 		htblColNameValue.clear( );
@@ -150,7 +150,7 @@ public class MainMethod {
 		//print the table
 		//dbApp.printTable(strTableName);
 		String[] cols = {"name", "gpa", "dob"};
-		//dbApp.createIndex(strTableName, cols);
+		dbApp.createIndex(strTableName, cols);
 		dbApp.printTable(strTableName);
 		
 		
