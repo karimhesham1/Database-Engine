@@ -33,7 +33,6 @@ public class DBApp implements Serializable {
 	private OctTree loadedOctree;
 	private String loadedIndexName;
 	private boolean firstDeletion = true;
-	private String currIndexName = "";
 
 	// Test
 	// This is a part of a pull request
@@ -407,32 +406,8 @@ public class DBApp implements Serializable {
 			}
 
 			
-			String[] res = hasIndex(strTableName);
-			
-			if(res.length == 3)
-			{
-				loadIndex(strTableName, currIndexName);
-				loadedOctree = new OctTree(strTableName, res);
-				for (Page p : loadedPages) {
-					for (Row r : p.getRows()) {
-						Object x = r.getValue(res[0]);
-						Object y = r.getValue(res[1]);
-						Object z = r.getValue(res[2]);
-						Object pkv = r.getValue(pk);
-						Object ref = p.getPageName();
-						loadedOctree.insert(x, y, z, ref, pk);
-					}
-				}
-				loadedOctree.printOctTree(loadedOctree.getRoot(), "");
-				
-				saveIndex();
-			}
-
-
-			
-			
 			//ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
-			//reCreateIndex(strTableName);
+			reCreateIndex(strTableName);
 //			if(indexCols != null) {
 //				loadIndex(strTableName, indexCols.get(3));
 //				Object x = indexCols.get(0);
@@ -457,7 +432,16 @@ public class DBApp implements Serializable {
 //				String indexName = "";
 //				indexName = indexColNames[0] + indexColNames[1] + indexColNames[2] + strTableName + ".class";
 //
-
+//				for (Page p : loadedPages) {
+//					for (Row r : p.getRows()) {
+//						Object x = r.getValue(indexColNames[0]);
+//						Object y = r.getValue(indexColNames[1]);
+//						Object z = r.getValue(indexColNames[2]);
+//						//Object pk = r.getValue(pkname);
+//						Object ref = p.getPageName();
+//						loadedOctree.insert(x, y, z, ref, pk);
+//					}
+//				}
 				savePages();
 				saveTable();
 
@@ -479,49 +463,7 @@ public class DBApp implements Serializable {
 	}
 
 
-public String[] hasIndex(String strTableName) throws IOException
-{
-	
 
-	String[] res = new String[3];
-	int i=0;
-	BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-		String line = br.readLine();
-		boolean firstloop =true;
-		while (line != null) 
-		{
-
-			if (firstloop)
-				line = br.readLine();
-
-			firstloop = false;
-
-			String[] content = line.split(",");
-
-			if(content[0].equals(strTableName))
-			{
-
-				if (!content[4].equals("Null"))
-				{
-					res[i]=(content[1]);
-					currIndexName = content[4];
-					i++;
-					
-				}
-
-			}
-			line = br.readLine();
-
-		}
-		br.close();
-	
-	
-		//loadIndex(strTableName, indexName);
-		return res;
-	
-
-
-}
 
 	// following method updates one row only
 	// htblColNameValue holds the key and new value
@@ -621,7 +563,7 @@ public String[] hasIndex(String strTableName) throws IOException
 			if (!found)
 				throw new DBAppException("Pk is not found");
 
-			//reCreateIndex(strTableName);
+			reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 
@@ -916,7 +858,7 @@ public String[] hasIndex(String strTableName) throws IOException
 
 				}
 			}
-			//reCreateIndex(strTableName);
+			reCreateIndex(strTableName);
 
 			savePages();
 			saveTable();
@@ -1009,14 +951,14 @@ public String[] hasIndex(String strTableName) throws IOException
 
 			}
 
-			//reCreateIndex(strTableName);
+			reCreateIndex(strTableName);
 			savePages();
 			saveTable();
 
 			if (firstDeletion) {
 				firstDeletion = false;
 				this.deleteFromTable(strTableName, htblColNameValue);
-				//reCreateIndex(strTableName);
+				reCreateIndex(strTableName);
 
 			}
 
