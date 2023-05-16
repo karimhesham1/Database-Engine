@@ -1559,11 +1559,342 @@ public class Node implements Serializable{
             }
         }
         
+public Vector<Vector<Point>> getX(Object x, String op)
+{
+	
+	Vector<Vector<Point>> out= new Vector<Vector<Point>>();
 
+	Object midx = null;
+	if(xType.equals("java.lang.Integer"))
+	{
+		midx = (int) this.xMax+ (int) this.xMin/2;
+		x=(int) x;
+	}
+	
+	
+	if(xType.equals("java.lang.Double"))
+    {
+    	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
+    	x=(double)x;
+    }
+	
+	
+	  if(xType.equals("java.lang.String"))
+      {
+  		midx = printMiddleString((String)xMin,(String)xMax);
+  		x=(String) x;
+      }
+	
+      if(xType.equals("java.util.Date"))
+      {
+  		try {
+				midx = getMiddleDate((String)xMin,(String)xMax);
+				x=(Date) x;
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+      }
+      
+      
+      
+      if(this.children==null) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+      {
+      	for(int i=0; i<this.rowPoint.size(); i++)
+      	{
+      		if(op.equals("="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getX(), x)==0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals(">="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getX(), x)>=0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals("<="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getX(), x)<=0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals(">"))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getX(), x)>0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals("<"))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getX(), x)<0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      	
+      	}
 
         }
+      else 
+      {
+    	   if(compare(x,midx)>-1)
+    	   {
+    		   out.addAll(this.children[4].getX(x,op));
+    		   out.addAll(this.children[5].getX(x,op));
+    		   out.addAll(this.children[6].getX(x,op));
+    		   out.addAll(this.children[7].getX(x,op));
+    	   }
+    	   else
+    	   {
+    		   out.addAll(this.children[0].getX(x,op));
+    		   out.addAll(this.children[1].getX(x,op));
+    		   out.addAll(this.children[2].getX(x,op));
+    		   out.addAll(this.children[3].getX(x,op));
+    	   }
+      }
+
+      return null;
+}
+
+public Vector<Vector<Point>> getY(Object y, String op)
+{
+	
+	Vector<Vector<Point>> out= new Vector<Vector<Point>>();
+
+	Object midy = null;
+	if(yType.equals("java.lang.Integer"))
+	{
+		midy = (int) this.yMax+ (int) this.yMin/2;
+		y=(int) y;
+	}
+	
+	
+	if(yType.equals("java.lang.Double"))
+    {
+    	midy = Double.parseDouble((String) this.yMax )+Double.parseDouble((String) this.yMin ) /2;
+    	y=(double)y;
+    }
+	
+	
+	  if(yType.equals("java.lang.String"))
+      {
+  		midy = printMiddleString((String)yMin,(String)yMax);
+  		y=(String) y;
+      }
+	
+      if(yType.equals("java.util.Date"))
+      {
+  		try {
+				midy = getMiddleDate((String)yMin,(String)yMax);
+				y=(Date) y;
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+      }
+      
+      
+      
+      if(this.children==null) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+      {
+      	for(int i=0; i<this.rowPoint.size(); i++)
+      	{
+      		if(op.equals("="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getY(), y)==0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals(">="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getY(), y)>=0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals("<="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getY(), y)<=0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals(">"))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getY(), y)>0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals("<"))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getY(), y)<0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      	
+      	}
+
+        }
+      else 
+      {
+    	   if(compare(y,midy)>-1)
+    	   {
+    		   out.addAll(this.children[4].getY(y,op));
+    		   out.addAll(this.children[5].getY(y,op));
+    		   out.addAll(this.children[6].getY(y,op));
+    		   out.addAll(this.children[7].getY(y,op));
+    	   }
+    	   else
+    	   {
+    		   out.addAll(this.children[0].getY(y,op));
+    		   out.addAll(this.children[1].getY(y,op));
+    		   out.addAll(this.children[2].getY(y,op));
+    		   out.addAll(this.children[3].getY(y,op));
+    	   }
+      }
+
+      return null;
+}
 
 
+public Vector<Vector<Point>> getZ(Object z, String op)
+{
+	
+	Vector<Vector<Point>> out= new Vector<Vector<Point>>();
+
+	Object midz = null;
+	if(zType.equals("java.lang.Integer"))
+	{
+		midz = (int) this.zMax+ (int) this.yMin/2;
+		z=(int) z;
+	}
+	
+	
+	if(zType.equals("java.lang.Double"))
+    {
+    	midz = Double.parseDouble((String) this.zMax )+Double.parseDouble((String) this.zMin ) /2;
+    	z=(double)z;
+    }
+	
+	
+	  if(zType.equals("java.lang.String"))
+      {
+  		midz = printMiddleString((String)zMin,(String)zMax);
+  		z=(String) z;
+      }
+	
+      if(yType.equals("java.util.Date"))
+      {
+  		try {
+				midz = getMiddleDate((String)zMin,(String)zMax);
+				z=(Date) z;
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+      }
+      
+      
+      
+      if(this.children==null) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+      {
+      	for(int i=0; i<this.rowPoint.size(); i++)
+      	{
+      		if(op.equals("="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getZ(), z)==0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals(">="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getZ(), z)>=0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals("<="))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getZ(), z)<=0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals(">"))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getZ(), z)>0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      		else if(op.equals("<"))
+      		{
+      		if( compare(this.rowPoint.get(i).get(0).getZ(), z)<0)
+      		{
+      			 out.add(rowPoint.get(i));
+      			 return out;
+      		}
+      		}
+      	
+      	}
+
+        }
+      else 
+      {
+    	   if(compare(z,midz)>-1)
+    	   {
+    		   out.addAll(this.children[4].getZ(z,op));
+    		   out.addAll(this.children[5].getZ(z,op));
+    		   out.addAll(this.children[6].getZ(z,op));
+    		   out.addAll(this.children[7].getZ(z,op));
+    	   }
+    	   else
+    	   {
+    		   out.addAll(this.children[0].getZ(z,op));
+    		   out.addAll(this.children[1].getZ(z,op));
+    		   out.addAll(this.children[2].getZ(z,op));
+    		   out.addAll(this.children[3].getZ(z,op));
+    	   }
+      }
+
+      return null;
+}
+
+
+
+
+
+
+
+
+}
 
 
 
