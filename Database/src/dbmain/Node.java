@@ -1170,23 +1170,23 @@ public Vector<Vector<Point>> getX(Object x, String op)
         }
       else 
       {
-    	   if(compare(x,midx)>-1)
+    	   if(compare(x,midx)>0)
     	   {
-    		   out.addAll(this.children[4].getX(x,op));
-    		   out.addAll(this.children[5].getX(x,op));
-    		   out.addAll(this.children[6].getX(x,op));
-    		   out.addAll(this.children[7].getX(x,op));
+    		   out.add((Vector)this.children[4].getX(x,op));
+    		   out.add((Vector)this.children[5].getX(x,op));
+    		   out.add((Vector)this.children[6].getX(x,op));
+    		   out.add((Vector)this.children[7].getX(x,op));
     	   }
     	   else
     	   {
-    		   out.addAll(this.children[0].getX(x,op));
-    		   out.addAll(this.children[1].getX(x,op));
-    		   out.addAll(this.children[2].getX(x,op));
-    		   out.addAll(this.children[3].getX(x,op));
+    		   out.add((Vector)this.children[0].getX(x,op));
+    		   out.add((Vector)this.children[1].getX(x,op));
+    		   out.add((Vector)this.children[2].getX(x,op));
+    		   out.add((Vector)this.children[3].getX(x,op));
     	   }
       }
 
-      return null;
+      return out;
 }
 
 public Vector<Vector<Point>> getY(Object y, String op)
@@ -1279,7 +1279,7 @@ public Vector<Vector<Point>> getY(Object y, String op)
         }
       else 
       {
-    	   if(compare(y,midy)>-1)
+    	   if(compare(y,midy)>0)
     	   {
     		   out.addAll(this.children[4].getY(y,op));
     		   out.addAll(this.children[5].getY(y,op));
@@ -1295,7 +1295,7 @@ public Vector<Vector<Point>> getY(Object y, String op)
     	   }
       }
 
-      return null;
+      return out;
 }
 
 
@@ -1325,7 +1325,7 @@ public Vector<Vector<Point>> getZ(Object z, String op)
   		z=(String) z;
       }
 	
-      if(yType.equals("java.util.Date"))
+      if(zType.equals("java.util.Date"))
       {
   		try {
 				midz = getMiddleDate((Date)zMin,(Date)zMax);
@@ -1389,7 +1389,7 @@ public Vector<Vector<Point>> getZ(Object z, String op)
         }
       else 
       {
-    	   if(compare(z,midz)>-1)
+    	   if(compare(z,midz)>0)
     	   {
     		   out.addAll(this.children[4].getZ(z,op));
     		   out.addAll(this.children[5].getZ(z,op));
@@ -1405,7 +1405,7 @@ public Vector<Vector<Point>> getZ(Object z, String op)
     	   }
       }
 
-      return null;
+      return out;
 }
 
 
