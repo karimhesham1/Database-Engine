@@ -296,52 +296,130 @@ public class Node implements Serializable{
          	}
         	
         	
-        		 
-        	
-        	
-        	
-        	
-        
-
-        	
-        	
         	
         	this.distributeRef();
         }
 	
         public void distributeRef() {
-//        	int size = this.rowPoint.size();
-//        	for(int i =0;i<size;i++) {
-//        		Object x = this.rowPoint.get(i).getX();
-//        		Object y = this.rowPoint.get(i).getY();
-//        		Object z = this.rowPoint.get(i).getZ();
-//        		Point p1 = this.rowPoint.get(i);
-//  
-//        	}
-        	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>();
-        	tmps=rowPoint;
-        	
-        	
-        	
-        	 for (Vector<Point> vector : rowPoint)
-        	 {
-        		 tmps.add(new Vector<>(vector));
-             }
-        	
-        	
-        	
+
+     	
         	int i=0;
-        	while (!tmps.isEmpty())
+        	while (!rowPoint.isEmpty())
         	{	
         	Object x= this.rowPoint.get(i).get(0).getX();
         	Object y=  this.rowPoint.get(i).get(0).getY();
         	Object z=  this.rowPoint.get(i).get(0).getZ();
         	
-        	//leh keda
+        	Object xMin,xMax,yMin,yMax,zMin,zMax;
+     
+        	
+        	
+        	
+        	
+        	
         	Point p1 = this.rowPoint.get(i).get(0);
         	
         	for(int j=0; j< this.children.length; j++)
-    		{	
+    		{
+        		
+        		//=========================================================================
+            	
+            	if(xType.equals("java.lang.Integer"))
+            	{
+            		
+            	}
+                
+            	if(yType.equals("java.lang.Integer"))
+            	{
+            	midy = (int) this.yMax+ (int) this.yMin/2;
+                y=(int) findMyNode[1];
+            	}
+            	if(zType.equals("java.lang.Integer")) 
+                {
+                midz =(int) this.zMax+ (int) this.zMin/2;
+                z=(int) findMyNode[2];
+                }
+                
+            	
+            	//double
+            	if(xType.equals("java.lang.Double"))
+                {
+                	midx = Double.parseDouble((String) this.xMax )+Double.parseDouble((String) this.xMin ) /2;
+                	x=(double)findMyNode[0];
+                }
+                
+                if(yType.equals("java.lang.Double"))
+                {
+                	midy = Double.parseDouble((String) this.yMax )+ Double.parseDouble((String) this.yMin ) /2;
+                	y=(int) findMyNode[1];
+                }
+                
+                
+                if(zType.equals("java.lang.Double"))
+                {
+                	midz =Double.parseDouble((String) this.zMax ) + Double.parseDouble((String) this.zMin ) /2;
+                	z=(double) findMyNode[2];
+                }
+                
+                //string 
+                if(xType.equals("java.lang.String"))
+                {
+            		midx = printMiddleString((String)xMin,(String)xMax);
+            		x=(String) findMyNode[0];
+                }
+                if(yType.equals("java.lang.String"))
+                {
+            		midy = printMiddleString((String)yMin,(String)yMax);
+            		y=(String) findMyNode[1];
+                }
+                if(zType.equals("java.lang.String"))
+                {
+            		midz = printMiddleString((String)zMin,(String)zMax);
+            		z=(String) findMyNode[2];
+                }
+             
+                //date 
+                if(xType.equals("java.util.Date"))
+                {
+            		try {
+    					midx = getMiddleDate((String)xMin,(String)xMax);
+    					x=(Date) findMyNode[0];
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+                
+                if(yType.equals("java.util.Date"))
+                {
+            		try {
+    					midy = getMiddleDate((String)yMin,(String)yMax);
+    					y=(Date) findMyNode[1];
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+                
+                if(zType.equals("java.util.Date"))
+                {
+            		try {
+    					midz = getMiddleDate((String)zMin,(String)zMax);
+    					z=(Date) findMyNode[2];
+    					
+    				} catch (ParseException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+                }
+            	
+            	
+            	
+            	//===================================================
+        		
+        		
         		int compareXMIN= compare(this.children[j].xMin, x);
         		int compareXMax= compare(this.children[j].xMax, x);
         		
@@ -357,7 +435,7 @@ public class Node implements Serializable{
         				)
         		{
         			children[j].insert( this.rowPoint.get(i));
-        			tmps.remove(i);
+        			rowPoint.remove(i);
         			i++;
         			break;
         		}
@@ -369,48 +447,7 @@ public class Node implements Serializable{
         	
         	}
         	
-        	
-        	
-//        	Vector< Vector<Point> > tmps= new  Vector<Vector<Point>>(this.rowPoint.size());
-//        	tmps=rowPoint;
-//        	Vector<Point> tmp= new Vector<Point>();
-//        	tmp = rowPoint.get(0); //new
-//        	int i=0;
-//        	int ii=0;
-//        	while(!tmps.isEmpty()) 
-//        	{
-//        	while(!tmp.isEmpty())
-//        	{
-//        		
-//        		int x = (int) this.rowPoint.get(i).get(0).getX();
-//        		int y = (int) this.rowPoint.get(i).get(0).getY();
-//        		int z = (int) this.rowPoint.get(i).get(0).getZ();
-//        		Point p1 = this.rowPoint.get(i).get(0);
-//        		
-//        		
-//        		for(int j=0; j< this.children.length; j++)
-//        		{	
-//        			if( (int)this.children[j].xMin>x && (int)this.children[j].xMax<x
-//        				&&	(int)this.children[j].yMin>y && (int)this.children[j].yMax<y	
-//        				&&	(int)this.children[j].zMin>z && (int)this.children[j].zMax<z	
-//        					)
-//        			{
-//        				insert(p1);
-//        				tmp.remove(i);
-//        				i--; //new
-//        				break;
-//        			}
-//        		}
-//        		
-//        		
-//        		i++;
-//        		
-//        	} 
-//        	tmps.remove(ii);
-//        	ii++;
-//        	}
-//        	
-//        	
+
         }
         
         public void insert(Point ref) throws IOException 
