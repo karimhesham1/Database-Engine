@@ -693,14 +693,10 @@ public class DBApp implements Serializable {
 				}
 			}
 		
-			
-			loadedOctree.printOctTree(loadedOctree.getRoot(), "");
-			
-			//reCreateIndex(strTableName);
-			saveIndex();
+			reCreateIndex(strTableName);
 			savePages();
 			saveTable();
-			
+			saveIndex();
 			
 			
 			
@@ -1394,28 +1390,6 @@ public class DBApp implements Serializable {
 
 
 
-	
-	public String getPkColName(String strTableName) throws IOException
-	{
-		String pkname = "";
-		BufferedReader br = new BufferedReader(new FileReader("metadata.csv"));
-		String line = br.readLine();
-		while (line != null) {
-			String[] content = line.split(",");
-			if (content[0].equals(strTableName) && content[3].equals("true"))
-			{
-				pkname = content[1];
-			}
-
-			line = br.readLine();
-		}
-
-		
-
-		br.close();
-		return pkname;
-	}
-	
 
 	//	 following method creates an octree
 	//	 depending on the count of column names passed.
@@ -1423,7 +1397,7 @@ public class DBApp implements Serializable {
 	//	 If only one or two column names is passed, throw an Exception.
 	public void createIndex(String strTableName, String[] strarrColName)
 			throws DBAppException, IOException, ClassNotFoundException {
-		String pkname = getPkColName(strTableName);
+		String pkname = "";
 
 		if (strarrColName.length != 3)
 			throw new DBAppException();
@@ -1439,6 +1413,8 @@ public class DBApp implements Serializable {
 			String line = br.readLine();
 			while (line != null) {
 				String[] content = line.split(",");
+				if (content[0].equals(strTableName) && content[3].equals("true"))
+					pkname = content[1];
 				if (content[0].equals(strTableName) && content[1].equals(insertedColName) && content[4].equals("Null")
 						&& content[5].equals("Null")) {
 
@@ -1509,9 +1485,6 @@ public class DBApp implements Serializable {
 
 			br.close();
 		}
-		
-		
-		
 
 		// create the octree
 		// mango
