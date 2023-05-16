@@ -80,8 +80,8 @@ public class MainMethod {
 		htblColNameValue.put("gpa", new Double( 0.4 ) );
 		//dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-//		for(int i=60;i<80;i++) {
-//		if(i<68)
+//		for(int i=1;i<20;i++) {
+//		if(i<10)
 //		{
 //			htblColNameValue.clear( );
 //			htblColNameValue.put("id", new Integer( i ));
@@ -103,7 +103,7 @@ public class MainMethod {
 		
 		
 		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 13 ));
+		//htblColNameValue.put("id", new Integer( 29 ));
 		htblColNameValue.put("name", new String("susFash5" ) );
 		htblColNameValue.put("gpa", new Double( 3.2 ) );
 		htblColNameValue.put("dob", new Date(2002 - 1900, 1 - 1, 1));
