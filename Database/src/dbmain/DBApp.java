@@ -407,52 +407,52 @@ public class DBApp implements Serializable {
 			}
 
 			
-			ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
-//			if(indexCols != null) {
+//			ArrayList<String> indexCols = indexCols(strTableName, htblColNameValue);
+////			if(indexCols != null) {
+////				loadIndex(strTableName, indexCols.get(3));
+////				Object x = indexCols.get(0);
+////				Object y = indexCols.get(1);
+////				Object z = indexCols.get(2);
+////				//Object pk = r.getValue(pkname);
+////				Object ref = loadedPages.get(s1);
+////				loadedOctree.insert(x, y, z, ref, pk);
+////				saveIndex();
+////			}
+//			
+//			String[] indexColNames = new String[3];
+//			indexColNames[0] = indexCols.get(0);
+//			indexColNames[1] = indexCols.get(1);
+//			indexColNames[2] = indexCols.get(2);
+//			
+//			if(hasIndex(strTableName, htblColNameValue)) {
 //				loadIndex(strTableName, indexCols.get(3));
-//				Object x = indexCols.get(0);
-//				Object y = indexCols.get(1);
-//				Object z = indexCols.get(2);
-//				//Object pk = r.getValue(pkname);
-//				Object ref = loadedPages.get(s1);
-//				loadedOctree.insert(x, y, z, ref, pk);
-//				saveIndex();
-//			}
-			
-			String[] indexColNames = new String[3];
-			indexColNames[0] = indexCols.get(0);
-			indexColNames[1] = indexCols.get(1);
-			indexColNames[2] = indexCols.get(2);
-			
-			if(hasIndex(strTableName, htblColNameValue)) {
-				loadIndex(strTableName, indexCols.get(3));
-				loadedOctree = new OctTree(strTableName, indexColNames);
-				loadTable(strTableName);
-				loadPages(loadedTable);
-				String indexName = "";
-				indexName = indexColNames[0] + indexColNames[1] + indexColNames[2] + strTableName + ".class";
-
-				for (Page p : loadedPages) {
-					for (Row r : p.getRows()) {
-						Object x = r.getValue(indexColNames[0]);
-						Object y = r.getValue(indexColNames[1]);
-						Object z = r.getValue(indexColNames[2]);
-						//Object pk = r.getValue(pkname);
-						Object ref = p.getPageName();
-						loadedOctree.insert(x, y, z, ref, pk);
-					}
-				}
+//				loadedOctree = new OctTree(strTableName, indexColNames);
+//				loadTable(strTableName);
+//				loadPages(loadedTable);
+//				String indexName = "";
+//				indexName = indexColNames[0] + indexColNames[1] + indexColNames[2] + strTableName + ".class";
+//
+//				for (Page p : loadedPages) {
+//					for (Row r : p.getRows()) {
+//						Object x = r.getValue(indexColNames[0]);
+//						Object y = r.getValue(indexColNames[1]);
+//						Object z = r.getValue(indexColNames[2]);
+//						//Object pk = r.getValue(pkname);
+//						Object ref = p.getPageName();
+//						loadedOctree.insert(x, y, z, ref, pk);
+//					}
+//				}
 				savePages();
 				saveTable();
 				
-				// serialize to disk
-				File indexFile = new File(indexName + strTableName + ".class");
-				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
-				out.writeObject(loadedOctree);
-				out.close();
+//				// serialize to disk
+//				File indexFile = new File(indexName + strTableName + ".class");
+//				ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(indexFile));
+//				out.writeObject(loadedOctree);
+//				out.close();
 				
-				loadedOctree.printOctTree(loadedOctree.getRoot(), "");
-			}
+				//loadedOctree.printOctTree(loadedOctree.getRoot(), "");
+			//}
 			
 			
 
@@ -699,9 +699,12 @@ public class DBApp implements Serializable {
 				}
 			}
 		
-			
+			loadedOctree.printOctTree(loadedOctree.getRoot(), "");
 			savePages();
 			saveTable();
+			saveIndex();
+			
+			
 			
 		}
 
@@ -714,8 +717,7 @@ public class DBApp implements Serializable {
 	{
 
 		// find el pages ele feha el 7aga
-		loadTable(strTableName);
-		loadPages(loadedTable);
+		
 
 		boolean valid = validateHashtable(strTableName, htblColNameValue);
 		if (!valid)
@@ -724,6 +726,8 @@ public class DBApp implements Serializable {
 			deleteUsingIndex(strTableName,htblColNameValue);
 			return;
 		}
+		loadTable(strTableName);
+		loadPages(loadedTable);
 		boolean hasPk = checkForPrimaryKey(strTableName, htblColNameValue);
 		boolean firstloop = true;
 		Vector<Row> tmpRows = new Vector<Row>();
@@ -1549,7 +1553,7 @@ return iterator;
 					}
 
 					// edit specific columns in the line
-					content[4] = indexName + "Index";
+					content[4] = indexName ; //shelna el "Index"
 					content[5] = "Octree";
 					
 					

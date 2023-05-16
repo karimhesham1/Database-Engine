@@ -483,8 +483,8 @@ public class Node implements Serializable{
 					int compareZMIN= compare(zMinn, z);
 					int compareZMax= compare(zMaxx, z);
 					if( compareXMIN <=0 && compareXMax >=0 &&
-							compareYMIN<=1 && compareYMax>=1 &&
-							compareZMIN<=1 && compareZMax>=1 
+							compareYMIN<=0 && compareYMax>=0 &&
+							compareZMIN<=0 && compareZMax>=0 
 							)
 					{
 						children[j].insert( this.rowPoint.get(i));
@@ -804,7 +804,7 @@ public class Node implements Serializable{
             
             //------------------------------------------------------------------------
             
-            if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+            if(this.children==null) // m3ndosh 3yal hdwr fel vector points 3la el point d 
             {
             	for(int i=0; i<this.rowPoint.size(); i++)
             	{
@@ -817,15 +817,15 @@ public class Node implements Serializable{
             else 
             {
             	   // 3ndo 3yal h2olo yro7 ye search fe anhe wa7ed fehom
-                if(compare(x,midx)<1)
+                if(compare(x,midx)<=0)
                 	{
-                	if(compare(y,midy)<1)
+                	if(compare(y,midy)<=0)
                 	{
                 		{
-                		if(compare(z,midz)<1) //low low low
-                			this.children[0].search(findMe);
+                		if(compare(z,midz)<=0) //low low low
+                			return this.children[0].search(findMe);
                 		else //low low high
-                			this.children[1].search(findMe);
+                			return this.children[1].search(findMe);
                 		}
                 
                 
@@ -833,22 +833,22 @@ public class Node implements Serializable{
                 	else 
                 	{
                 		{
-                    		if(compare(z,midz)<1) //low high low 
-                    			this.children[2].search(findMe);
+                    		if(compare(z,midz)<=0) //low high low 
+                    			return this.children[2].search(findMe);
                     		else //low high high 
-                    			this.children[3].search(findMe);
+                    			return this.children[3].search(findMe);
                     		}
                 	}
                 	}
                 else // x aslun high 
                 {
-                	if(compare(y,midy)<1)
+                	if(compare(y,midy)<=0)
                 	{
                 		{
-                		if(compare(z,midz)<1) //high low low
-                			this.children[4].search(findMe);
+                		if(compare(z,midz)<=0) //high low low
+                			return this.children[4].search(findMe);
                 		else //high low high
-                			this.children[5].search(findMe);
+                			return this.children[5].search(findMe);
                 		}
                 
                 
@@ -856,10 +856,10 @@ public class Node implements Serializable{
                 	else 
                 	{
                 		{
-                    		if(compare(z,midz)<1) //high high low 
-                    			this.children[6].search(findMe);
+                    		if(compare(z,midz)<=0) //high high low 
+                    			return this.children[6].search(findMe);
                     		else //high high high 
-                    			this.children[7].search(findMe);
+                    			return this.children[7].search(findMe);
                     		}
                 	}
                 }
@@ -988,7 +988,7 @@ public class Node implements Serializable{
                 
                 //------------------------------------------------------------------------
                 
-                if(this.children.length==0) // m3ndosh 3yal hdwr fel vector points 3la el point d 
+                if(this.children==null) // m3ndosh 3yal hdwr fel vector points 3la el point d 
                 {
                 	for(int i=0; i<this.rowPoint.size(); i++)
                 	{
@@ -1010,9 +1010,9 @@ public class Node implements Serializable{
                     	{
                     		{
                     		if(compare(z,midz)<1) //low low low
-                    			this.children[0].get(findMyNode, found);
+                    			return this.children[0].get(findMyNode, found);
                     		else //low low high
-                    			this.children[1].get(findMyNode, found);
+                    			return this.children[1].get(findMyNode, found);
                     		}
                     
                     
@@ -1021,9 +1021,9 @@ public class Node implements Serializable{
                     	{
                     		{
                         		if(compare(z,midz)<1) //low high low 
-                        			this.children[2].get(findMyNode, found);
+                        			return this.children[2].get(findMyNode, found);
                         		else //low high high 
-                        			this.children[3].get(findMyNode, found);
+                        			return this.children[3].get(findMyNode, found);
                         		}
                     	}
                     	}
@@ -1033,9 +1033,9 @@ public class Node implements Serializable{
                     	{
                     		{
                     		if(compare(z,midz)<1) //high low low
-                    			this.children[4].get(findMyNode, found);
+                    			return this.children[4].get(findMyNode, found);
                     		else //high low high
-                    			this.children[5].get(findMyNode, found);
+                    			return this.children[5].get(findMyNode, found);
                     		}
                     
                     
@@ -1044,9 +1044,9 @@ public class Node implements Serializable{
                     	{
                     		{
                         		if(compare(z,midz)<1) //high high low 
-                        			this.children[6].get(findMyNode, found);
+                        			return this.children[6].get(findMyNode, found);
                         		else //high high high 
-                        			this.children[7].get(findMyNode, found);
+                        			return this.children[7].get(findMyNode, found);
                         		}
                     	}
                     }
