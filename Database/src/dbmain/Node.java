@@ -3,10 +3,12 @@ package dbmain;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 import java.util.Vector;
 import java.text.SimpleDateFormat;
 
@@ -35,13 +37,19 @@ public class Node implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-		private static final int MAX_ENTRIES = 16;
+		private static int MAX_ENTRIES = 0;
         private Vector< Vector<Point> > rowPoint;
         private Node[] children;
         private Object xMin,xMax,yMin,yMax,zMin,zMax;
         private String xType,yType,zType;
 
-        public Node() {
+        public Node() throws IOException {
+        	Properties props = new Properties();
+        	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("resources/DBApp.config");
+        	props.load(inputStream);
+
+        	Node.MAX_ENTRIES = Integer.parseInt(props.getProperty("MaximumEntriesinOctreeNode"));
+
            rowPoint= new Vector< Vector<Point> >(MAX_ENTRIES);
            children = null;
         }
@@ -188,7 +196,7 @@ public class Node implements Serializable{
 			this.xMax = xMax;
 		}
 
-		public void newParent()
+		public void newParent() throws IOException
         {
 			int y=0;
         	this.children = new Node[8];
@@ -592,7 +600,7 @@ public class Node implements Serializable{
 //        	
         }
         
-        public void insert(Point ref) 
+        public void insert(Point ref) throws IOException 
         {
         	
         	

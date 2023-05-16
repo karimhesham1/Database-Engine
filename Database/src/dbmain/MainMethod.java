@@ -101,6 +101,13 @@ public class MainMethod {
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 	
 		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 14 ));
+		htblColNameValue.put("name", new String("zozawy" ) );
+		htblColNameValue.put("gpa", new Double( 3.8 ) );
+		htblColNameValue.put("dob", new Date(2008 - 1900, 1 - 1, 1));
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		htblColNameValue.clear( );
 		//htblColNameValue.put("id", new Integer( 67 ));
 		//htblColNameValue.put("name", new String( "manga" ));
 		htblColNameValue.put("gpa", new Double( 0.4 ) );

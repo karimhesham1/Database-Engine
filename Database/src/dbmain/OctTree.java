@@ -34,7 +34,7 @@ public class OctTree implements Serializable {
 		return zName;
 	}
 
-	public OctTree(String tableName,String[] columns) throws DBAppException {
+	public OctTree(String tableName,String[] columns) throws DBAppException, IOException {
         this.root = new Node();
         try {
 			this.setTypes(tableName,columns);
@@ -147,7 +147,7 @@ public class OctTree implements Serializable {
     	
     }
 
-    public void insert(Object x, Object y, Object z, Object ref, Object pk) 
+    public void insert(Object x, Object y, Object z, Object ref, Object pk) throws IOException 
     {
     	Point p1 = new Point(x,y,z,ref, pk);
     	root.insert(p1);
