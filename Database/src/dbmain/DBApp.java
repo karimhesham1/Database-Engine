@@ -92,9 +92,9 @@ public class DBApp implements Serializable {
 			// Loop through columns in hashtable and write to metadata file
 
 			Enumeration<String> columnNames1 = htblColNameType.keys();
-			if ((checkTypeMinMax(columnNames1, htblColNameType, htblColNameMin, htblColNameMax)) == false) {
-				throw new DBAppException("Error with data consistency");
-			}
+//			if ((checkTypeMinMax(columnNames1, htblColNameType, htblColNameMin, htblColNameMax)) == false) {
+//				throw new DBAppException("Error with data consistency");
+//			}
 			Enumeration<String> columnNames = htblColNameType.keys();
 			while (columnNames.hasMoreElements()) {
 				String columnName = columnNames.nextElement();
@@ -165,8 +165,8 @@ public class DBApp implements Serializable {
 
 							if (content[2].equals(insertedvalue.getClass().getName())) {
 								if ((insertedvalue.getClass().getName()).equals("java.lang.Double")) {
-									int min = Integer.parseInt(content[6]);
-									int max = Integer.parseInt(content[7]);
+									Double min = Double.parseDouble(content[6]);
+									Double max = Double.parseDouble(content[7]);
 
 									if ((double) insertedvalue >= min && (double) insertedvalue <= max) {
 										flag = true;
@@ -1965,6 +1965,12 @@ public class DBApp implements Serializable {
 			else
 				return 0;
 		}
+		if (x instanceof Date)
+		{
+			Date newy = new Date(y);
+			return ((Date) x).compareTo(newy);
+		}
+			
 
 		Integer yy = Integer.parseInt(y);
 		if ((Integer) x > yy)
@@ -1984,6 +1990,7 @@ public class DBApp implements Serializable {
 			System.out.println("Start of page");
 			for (int i = 0; i < p.getNumUsedRows(); i++) {
 				p.getRow(i).printRow();
+				System.out.println(i);
 				System.out.println(" ");
 			}
 		}

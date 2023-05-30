@@ -1,5 +1,16 @@
 Table Name,Column Name,Column Type,Clustering Key,IndexName,IndexType,Min,Max
-Student,gpa,java.lang.Double,false,namegpadob,Octree,0,4
-Student,name,java.lang.String,false,namegpadob,Octree,a,ZZZZZZZZ
-Student,dob,java.util.Date,false,namegpadob,Octree,1990-01-01,2025-01-01
-Student,id,java.lang.Integer,true,Null,Null,0,999999999
+pcs,pc_id,java.lang.Integer,TRUE,Null,Null,0,20000
+pcs,student_id,java.lang.String,FALSE,Null,Null,43-0000,99-9999
+courses,hours,java.lang.Integer,FALSE,course_idhoursdate_added,Octree,1,24
+courses,date_added,java.util.Date,TRUE,course_idhoursdate_added,Octree,01-01-01,31-12-20
+courses,course_id,java.lang.String,FALSE,course_idhoursdate_added,Octree,0,9999
+courses,course_name,java.lang.String,FALSE,Null,Null,AAAAAA,zzzzzz
+transcripts,gpa,java.lang.Double,TRUE,Null,Null,0.7,5
+transcripts,date_passed,java.util.Date,FALSE,Null,Null,01-01-90,31-12-20
+transcripts,course_name,java.lang.String,FALSE,Null,Null,AAAAAA,zzzzzz
+transcripts,student_id,java.lang.String,FALSE,Null,Null,43-0000,99-9999
+students,gpa,java.lang.Double,FALSE,idfirst_namegpa,Octree,0.7,5
+students,last_name,java.lang.String,FALSE,Null,Null,AAAAAA,zzzzzz
+students,first_name,java.lang.String,FALSE,idfirst_namegpa,Octree,AAAAAA,zzzzzz
+students,dob,java.util.Date,FALSE,Null,Null,01-01-90,31-12-00
+students,id,java.lang.String,TRUE,idfirst_namegpa,Octree,43-0000,99-9999

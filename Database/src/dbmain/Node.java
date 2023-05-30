@@ -351,7 +351,7 @@ public class Node implements Serializable{
          		 
          	}
         	
-        	
+        	//fd
         	//System.out.println(this.yMin.getClass());
         	this.distributeRef();
         }
@@ -495,6 +495,8 @@ public class Node implements Serializable{
 
 
 				}
+				rowPoint.remove(i);
+				i--;
 			}
 			this.rowPoint =new  Vector<Vector<Point>>();
 
@@ -518,7 +520,9 @@ public class Node implements Serializable{
         		}
         		else 
         		{
+        			int hjghg;
         			System.out.println(this.yMin.getClass());
+        			//here
         			this.newParent();
         			System.out.println(this.yMin.getClass());
         			insert(ref);
